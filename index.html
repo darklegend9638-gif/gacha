@@ -382,18 +382,16 @@ function show(i,t,extra){
 }
 function roll(n){
  const cost=10*n;if(busy||!ready||S.coins<cost)return;S.coins-=cost;busy=true;
- let best=-1,bi=null,gain=0,lines=[];
+ let best=-1,bi=null,gain=0;
  for(let k=0;k<n;k++){
   let i,t;const xt=exRoll();
   if(xt){i=X;t=xt}else{i=pick();const its=R[i].items;t=its[Math.floor(Math.random()*its.length)]}
   S.rolls++;S.found[t]=(S.found[t]||0)+1;gain+=RA(i).v;
   if(i>best){best=i;bi=t}if(i<X&&i>S.best)S.best=i;
-  if(i>=3)lines.push(`<div style="color:${RA(i).c}">${rname(i)}: ${iview(t)}</div>`);
  }
  const e_=ev();gain=Math.floor(gain*(1+.1*setsDone())*(e_.coin||1)*(e_.gain||1));S.coins+=gain;render();save();
  const o=$("orb");o.classList.add("charge");$("nm").textContent="…";$("rr").textContent="";
  setTimeout(()=>{o.classList.remove("charge");show(best,bi,"+"+fmt(gain));
-  if(lines.length)$("log").innerHTML=lines.join("")+$("log").innerHTML;
   busy=false;render()},n>1?650:450);
 }
 function render(){
