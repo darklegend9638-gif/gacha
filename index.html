@@ -219,10 +219,19 @@ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale
 </div>
 <div id="admp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть">×</button>
   <b class="hd"><svg class="ico"><use href="#i-admin"/></svg>Админ-панель</b>
-  <div id="own" style="display:none;margin:10px 0;padding:10px;border:1px dashed var(--line);border-radius:12px"><b style="font-size:14px">Выдать доступ к админке</b>
-   <div style="color:var(--mute);font-size:13px;margin-top:6px">Заходили на сайт:</div><div id="g_can" style="font-size:14px"></div>
-   <div style="color:var(--mute);font-size:13px;margin-top:8px">Есть доступ:</div><div id="g_list" style="font-size:14px"></div></div>
-  <div id="tgtw" style="display:none;margin:10px 0"><div style="color:var(--mute);font-size:13px">Кого изменить:</div><div class="row" style="margin-top:6px"><select id="a_who"></select></div><div id="a_st" style="font-size:14px;min-height:18px;margin-top:6px"></div></div>
+  <div id="own" style="display:none;margin:10px 0;padding:10px;border:1px dashed var(--line);border-radius:12px">
+   <b style="font-size:14px">Администраторы</b>
+   <div id="g_list" style="font-size:14px;margin-top:8px"></div>
+  </div>
+  <div id="tgtw" style="display:none;margin:10px 0;padding:10px;border:1px dashed var(--line);border-radius:12px">
+   <b style="font-size:14px">Кого изменить</b>
+   <div class="row" style="margin-top:8px"><select id="a_who"></select></div>
+   <div class="row" style="margin-top:8px">
+    <button id="a_grant" type="button">Выдать админа</button>
+    <button class="alt" id="a_revoke" type="button">Забрать админа</button>
+   </div>
+   <div id="a_st" style="font-size:14px;min-height:18px;margin-top:6px"></div>
+  </div>
   <div style="margin:10px 0;padding:10px;border:1px dashed var(--line);border-radius:12px"><b style="font-size:14px">Ивенты (для всех игроков)</b>
    <div class="row"><select id="a_ev"></select></div>
    <div class="row"><input id="a_evm" type="number" min="1" value="30" placeholder="Кол-во"><select id="a_evu" style="flex:none;width:auto"><option value="1">Минуты</option><option value="60">Часы</option><option value="1440">Дни</option></select></div>
@@ -297,7 +306,7 @@ const TX={"Кристальный алтарь":"Crystal Altar","Бросай, �
 "Выдать монеты":"Give coins","Забрать монеты":"Take coins","Уровень удачи":"Luck level","Выдать предмет":"Give item","Открыть всю коллекцию":"Unlock the whole collection",
 "⚠️ Обнуление прогресса":"⚠️ Progress wipe","Вы уверены, что хотите обнулить прогресс всех игроков?":"Are you sure you want to wipe all players' progress?","Это действие нельзя отменить.":"This cannot be undone.",
 "Отмена":"Cancel","Обнулить":"Wipe","Понятно":"OK","Регистрация":"Sign up","Вход":"Sign in","Позже":"Later",
-"Новый ник":"New nickname","Текущий пароль":"Current password","Новый пароль (от 4 символов)":"New password (4+ characters)","Никнейм":"Nickname","Пароль (от 4 символов)":"Password (4+ characters)","Меню":"Menu","Закрыть":"Close","Удалить аккаунт":"Delete account","⚠️ Удаление аккаунта":"⚠️ Delete account","Аккаунт и весь ваш прогресс будут удалены навсегда. Для подтверждения введите свой ник.":"Your account and all progress will be permanently deleted. Type your nickname to confirm.","Удалить":"Delete","Кого изменить:":"Whom to edit:","Уровень дохода":"Income level","Титулы":"Titles","Топ по монетам":"Coins leaderboard","Топ":"Top","Ивенты (для всех игроков)":"Events (for all players)","Запустить ивент":"Start event","Остановить ивент":"Stop event","Минут":"Minutes","Кол-во":"Amount","Минуты":"Minutes","Часы":"Hours","Дни":"Days","Максимум 30 дней":"Maximum 30 days","Переводы":"Transfers","💸 Переводы":"💸 Transfers","Отправь монеты другому игроку":"Send coins to another player","Ник получателя":"Recipient nickname","Поиск игрока или ник":"Search player or nickname","Сумма":"Amount","Отправить":"Send","Магазин":"Shop","🛒 Магазин":"🛒 Shop","Покупай титулы за монеты":"Buy titles with coins","🏆 Титулы":"🏆 Titles"};
+"Новый ник":"New nickname","Текущий пароль":"Current password","Новый пароль (от 4 символов)":"New password (4+ characters)","Никнейм":"Nickname","Пароль (от 4 символов)":"Password (4+ characters)","Меню":"Menu","Закрыть":"Close","Удалить аккаунт":"Delete account","⚠️ Удаление аккаунта":"⚠️ Delete account","Аккаунт и весь ваш прогресс будут удалены навсегда. Для подтверждения введите свой ник.":"Your account and all progress will be permanently deleted. Type your nickname to confirm.","Удалить":"Delete","Кого изменить":"Whom to edit","Администраторы":"Administrators","Выдать админа":"Grant admin","Забрать админа":"Revoke admin","Сначала выберите игрока":"Select a player first","Админ выдан":"Admin granted","Админ снят":"Admin revoked","Кого изменить:":"Whom to edit:","Уровень дохода":"Income level","Титулы":"Titles","Топ по монетам":"Coins leaderboard","Топ":"Top","Ивенты (для всех игроков)":"Events (for all players)","Запустить ивент":"Start event","Остановить ивент":"Stop event","Минут":"Minutes","Кол-во":"Amount","Минуты":"Minutes","Часы":"Hours","Дни":"Days","Максимум 30 дней":"Maximum 30 days","Переводы":"Transfers","💸 Переводы":"💸 Transfers","Отправь монеты другому игроку":"Send coins to another player","Ник получателя":"Recipient nickname","Поиск игрока или ник":"Search player or nickname","Сумма":"Amount","Отправить":"Send","Магазин":"Shop","🛒 Магазин":"🛒 Shop","Покупай титулы за монеты":"Buy titles with coins","🏆 Титулы":"🏆 Titles"};
 const o0=new WeakMap();
 function applyStatic(){const en=LANG==="en",w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
  while(n=w.nextNode()){if(n.parentNode.tagName==="SCRIPT")continue;const o=o0.has(n)?o0.get(n):n.nodeValue,k=o.trim();if(TX[k]){o0.set(n,o);n.nodeValue=en?o.replace(k,TX[k]):o}}
@@ -447,14 +456,29 @@ $("reg_ok").onclick=async()=>{const n=$("reg_nick").value.trim(),p=$("reg_pw").v
  const r=mode==="reg"?await rpc("gacha_register",{p_nick:n,p_pass:p,p_avatar:pickAv,p_save:S}):await rpc("gacha_login",{p_nick:n,p_pass:p});
  if(r.error){st.textContent=r.error;return}
  TOKEN=r.data.token;try{localStorage.setItem("gacha-token",TOKEN)}catch(e){}applyMe(r.data)};
-async function setRole(k,r){const x=await rpc("gacha_set_role",{p_token:TOKEN,p_key:k,p_role:r});if(x.error)alert(x.error);renderGrants()}
-async function renderGrants(){if(!isOwner)return;const r=await rpc("gacha_players",{p_token:TOKEN});if(r.error)return;let can="",has="";const w=$("a_who"),cv=w.value;
- w.innerHTML=`<option value="">${tr("meopt")}</option>`+(r.data||[]).filter(x=>x.role!=="owner").map(x=>`<option value="${esc(x.key)}">${avT(x.avatar)} ${esc(x.nick)}</option>`).join("");w.value=[...w.options].some(o=>o.value===cv)?cv:"";
- (r.data||[]).forEach(x=>{if(x.role==="owner")return;const row=`<div class="gr"><span>${avH(x.avatar)} ${esc(x.nick)}</span>`;
-  if(x.role==="admin")has+=row+`<button class="alt" data-rv="${esc(x.key)}">${tr("revoke")}</button></div>`;else can+=row+`<button data-gv="${esc(x.key)}">${tr("grant")}</button></div>`});
- $("g_can").innerHTML=can||"<i>"+tr("nobodyyet")+"</i>";$("g_list").innerHTML=has||"<i>"+tr("nobody")+"</i>";
- document.querySelectorAll("[data-gv]").forEach(b=>b.onclick=()=>setRole(b.dataset.gv,"admin"));
- document.querySelectorAll("[data-rv]").forEach(b=>b.onclick=()=>setRole(b.dataset.rv,""))}
+async function setRole(k,r){
+ const x=await rpc("gacha_set_role",{p_token:TOKEN,p_key:k,p_role:r});
+ if(x.error)return aMsg(x.error);
+ await renderGrants();
+ aMsg(r==="admin"?"Админ выдан":"Админ снят",true);
+}
+async function renderGrants(){
+ if(!isOwner)return;
+ const r=await rpc("gacha_players",{p_token:TOKEN});
+ if(r.error)return;
+ const players=r.data||[];
+ const w=$("a_who"),cv=w.value;
+ w.innerHTML=`<option value="">${tr("meopt")}</option>`+
+   players.filter(x=>x.role!=="owner").map(x=>`<option value="${esc(x.key)}">${avT(x.avatar)} ${esc(x.nick)}</option>`).join("");
+ w.value=[...w.options].some(o=>o.value===cv)?cv:"";
+ const admins=players.filter(x=>x.role==="admin");
+ $("g_list").innerHTML=admins.length
+   ?admins.map(x=>`<div class="gr"><span>${avH(x.avatar)} ${esc(x.nick)}</span><button class="alt" data-rv="${esc(x.key)}">${tr("revoke")}</button></div>`).join("")
+   :"<i>"+tr("nobody")+"</i>";
+ document.querySelectorAll("[data-rv]").forEach(b=>b.onclick=()=>setRole(b.dataset.rv,""));
+}
+$("a_grant").onclick=()=>{const k=$("a_who").value;if(!k)return aMsg("Сначала выберите игрока",false);setRole(k,"admin")};
+$("a_revoke").onclick=()=>{const k=$("a_who").value;if(!k)return aMsg("Сначала выберите игрока",false);setRole(k,"")};
 const DAY7=7*864e5,NICKRE=/^[A-Za-z0-9_А-Яа-яЁё-]{3,16}$/;
 const sMsg=(t,ok)=>{const e=$("s_st");e.textContent=t;e.style.color=ok?"var(--c1)":"var(--c5)"};
 const nickLeft=()=>me.nickAt?me.nickAt+DAY7-Date.now():0;
