@@ -105,11 +105,6 @@ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale
 .confirm-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(5,3,15,.72);z-index:1000}.confirm-modal.show{display:flex}.confirm-modal .modal-box{width:100%;max-width:390px;padding:22px;background:var(--bg2);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 60px rgba(0,0,0,.45);text-align:center}.confirm-modal .modal-title{font:700 17px var(--fh);margin-bottom:10px}.confirm-modal .modal-text{color:var(--mute);font-size:14px;margin-bottom:18px}.confirm-modal .modal-actions{display:flex;gap:10px}.confirm-modal .modal-actions button{flex:1}
 .stat b{font:800 17px var(--fh)}.tag{font-family:var(--fh);font-size:10px}h2{font-family:var(--fh);font-size:12px}
 </style>
-<style id="admin-compact-style">
-#g_role .gr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0}
-#g_role .gr button{padding:6px 12px}
-#tgtw .row button{min-width:0}
-</style>
 </head>
 <body>
 <canvas id="stB" aria-hidden="true"></canvas><canvas id="stF" aria-hidden="true"></canvas>
@@ -171,7 +166,7 @@ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale
   <div id="nm">Сделай первый бросок</div><div id="rr" style="color:var(--mute)">Копи монеты и бросай</div>
   <div class="row"><button id="r1">Бросок · 10</button><button id="r10">×10 · 100</button></div>
   <div class="row"><button class="alt" id="luck"></button><button class="alt" id="inc"></button></div>
-  <div id="pity" style="color:var(--mute);font-size:13px;margin-top:10px"></div>
+  <div id="pity" style="color:var(--mute);font-size:13px;margin-top:10px"></div><div id="log"></div>
 </div>
 
 <h2>Шансы с учётом удачи</h2>
@@ -354,7 +349,7 @@ normS();
 const save=()=>{if(!ready)return;if(TOKEN)dirty=true;else try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 async function push(keep){if(!TOKEN||!ready||!dirty)return;dirty=false;const r=await rpc("gacha_save",{p_token:TOKEN,p_save:S},keep);
  if(r.error){dirty=true;return}
- if(r.data&&r.data.reset){S=Object.assign(FRESH(),r.data.save);normS();dirty=false;render()}}
+ if(r.data&&r.data.reset){S=Object.assign(FRESH(),r.data.save);normS();dirty=false;$("log").innerHTML="";render()}}
 setInterval(()=>push(),5000);
 document.addEventListener("visibilitychange",()=>{if(document.hidden)push(true)});addEventListener("pagehide",()=>push(true));
 const SUF=["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc"];
@@ -380,16 +375,18 @@ function show(i,t,extra){
 }
 function roll(n){
  const cost=10*n;if(busy||!ready||S.coins<cost)return;S.coins-=cost;busy=true;
- let best=-1,bi=null;
+ let best=-1,bi=null,gain=0,lines=[];
  for(let k=0;k<n;k++){
   let i,t;const xt=exRoll();
   if(xt){i=X;t=xt}else{i=pick();const its=R[i].items;t=its[Math.floor(Math.random()*its.length)]}
-  S.rolls++;S.found[t]=(S.found[t]||0)+1;
+  S.rolls++;S.found[t]=(S.found[t]||0)+1;gain+=RA(i).v;
   if(i>best){best=i;bi=t}if(i<X&&i>S.best)S.best=i;
+  if(i>=3)lines.push(`<div style="color:${RA(i).c}">${rname(i)}: ${iview(t)}</div>`);
  }
- render();save();
+ const e_=ev();gain=Math.floor(gain*(1+.1*setsDone())*(e_.coin||1)*(e_.gain||1));S.coins+=gain;render();save();
  const o=$("orb");o.classList.add("charge");$("nm").textContent="…";$("rr").textContent="";
- setTimeout(()=>{o.classList.remove("charge");show(best,bi);
+ setTimeout(()=>{o.classList.remove("charge");show(best,bi,"+"+fmt(gain));
+  if(lines.length)$("log").innerHTML=lines.join("")+$("log").innerHTML;
   busy=false;render()},n>1?650:450);
 }
 function render(){
@@ -414,7 +411,7 @@ $("fuse").onclick=e=>{const b=e.target.closest("[data-f]");if(b&&!b.disabled)fus
 $("inc").onclick=()=>{const c=incCost();if(S.inc<MAXINC&&S.coins>=c){S.coins-=c;S.inc++;render();save()}};
 $("r1").onclick=()=>roll(1);$("r10").onclick=()=>roll(10);
 $("luck").onclick=()=>{const c=luckCost();if(S.luck<MAXLUCK&&S.coins>=c){S.coins-=c;S.luck++;render();save()}};
-function showNotice(title,text,ok=true){$("noticeTitle").textContent=(ok?"✨ ":"⚠️ ")+title;$("noticeText").textContent=text;$("noticeModal").classList.add("show")}$("noticeOk").onclick=()=>$("noticeModal").classList.remove("show");$("noticeModal").onclick=e=>{if(e.target===$("noticeModal"))$("noticeModal").classList.remove("show")};$("reset").onclick=async()=>{if(!isOwner||!TOKEN)return;$("confirmModal").classList.add("show")};$("confirmNo").onclick=()=>$("confirmModal").classList.remove("show");$("confirmModal").onclick=e=>{if(e.target===$("confirmModal"))$("confirmModal").classList.remove("show")};$("confirmYes").onclick=async()=>{$("confirmModal").classList.remove("show");const r=await rpc("gacha_reset_all",{p_token:TOKEN});if(r.error){showNotice(tr("error"),r.error,false);return}S=FRESH();dirty=false;render();showNotice(tr("done"),tr("wiped"),true)};
+function showNotice(title,text,ok=true){$("noticeTitle").textContent=(ok?"✨ ":"⚠️ ")+title;$("noticeText").textContent=text;$("noticeModal").classList.add("show")}$("noticeOk").onclick=()=>$("noticeModal").classList.remove("show");$("noticeModal").onclick=e=>{if(e.target===$("noticeModal"))$("noticeModal").classList.remove("show")};$("reset").onclick=async()=>{if(!isOwner||!TOKEN)return;$("confirmModal").classList.add("show")};$("confirmNo").onclick=()=>$("confirmModal").classList.remove("show");$("confirmModal").onclick=e=>{if(e.target===$("confirmModal"))$("confirmModal").classList.remove("show")};$("confirmYes").onclick=async()=>{$("confirmModal").classList.remove("show");const r=await rpc("gacha_reset_all",{p_token:TOKEN});if(r.error){showNotice(tr("error"),r.error,false);return}S=FRESH();dirty=false;$("log").innerHTML="";render();showNotice(tr("done"),tr("wiped"),true)};
 let isOwner=false,granted=false,me=null,pickAv="😀",mode="reg";
 const AV=["😀","😎","🤖","👻","🐱","🦊","🐼","🐸","🦄","🐲","👑","🧙","🥷","🚀","🌟","💀"];
 const isImg=a=>/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(a||"");
@@ -451,21 +448,13 @@ $("reg_ok").onclick=async()=>{const n=$("reg_nick").value.trim(),p=$("reg_pw").v
  if(r.error){st.textContent=r.error;return}
  TOKEN=r.data.token;try{localStorage.setItem("gacha-token",TOKEN)}catch(e){}applyMe(r.data)};
 async function setRole(k,r){const x=await rpc("gacha_set_role",{p_token:TOKEN,p_key:k,p_role:r});if(x.error)alert(x.error);renderGrants()}
-async function renderGrants(){
- if(!isOwner)return;
- const r=await rpc("gacha_players",{p_token:TOKEN});
- if(r.error)return;
- const players=(r.data||[]).filter(x=>x.role!=="owner");
- const w=$("a_who"),cv=w.value;
- w.innerHTML=`<option value="">Выберите игрока</option>`+
-   players.map(x=>`<option value="${esc(x.key)}">${avT(x.avatar)} ${esc(x.nick)}${x.role==="admin"?" — 🛡️ админ":""}</option>`).join("");
- w.value=[...w.options].some(o=>o.value===cv)?cv:"";
- const admins=players.filter(x=>x.role==="admin");
- $("g_list").innerHTML=admins.length
-   ?admins.map(x=>`<div class="gr"><span>${avH(x.avatar)} ${esc(x.nick)}</span><button class="alt" data-rv="${esc(x.key)}">Забрать</button></div>`).join("")
-   :"<i>Админов пока нет</i>";
- document.querySelectorAll("[data-rv]").forEach(b=>b.onclick=()=>setRole(b.dataset.rv,""));
-}
+async function renderGrants(){if(!isOwner)return;const r=await rpc("gacha_players",{p_token:TOKEN});if(r.error)return;let can="",has="";const w=$("a_who"),cv=w.value;
+ w.innerHTML=`<option value="">${tr("meopt")}</option>`+(r.data||[]).filter(x=>x.role!=="owner").map(x=>`<option value="${esc(x.key)}">${avT(x.avatar)} ${esc(x.nick)}</option>`).join("");w.value=[...w.options].some(o=>o.value===cv)?cv:"";
+ (r.data||[]).forEach(x=>{if(x.role==="owner")return;const row=`<div class="gr"><span>${avH(x.avatar)} ${esc(x.nick)}</span>`;
+  if(x.role==="admin")has+=row+`<button class="alt" data-rv="${esc(x.key)}">${tr("revoke")}</button></div>`;else can+=row+`<button data-gv="${esc(x.key)}">${tr("grant")}</button></div>`});
+ $("g_can").innerHTML=can||"<i>"+tr("nobodyyet")+"</i>";$("g_list").innerHTML=has||"<i>"+tr("nobody")+"</i>";
+ document.querySelectorAll("[data-gv]").forEach(b=>b.onclick=()=>setRole(b.dataset.gv,"admin"));
+ document.querySelectorAll("[data-rv]").forEach(b=>b.onclick=()=>setRole(b.dataset.rv,""))}
 const DAY7=7*864e5,NICKRE=/^[A-Za-z0-9_А-Яа-яЁё-]{3,16}$/;
 const sMsg=(t,ok)=>{const e=$("s_st");e.textContent=t;e.style.color=ok?"var(--c1)":"var(--c5)"};
 const nickLeft=()=>me.nickAt?me.nickAt+DAY7-Date.now():0;
@@ -505,8 +494,6 @@ async function adm(f){const k=isOwner?$("a_who").value:"";
  const o=Object.assign(FRESH(),(g.data&&g.data.save)||g.data||{});f(o);
  const r=await rpc("gacha_admin_set",{p_token:TOKEN,p_key:k,p_save:o});if(r.error)return aMsg(r.error);
  aMsg(tr("edited",$("a_who").selectedOptions[0].textContent),1)}
-$("a_grant").onclick=()=>{const k=$("a_who").value;if(!k)return aMsg("Сначала выбери игрока");setRole(k,"admin")};
-$("a_revoke").onclick=()=>{const k=$("a_who").value;if(!k)return aMsg("Сначала выбери игрока");setRole(k,"")};
 $("a_give").onclick=()=>adm(o=>{o.coins+=Math.max(0,+$("a_coins").value||0)});
 $("a_take").onclick=()=>adm(o=>{o.coins=Math.max(0,o.coins-Math.max(0,+$("a_coins").value||0))});
 $("a_setluck").onclick=()=>adm(o=>{o.luck=Math.min(MAXLUCK,Math.max(0,Math.floor(+$("a_luck").value||0)))});
