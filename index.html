@@ -389,7 +389,7 @@ function roll(n){
   S.rolls++;S.found[t]=(S.found[t]||0)+1;gain+=RA(i).v;
   if(i>best){best=i;bi=t}if(i<X&&i>S.best)S.best=i;
  }
- const e_=ev();gain=Math.floor(gain*(1+.1*setsDone())*(e_.coin||1)*(e_.gain||1));S.coins+=gain;render();save();
+ const e_=ev();gain=Math.floor(gain*(1+.1*setsDone())*(e_.coin||1)*(e_.gain||1));render();save();
  const o=$("orb");o.classList.add("charge");$("nm").textContent="…";$("rr").textContent="";
  setTimeout(()=>{o.classList.remove("charge");show(best,bi,"+"+fmt(gain));
   busy=false;render()},n>1?650:450);
