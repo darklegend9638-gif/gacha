@@ -71,8 +71,9 @@ input,select{font:inherit;flex:1;min-width:0;padding:11px;border-radius:12px;bor
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
 
-#menuBtn,#shopBtn{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;z-index:50;flex:none;width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center;font-size:26px;line-height:1;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+#menuBtn,#shopBtn,#topBtn{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;z-index:50;flex:none;width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center;font-size:26px;line-height:1;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 #shopBtn{right:64px}
+#topBtn{right:116px}
 #menu{position:fixed;top:calc(env(safe-area-inset-top,0px) + 62px);right:12px;z-index:50;min-width:240px;max-width:calc(100% - 24px);padding:8px;display:flex;flex-direction:column;gap:6px;background:var(--bg2);border:1px solid var(--line);border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.4);
 opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale(.96);transform-origin:top right;transition:opacity .25s ease,transform .25s cubic-bezier(.2,.8,.2,1),visibility .25s}
 #menu.open{opacity:1;visibility:visible;pointer-events:auto;transform:none}
@@ -99,6 +100,7 @@ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale
 <body>
 <canvas id="stB" aria-hidden="true"></canvas><canvas id="stF" aria-hidden="true"></canvas>
 <div id="flash"></div>
+ <button class="alt" id="topBtn" aria-label="Топ" style="display:none">📊</button>
 <button class="alt" id="shopBtn" aria-label="Магазин" style="display:none">🛒</button>
 <button class="alt" id="menuBtn" aria-label="Меню" aria-expanded="false" style="display:none">☰</button>
 <div id="menu">
@@ -152,6 +154,11 @@ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale
   <div class="row"><input id="s_new" type="password" placeholder="Новый пароль (от 4 символов)"><button id="s_pb" style="flex:none">Сменить</button></div>
   <div class="row"><button class="alt" id="s_del" style="border-color:var(--c5);color:var(--c5)">Удалить аккаунт</button></div>
   <div id="s_st" style="font-size:14px;min-height:20px;margin-top:8px"></div>
+</div>
+<div id="topp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть">×</button>
+  <b>Топ по монетам</b>
+  <div id="topme" style="color:var(--mute);font-size:13px;margin-top:6px;min-height:18px"></div>
+  <div id="toplist"></div>
 </div>
 <div id="trp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть">×</button>
   <b>Переводы</b>
@@ -231,7 +238,7 @@ maxd:["На максимуме удачи ({0}) шанс Divine: {1}% ({2})","At
 colcnt:["{0}/{1} · бонус монет +{2}%","{0}/{1} · coin bonus +{2}%"],oneIn:["1 из ","1 in "],fusion:["слияние","fusion"],byadm:["Выдано админом","Given by admin"],
 meopt:["Я (себя)","Me (myself)"],edited:["Изменено у {0}","Updated {0}"],ownerdel:["Владелец не может удалить аккаунт","The owner cannot delete the account"],delmis:["Ник не совпадает","Nickname does not match"],error:["Ошибка","Error"],tlogin:["Войдите в аккаунт, чтобы переводить монеты","Sign in to transfer coins"],tnick:["Введите ник получателя","Enter the recipient's nickname"],tamt:["Введите сумму","Enter an amount"],
 tself:["Нельзя переводить самому себе","You can't send coins to yourself"],tmoney:["Недостаточно монет","Not enough coins"],tsent:["Отправлено {0} 🪙 игроку {1}","Sent {0} 🪙 to {1}"],
-tgot:["Вам перевели монеты","You received coins"],tgotx:["Получено {0} 🪙 от: {1}","Received {0} 🪙 from: {1}"],tnot:["Переводы пока не включены на сервере","Transfers are not enabled on the server yet"],evon:["Ивент запущен на {0} мин.","Event started for {0} min"],evoff:["Ивент остановлен","Event stopped"],exnone:["Exclusive можно выдать только во время сезонного ивента","Exclusive items can only be given during a seasonal event"],evnot:["Ивенты не включены на сервере (нужен events.sql)","Events are not enabled on the server (events.sql needed)"],done:["Готово","Done"],wiped:["Прогресс всех игроков успешно обнулён.","All players' progress has been wiped."]};
+tgot:["Вам перевели монеты","You received coins"],tgotx:["Получено {0} 🪙 от: {1}","Received {0} 🪙 from: {1}"],tnot:["Переводы пока не включены на сервере","Transfers are not enabled on the server yet"],evon:["Ивент запущен на {0} мин.","Event started for {0} min"],evoff:["Ивент остановлен","Event stopped"],topnot:["Топ пока не включён на сервере (нужен top.sql)","Leaderboard is not enabled on the server yet (top.sql needed)"],topme:["Твоё место: #{0} · 🪙 {1}","Your rank: #{0} · 🪙 {1}"],topempty:["Пока никого нет","Nobody here yet"],exnone:["Exclusive можно выдать только во время сезонного ивента","Exclusive items can only be given during a seasonal event"],evnot:["Ивенты не включены на сервере (нужен events.sql)","Events are not enabled on the server (events.sql needed)"],done:["Готово","Done"],wiped:["Прогресс всех игроков успешно обнулён.","All players' progress has been wiped."]};
 const tr=(k,...a)=>{let s=D[k][LANG==="en"?1:0];a.forEach((v,i)=>s=s.split("{"+i+"}").join(v));return s};
 const EN=[["Stone","Leaf","Spoon","Sock"],["Clover","Key","Candle","Potion"],["Sapphire","Shield","Scroll","Owl"],["Orb of Fate","Shadow Blade","Unicorn"],["Crown of Kings","Dragon","Zeus's Lightning"],["Phoenix","Galaxy Shard","Kraken"],["Black Hole","Stranger's Mask","Forgotten Time"],["Heart of the Sun","Eye of the Universe","First Star"]];
 const IT={};R.forEach((r,i)=>r.items.forEach((t,j)=>IT[t]=EN[i][j]));
@@ -249,7 +256,7 @@ const TX={"Кристальный алтарь":"Crystal Altar","Бросай, �
 "Выдать монеты":"Give coins","Забрать монеты":"Take coins","Уровень удачи":"Luck level","Выдать предмет":"Give item","Открыть всю коллекцию":"Unlock the whole collection",
 "⚠️ Обнуление прогресса":"⚠️ Progress wipe","Вы уверены, что хотите обнулить прогресс всех игроков?":"Are you sure you want to wipe all players' progress?","Это действие нельзя отменить.":"This cannot be undone.",
 "Отмена":"Cancel","Обнулить":"Wipe","Понятно":"OK","Регистрация":"Sign up","Вход":"Sign in","Позже":"Later",
-"Новый ник":"New nickname","Текущий пароль":"Current password","Новый пароль (от 4 символов)":"New password (4+ characters)","Никнейм":"Nickname","Пароль (от 4 символов)":"Password (4+ characters)","Меню":"Menu","Закрыть":"Close","Удалить аккаунт":"Delete account","⚠️ Удаление аккаунта":"⚠️ Delete account","Аккаунт и весь ваш прогресс будут удалены навсегда. Для подтверждения введите свой ник.":"Your account and all progress will be permanently deleted. Type your nickname to confirm.","Удалить":"Delete","Кого изменить:":"Whom to edit:","Уровень дохода":"Income level","Титулы":"Titles","Ивенты (для всех игроков)":"Events (for all players)","Запустить ивент":"Start event","Остановить ивент":"Stop event","Минут":"Minutes","Переводы":"Transfers","💸 Переводы":"💸 Transfers","Отправь монеты другому игроку":"Send coins to another player","Ник получателя":"Recipient nickname","Сумма":"Amount","Отправить":"Send","Магазин":"Shop","🛒 Магазин":"🛒 Shop","Покупай титулы за монеты":"Buy titles with coins","🏆 Титулы":"🏆 Titles"};
+"Новый ник":"New nickname","Текущий пароль":"Current password","Новый пароль (от 4 символов)":"New password (4+ characters)","Никнейм":"Nickname","Пароль (от 4 символов)":"Password (4+ characters)","Меню":"Menu","Закрыть":"Close","Удалить аккаунт":"Delete account","⚠️ Удаление аккаунта":"⚠️ Delete account","Аккаунт и весь ваш прогресс будут удалены навсегда. Для подтверждения введите свой ник.":"Your account and all progress will be permanently deleted. Type your nickname to confirm.","Удалить":"Delete","Кого изменить:":"Whom to edit:","Уровень дохода":"Income level","Титулы":"Titles","Топ по монетам":"Coins leaderboard","Топ":"Top","Ивенты (для всех игроков)":"Events (for all players)","Запустить ивент":"Start event","Остановить ивент":"Stop event","Минут":"Minutes","Переводы":"Transfers","💸 Переводы":"💸 Transfers","Отправь монеты другому игроку":"Send coins to another player","Ник получателя":"Recipient nickname","Сумма":"Amount","Отправить":"Send","Магазин":"Shop","🛒 Магазин":"🛒 Shop","Покупай титулы за монеты":"Buy titles with coins","🏆 Титулы":"🏆 Titles"};
 const o0=new WeakMap();
 function applyStatic(){const en=LANG==="en",w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
  while(n=w.nextNode()){if(n.parentNode.tagName==="SCRIPT")continue;const o=o0.has(n)?o0.get(n):n.nodeValue,k=o.trim();if(TX[k]){o0.set(n,o);n.nodeValue=en?o.replace(k,TX[k]):o}}
@@ -368,7 +375,7 @@ const AV=["😀","😎","🤖","👻","🐱","🦊","🐼","🐸","🦄","🐲",
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 $("a_rar").innerHTML=R.map((r,i)=>`<option value="${i}">${r.n}</option>`).join("")+`<option value="x">Exclusive</option>`;
 $("adm").onclick=()=>{openPanel("admp");renderGrants()};
-function renderProf(){$("menuBtn").style.display="";$("shopBtn").style.display="";$("prof").innerHTML=me?`<span class="av">${esc(me.avatar)}</span><b>${esc(me.nick)}</b>${titleTag()}${isOwner?'<span class="tag">'+tr("owner")+'</span>':granted?'<span class="tag">'+tr("admin")+'</span>':''}<button class="alt" id="out" style="flex:none;margin-left:auto;padding:6px 12px;font-size:13px">${tr("logout")}</button>`:`<span class="av">👤</span><b>${tr("guest")}</b><button id="inb" style="flex:none;margin-left:auto;padding:6px 12px;font-size:13px">${tr("login")}</button>`;
+function renderProf(){$("menuBtn").style.display="";$("shopBtn").style.display="";$("topBtn").style.display="";$("prof").innerHTML=me?`<span class="av">${esc(me.avatar)}</span><b>${esc(me.nick)}</b>${titleTag()}${isOwner?'<span class="tag">'+tr("owner")+'</span>':granted?'<span class="tag">'+tr("admin")+'</span>':''}<button class="alt" id="out" style="flex:none;margin-left:auto;padding:6px 12px;font-size:13px">${tr("logout")}</button>`:`<span class="av">👤</span><b>${tr("guest")}</b><button id="inb" style="flex:none;margin-left:auto;padding:6px 12px;font-size:13px">${tr("login")}</button>`;
  if($("out"))$("out").onclick=()=>{try{localStorage.removeItem("gacha-token")}catch(e){}location.reload()};
  if($("inb"))$("inb").onclick=()=>openReg()}
 function openReg(m){if(m)mode=m;const r=mode==="reg";$("reg").style.display="flex";$("reg_t").textContent=r?tr("createProf"):tr("signin");
@@ -449,7 +456,7 @@ setInterval(()=>{if(!ready)return;S.coins+=inc()*(ev().inc||1)*(ev().coin||1);re
  els.forEach(el=>{el.classList.add("rv");io.observe(el)});
 })();
 /* окна по центру экрана */
-function openPanel(id){["setp","admp","titp","shp","trp"].forEach(x=>$(x).style.display=x===id?"block":"none");$("pwrap").classList.add("open");$(id).scrollTop=0}
+function openPanel(id){["setp","admp","titp","shp","trp","topp"].forEach(x=>$(x).style.display=x===id?"block":"none");$("pwrap").classList.add("open");$(id).scrollTop=0}
 function closePanel(){$("pwrap").classList.remove("open")}
 $("pwrap").onclick=e=>{if(e.target===$("pwrap"))closePanel()};
 document.querySelectorAll(".pclose").forEach(b=>b.onclick=closePanel);
@@ -516,6 +523,16 @@ async function evSet(id,m){const r=await rpc("gacha_event_set",{p_token:TOKEN,p_
  evMsg(id?tr("evon",m):tr("evoff"),1);evOff=false;pollEv()}
 $("a_evgo").onclick=()=>evSet($("a_ev").value,Math.min(1440,Math.max(1,Math.floor(+$("a_evm").value||0))));
 $("a_evstop").onclick=()=>evSet("",0);
+/* топ по монетам */
+async function loadTop(){
+ const r=await rpc("gacha_top",{p_token:TOKEN,p_limit:20});
+ if(r.error){$("topme").textContent="";$("toplist").innerHTML=`<div style="color:var(--c5);margin-top:10px">${esc(/Could not find|schema cache/i.test(r.error)?tr("topnot"):r.error)}</div>`;return}
+ const d=r.data||{},list=d.top||[],medal=["🥇","🥈","🥉"];
+ $("topme").textContent=d.me?tr("topme",d.me.rank,fmt(+d.me.coins)):"";
+ $("toplist").innerHTML=list.length?list.map((p,i)=>{const mine=me&&p.nick===me.nick;
+  return `<div class="glass ti${mine?" eq":""}"><div class="ic">${medal[i]||"#"+(i+1)}</div><div class="tx"><b>${esc(p.avatar||"👤")} ${esc(p.nick)}</b></div><b style="flex:none">🪙 ${fmt(+p.coins)}</b></div>`}).join(""):`<div style="color:var(--mute);margin-top:10px">${tr("topempty")}</div>`}
+$("topBtn").onclick=()=>{openPanel("topp");loadTop()};
+setInterval(()=>{if($("topp").style.display==="block")loadTop()},20000);
 /* переводы монет между игроками */
 const tMsg=(t,ok)=>{const e=$("t_st");e.textContent=t;e.style.color=ok?"var(--c1)":"var(--c5)"};
 let tBusy=false,claimOff=false;
