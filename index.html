@@ -52,8 +52,6 @@ h2{font-size:15px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mute
 .od span:last-child{text-align:right;font-variant-numeric:tabular-nums}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
 .it{padding:10px;font-size:14px;border-radius:14px}.it.off{opacity:.3}.it .e{font-size:28px}
-#log{max-height:110px;overflow:auto;font-size:14px;margin-top:12px;text-align:left}
-#log div{padding:1px 0}
 #flash{position:fixed;inset:0;pointer-events:none;opacity:0;background:radial-gradient(circle,var(--fc,#fff),transparent 70%)}
 #flash.go{animation:fl .9s ease-out}
 @keyframes fl{0%{opacity:.7}100%{opacity:0}}
@@ -166,7 +164,7 @@ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale
   <div id="nm">Сделай первый бросок</div><div id="rr" style="color:var(--mute)">Копи монеты и бросай</div>
   <div class="row"><button id="r1">Бросок · 10</button><button id="r10">×10 · 100</button></div>
   <div class="row"><button class="alt" id="luck"></button><button class="alt" id="inc"></button></div>
-  <div id="pity" style="color:var(--mute);font-size:13px;margin-top:10px"></div><div id="log"></div>
+  <div id="pity" style="color:var(--mute);font-size:13px;margin-top:10px"></div>
 </div>
 
 <h2>Шансы с учётом удачи</h2>
@@ -358,7 +356,7 @@ normS();
 const save=()=>{if(!ready)return;if(TOKEN)dirty=true;else try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 async function push(keep){if(!TOKEN||!ready||!dirty)return;dirty=false;const r=await rpc("gacha_save",{p_token:TOKEN,p_save:S},keep);
  if(r.error){dirty=true;return}
- if(r.data&&r.data.reset){S=Object.assign(FRESH(),r.data.save);normS();dirty=false;$("log").innerHTML="";render()}}
+ if(r.data&&r.data.reset){S=Object.assign(FRESH(),r.data.save);normS();dirty=false;render()}}
 setInterval(()=>push(),5000);
 document.addEventListener("visibilitychange",()=>{if(document.hidden)push(true)});addEventListener("pagehide",()=>push(true));
 const SUF=["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc"];
@@ -420,7 +418,7 @@ $("fuse").onclick=e=>{const b=e.target.closest("[data-f]");if(b&&!b.disabled)fus
 $("inc").onclick=()=>{const c=incCost();if(S.inc<MAXINC&&S.coins>=c){S.coins-=c;S.inc++;render();save()}};
 $("r1").onclick=()=>roll(1);$("r10").onclick=()=>roll(10);
 $("luck").onclick=()=>{const c=luckCost();if(S.luck<MAXLUCK&&S.coins>=c){S.coins-=c;S.luck++;render();save()}};
-function showNotice(title,text,ok=true){$("noticeTitle").textContent=(ok?"✨ ":"⚠️ ")+title;$("noticeText").textContent=text;$("noticeModal").classList.add("show")}$("noticeOk").onclick=()=>$("noticeModal").classList.remove("show");$("noticeModal").onclick=e=>{if(e.target===$("noticeModal"))$("noticeModal").classList.remove("show")};$("reset").onclick=async()=>{if(!isOwner||!TOKEN)return;$("confirmModal").classList.add("show")};$("confirmNo").onclick=()=>$("confirmModal").classList.remove("show");$("confirmModal").onclick=e=>{if(e.target===$("confirmModal"))$("confirmModal").classList.remove("show")};$("confirmYes").onclick=async()=>{$("confirmModal").classList.remove("show");const r=await rpc("gacha_reset_all",{p_token:TOKEN});if(r.error){showNotice(tr("error"),r.error,false);return}S=FRESH();dirty=false;$("log").innerHTML="";render();showNotice(tr("done"),tr("wiped"),true)};
+function showNotice(title,text,ok=true){$("noticeTitle").textContent=(ok?"✨ ":"⚠️ ")+title;$("noticeText").textContent=text;$("noticeModal").classList.add("show")}$("noticeOk").onclick=()=>$("noticeModal").classList.remove("show");$("noticeModal").onclick=e=>{if(e.target===$("noticeModal"))$("noticeModal").classList.remove("show")};$("reset").onclick=async()=>{if(!isOwner||!TOKEN)return;$("confirmModal").classList.add("show")};$("confirmNo").onclick=()=>$("confirmModal").classList.remove("show");$("confirmModal").onclick=e=>{if(e.target===$("confirmModal"))$("confirmModal").classList.remove("show")};$("confirmYes").onclick=async()=>{$("confirmModal").classList.remove("show");const r=await rpc("gacha_reset_all",{p_token:TOKEN});if(r.error){showNotice(tr("error"),r.error,false);return}S=FRESH();dirty=false;render();showNotice(tr("done"),tr("wiped"),true)};
 let isOwner=false,granted=false,me=null,pickAv="😀",mode="reg";
 const AV=["😀","😎","🤖","👻","🐱","🦊","🐼","🐸","🦄","🐲","👑","🧙","🥷","🚀","🌟","💀"];
 const isImg=a=>/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(a||"");
