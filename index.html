@@ -231,7 +231,7 @@ maxd:["На максимуме удачи ({0}) шанс Divine: {1}% ({2})","At
 colcnt:["{0}/{1} · бонус монет +{2}%","{0}/{1} · coin bonus +{2}%"],oneIn:["1 из ","1 in "],fusion:["слияние","fusion"],byadm:["Выдано админом","Given by admin"],
 meopt:["Я (себя)","Me (myself)"],edited:["Изменено у {0}","Updated {0}"],ownerdel:["Владелец не может удалить аккаунт","The owner cannot delete the account"],delmis:["Ник не совпадает","Nickname does not match"],error:["Ошибка","Error"],tlogin:["Войдите в аккаунт, чтобы переводить монеты","Sign in to transfer coins"],tnick:["Введите ник получателя","Enter the recipient's nickname"],tamt:["Введите сумму","Enter an amount"],
 tself:["Нельзя переводить самому себе","You can't send coins to yourself"],tmoney:["Недостаточно монет","Not enough coins"],tsent:["Отправлено {0} 🪙 игроку {1}","Sent {0} 🪙 to {1}"],
-tgot:["Вам перевели монеты","You received coins"],tgotx:["Получено {0} 🪙 от: {1}","Received {0} 🪙 from: {1}"],tnot:["Переводы пока не включены на сервере","Transfers are not enabled on the server yet"],evon:["Ивент запущен на {0} мин.","Event started for {0} min"],evoff:["Ивент остановлен","Event stopped"],evnot:["Ивенты не включены на сервере (нужен events.sql)","Events are not enabled on the server (events.sql needed)"],done:["Готово","Done"],wiped:["Прогресс всех игроков успешно обнулён.","All players' progress has been wiped."]};
+tgot:["Вам перевели монеты","You received coins"],tgotx:["Получено {0} 🪙 от: {1}","Received {0} 🪙 from: {1}"],tnot:["Переводы пока не включены на сервере","Transfers are not enabled on the server yet"],evon:["Ивент запущен на {0} мин.","Event started for {0} min"],evoff:["Ивент остановлен","Event stopped"],exnone:["Exclusive можно выдать только во время сезонного ивента","Exclusive items can only be given during a seasonal event"],evnot:["Ивенты не включены на сервере (нужен events.sql)","Events are not enabled on the server (events.sql needed)"],done:["Готово","Done"],wiped:["Прогресс всех игроков успешно обнулён.","All players' progress has been wiped."]};
 const tr=(k,...a)=>{let s=D[k][LANG==="en"?1:0];a.forEach((v,i)=>s=s.split("{"+i+"}").join(v));return s};
 const EN=[["Stone","Leaf","Spoon","Sock"],["Clover","Key","Candle","Potion"],["Sapphire","Shield","Scroll","Owl"],["Orb of Fate","Shadow Blade","Unicorn"],["Crown of Kings","Dragon","Zeus's Lightning"],["Phoenix","Galaxy Shard","Kraken"],["Black Hole","Stranger's Mask","Forgotten Time"],["Heart of the Sun","Eye of the Universe","First Star"]];
 const IT={};R.forEach((r,i)=>r.items.forEach((t,j)=>IT[t]=EN[i][j]));
@@ -436,8 +436,8 @@ $("a_give").onclick=()=>adm(o=>{o.coins+=Math.max(0,+$("a_coins").value||0)});
 $("a_take").onclick=()=>adm(o=>{o.coins=Math.max(0,o.coins-Math.max(0,+$("a_coins").value||0))});
 $("a_setluck").onclick=()=>adm(o=>{o.luck=Math.min(MAXLUCK,Math.max(0,Math.floor(+$("a_luck").value||0)))});
 $("a_setinc").onclick=()=>adm(o=>{o.inc=Math.min(MAXINC,Math.max(0,Math.floor(+$("a_inc").value||0)))});
-$("a_item").onclick=()=>adm(o=>{const x=$("a_rar").value==="x",i=x?X:+$("a_rar").value,its=x?EXALL.map(a=>a.t):R[i].items,t=its[Math.floor(Math.random()*its.length)];
- o.found[t]=(o.found[t]||0)+1;if(i<X&&i>o.best)o.best=i;if(o===S)show(i,t,tr("byadm"))});
+$("a_item").onclick=()=>{if($("a_rar").value==="x"&&!ev().ex)return aMsg(tr("exnone"));adm(o=>{const x=$("a_rar").value==="x",i=x?X:+$("a_rar").value,its=x?ev().ex:R[i].items,t=its[Math.floor(Math.random()*its.length)];
+ o.found[t]=(o.found[t]||0)+1;if(i<X&&i>o.best)o.best=i;if(o===S)show(i,t,tr("byadm"))})};
 $("a_all").onclick=()=>adm(o=>{ALL.forEach(a=>{if(!o.found[a.t])o.found[a.t]=1})});
 setInterval(()=>{if(!ready)return;S.coins+=inc()*(ev().inc||1)*(ev().coin||1);render();save()},1000);
 /* плавное появление блоков при прокрутке (вниз и вверх) */
