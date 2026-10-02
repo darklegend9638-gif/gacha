@@ -189,6 +189,7 @@ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale
    <div class="row"><select id="a_ev"></select></div>
    <div class="row"><input id="a_evm" type="number" min="1" max="1440" value="30" placeholder="Минут"><button id="a_evgo" style="flex:none">Запустить ивент</button></div>
    <div class="row"><button class="alt" id="a_evstop">Остановить ивент</button></div>
+   <div class="row"><button class="alt" id="a_evauto"></button></div>
    <div id="a_evst" style="font-size:14px;min-height:18px;margin-top:6px"></div></div>
   <div class="row"><input id="a_coins" type="number" value="1000"><button id="a_give">Выдать монеты</button></div>
   <div class="row"><button class="alt" id="a_take">Забрать монеты</button></div>
@@ -238,7 +239,7 @@ maxd:["На максимуме удачи ({0}) шанс Divine: {1}% ({2})","At
 colcnt:["{0}/{1} · бонус монет +{2}%","{0}/{1} · coin bonus +{2}%"],oneIn:["1 из ","1 in "],fusion:["слияние","fusion"],byadm:["Выдано админом","Given by admin"],
 meopt:["Я (себя)","Me (myself)"],edited:["Изменено у {0}","Updated {0}"],ownerdel:["Владелец не может удалить аккаунт","The owner cannot delete the account"],delmis:["Ник не совпадает","Nickname does not match"],error:["Ошибка","Error"],tlogin:["Войдите в аккаунт, чтобы переводить монеты","Sign in to transfer coins"],tnick:["Введите ник получателя","Enter the recipient's nickname"],tamt:["Введите сумму","Enter an amount"],
 tself:["Нельзя переводить самому себе","You can't send coins to yourself"],tmoney:["Недостаточно монет","Not enough coins"],tsent:["Отправлено {0} 🪙 игроку {1}","Sent {0} 🪙 to {1}"],
-tgot:["Вам перевели монеты","You received coins"],tgotx:["Получено {0} 🪙 от: {1}","Received {0} 🪙 from: {1}"],tnot:["Переводы пока не включены на сервере","Transfers are not enabled on the server yet"],evon:["Ивент запущен на {0} мин.","Event started for {0} min"],evoff:["Ивент остановлен","Event stopped"],topnot:["Топ пока не включён на сервере (нужен top.sql)","Leaderboard is not enabled on the server yet (top.sql needed)"],topme:["Твоё место: #{0} · 🪙 {1}","Your rank: #{0} · 🪙 {1}"],topempty:["Пока никого нет","Nobody here yet"],exnone:["Exclusive можно выдать только во время сезонного ивента","Exclusive items can only be given during a seasonal event"],evnot:["Ивенты не включены на сервере (нужен events.sql)","Events are not enabled on the server (events.sql needed)"],done:["Готово","Done"],wiped:["Прогресс всех игроков успешно обнулён.","All players' progress has been wiped."]};
+tgot:["Вам перевели монеты","You received coins"],tgotx:["Получено {0} 🪙 от: {1}","Received {0} 🪙 from: {1}"],tnot:["Переводы пока не включены на сервере","Transfers are not enabled on the server yet"],evon:["Ивент запущен на {0} мин.","Event started for {0} min"],evoff:["Ивент остановлен","Event stopped"],evnext:["Следующий ивент через","Next event in"],evaon:["Автоивенты: включены (нажми, чтобы выключить)","Auto events: on (tap to turn off)"],evaoff:["Автоивенты: выключены (нажми, чтобы включить)","Auto events: off (tap to turn on)"],topnot:["Топ пока не включён на сервере (нужен top.sql)","Leaderboard is not enabled on the server yet (top.sql needed)"],topme:["Твоё место: #{0} · 🪙 {1}","Your rank: #{0} · 🪙 {1}"],topempty:["Пока никого нет","Nobody here yet"],exnone:["Exclusive можно выдать только во время сезонного ивента","Exclusive items can only be given during a seasonal event"],evnot:["Ивенты не включены на сервере (нужен events.sql)","Events are not enabled on the server (events.sql needed)"],done:["Готово","Done"],wiped:["Прогресс всех игроков успешно обнулён.","All players' progress has been wiped."]};
 const tr=(k,...a)=>{let s=D[k][LANG==="en"?1:0];a.forEach((v,i)=>s=s.split("{"+i+"}").join(v));return s};
 const EN=[["Stone","Leaf","Spoon","Sock"],["Clover","Key","Candle","Potion"],["Sapphire","Shield","Scroll","Owl"],["Orb of Fate","Shadow Blade","Unicorn"],["Crown of Kings","Dragon","Zeus's Lightning"],["Phoenix","Galaxy Shard","Kraken"],["Black Hole","Stranger's Mask","Forgotten Time"],["Heart of the Sun","Eye of the Universe","First Star"]];
 const IT={};R.forEach((r,i)=>r.items.forEach((t,j)=>IT[t]=EN[i][j]));
@@ -263,7 +264,7 @@ function applyStatic(){const en=LANG==="en",w=document.createTreeWalker(document
  document.querySelectorAll("[placeholder],[aria-label]").forEach(e=>["placeholder","aria-label"].forEach(a=>{const v=e.getAttribute(a);if(v===null)return;const k="_"+a,o=e[k]||v;if(TX[o]){e[k]=o;e.setAttribute(a,en?TX[o]:o)}}));
  document.title=en?"Crystal Altar — Gacha":"Кристальный алтарь — Гача"}
 function setLang(l){LANG=l;try{localStorage.setItem("gacha-lang",l)}catch(e){}document.documentElement.lang=l;applyStatic();
- $("lang").textContent=$("lang2").textContent=l==="en"?"🌐 Русский":"🌐 English";render();renderProf();evSel();renderEv();
+ $("lang").textContent=$("lang2").textContent=l==="en"?"🌐 Русский":"🌐 English";render();renderProf();evSel();renderEv();updAuto();
  if($("reg").style.display==="flex")openReg();if(me&&$("setp").style.display==="block")renderSet()}
 const INCOME=1,MAXLUCK=20,MAXINC=15,PL=99,PM=1000,PS=10000;
 const inc=()=>INCOME+S.inc,incCost=()=>Math.floor(50*Math.pow(1.55,S.inc)*(ev().disc||1));
@@ -500,19 +501,27 @@ function updTitles(){if($("titp").style.display==="block"&&titleSig()!==titSig)r
 $("titlist").onclick=e=>{const b=e.target.closest("[data-eq]");if(!b)return;const on=eqTitle()&&eqTitle().id===b.dataset.eq;setEq(on?"":b.dataset.eq);renderTitles();renderProf()};
 /* ивенты: баннер, опрос сервера, управление */
 let evOff=false;
+let EVNEXT=0,EVAUTO=true;
 function renderEv(){const bar=$("evbar"),en=LANG==="en";
- if(!EVN||Date.now()>=EVN.until||!EVD[EVN.id]){bar.style.display="none";return}
- const d=EVD[EVN.id],n=d[en?"en":"ru"];bar.style.display="flex";bar.style.borderColor=d.c;
- bar.innerHTML=`<span style="font-size:28px">${d.e}</span><div style="flex:1;min-width:0"><b style="color:${d.c}">${esc(n[0])}</b><div style="color:var(--mute);font-size:12px">${esc(n[1])}</div>${d.ex?`<div style="font-size:12px;color:${XR.c}">✨ Exclusive ${Math.round(EXC*100)}%: ${d.ex.map(t=>t.split(" ")[0]).join(" ")}</div>`:""}</div><b id="evt" style="font:800 15px var(--fh);flex:none"></b>`;tickEv()}
-function tickEv(){if(!EVN)return;const l=Math.ceil((EVN.until-Date.now())/1000);
- if(l<=0){EVN=null;renderEv();render();if($("shp").style.display==="block")renderShop();return}
+ if(EVN&&Date.now()<EVN.until&&EVD[EVN.id]){
+  const d=EVD[EVN.id],n=d[en?"en":"ru"];bar.style.display="flex";bar.style.borderColor=d.c;
+  bar.innerHTML=`<span style="font-size:28px">${d.e}</span><div style="flex:1;min-width:0"><b style="color:${d.c}">${esc(n[0])}</b><div style="color:var(--mute);font-size:12px">${esc(n[1])}</div>${d.ex?`<div style="font-size:12px;color:${XR.c}">✨ Exclusive ${Math.round(EXC*100)}%: ${d.ex.map(t=>t.split(" ")[0]).join(" ")}</div>`:""}</div><b id="evt" style="font:800 15px var(--fh);flex:none"></b>`;tickEv();return}
+ if(EVNEXT>Date.now()){bar.style.display="flex";bar.style.borderColor="";
+  bar.innerHTML=`<span style="font-size:24px">⏳</span><div style="flex:1;min-width:0;color:var(--mute);font-size:13px">${tr("evnext")}</div><b id="evt" style="font:800 15px var(--fh);flex:none"></b>`;tickEv();return}
+ bar.style.display="none"}
+function tickEv(){
+ const tgt=EVN?EVN.until:EVNEXT;if(!tgt)return;
+ const l=Math.ceil((tgt-Date.now())/1000);
+ if(l<=0){if(EVN){EVN=null;render();if($("shp").style.display==="block")renderShop()}EVNEXT=0;renderEv();pollEv();return}
  const t=$("evt"),h=Math.floor(l/3600),m=Math.floor(l%3600/60),s2=l%60,z=x=>String(x).padStart(2,"0");
  if(t)t.textContent=(h?h+":":"")+z(m)+":"+z(s2)}
 setInterval(tickEv,1000);
+function updAuto(){const b=$("a_evauto");if(b)b.textContent=EVAUTO?tr("evaon"):tr("evaoff")}
 async function pollEv(){if(evOff)return;const r=await rpc("gacha_event_get",{});
  if(r.error){if(/Could not find|schema cache/i.test(r.error))evOff=true;return}
  const d=r.data,old=EVN?EVN.id:"";
  EVN=d&&d.ev&&d.left>0&&EVD[d.ev]?{id:d.ev,until:Date.now()+d.left*1000}:null;
+ EVNEXT=d&&d.next>0?Date.now()+d.next*1000:0;EVAUTO=!d||d.auto_on!==false;updAuto();
  renderEv();render();if((EVN?EVN.id:"")!==old&&$("shp").style.display==="block")renderShop()}
 setInterval(pollEv,15000);pollEv();
 function evSel(){const s=$("a_ev"),v=s.value,i=LANG==="en"?1:0;
@@ -523,6 +532,8 @@ async function evSet(id,m){const r=await rpc("gacha_event_set",{p_token:TOKEN,p_
  evMsg(id?tr("evon",m):tr("evoff"),1);evOff=false;pollEv()}
 $("a_evgo").onclick=()=>evSet($("a_ev").value,Math.min(1440,Math.max(1,Math.floor(+$("a_evm").value||0))));
 $("a_evstop").onclick=()=>evSet("",0);
+$("a_evauto").onclick=async()=>{const r=await rpc("gacha_event_auto",{p_token:TOKEN,p_on:!EVAUTO});
+ if(r.error)return evMsg(/Could not find|schema cache/i.test(r.error)?tr("evnot"):r.error);evOff=false;pollEv()};
 /* топ по монетам */
 async function loadTop(){
  const r=await rpc("gacha_top",{p_token:TOKEN,p_limit:20});
