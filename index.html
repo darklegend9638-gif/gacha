@@ -283,7 +283,7 @@ tgot:["Вам перевели монеты","You received coins"],tgotx:["По�
 const tr=(k,...a)=>{let s=D[k][LANG==="en"?1:0];a.forEach((v,i)=>s=s.split("{"+i+"}").join(v));return s};
 const EN=[["Stone","Leaf","Spoon","Sock"],["Clover","Key","Candle","Potion"],["Sapphire","Shield","Scroll","Owl"],["Orb of Fate","Shadow Blade","Unicorn"],["Crown of Kings","Dragon","Zeus's Lightning"],["Phoenix","Galaxy Shard","Kraken"],["Black Hole","Stranger's Mask","Forgotten Time"],["Heart of the Sun","Eye of the Universe","First Star"]];
 const IT={};R.forEach((r,i)=>r.items.forEach((t,j)=>IT[t]=EN[i][j]));
-const iname=t=>LANG==="en"&&IT[t]?IT[t]:t.slice(t.indexOf(" ")+1),iview=t=>iname(t);
+const iname=t=>LANG==="en"&&IT[t]?IT[t]:t.slice(t.indexOf(" ")+1),iview=t=>t.split(" ")[0]+" "+iname(t);
 const rname=i=>LANG==="ru"?RA(i).ru:RA(i).n,rn=i=>LANG==="ru"?RA(i).n+" · "+RA(i).ru:RA(i).n;
 const SRV={"Этот ник уже занят":"This nickname is already taken","Неверный ник или пароль":"Wrong nickname or password","Текущий пароль неверный":"Current password is incorrect","Нет доступа":"Access denied","Ошибка сервера":"Server error","Игрок не найден":"Player not found","Некорректное сохранение":"Invalid save","Владелец не может удалить аккаунт":"The owner cannot delete the account","Недостаточно монет":"Not enough coins","Нельзя переводить себе":"You can't send coins to yourself","Некорректная сумма":"Invalid amount"};
 const srv=m=>LANG==="en"&&SRV[m]?SRV[m]:m;
@@ -367,8 +367,8 @@ function fuse(i){if(i>=6||busy||dupes(i)<5)return;let need=5;
  const its=R[i+1].items,t=its[Math.floor(Math.random()*its.length)];S.found[t]=(S.found[t]||0)+1;if(i+1>S.best)S.best=i+1;
  show(i+1,t,tr("fusion"));render();save()}
 function show(i,t,extra){
- const o=$("orb");
- o.style.setProperty("--rc",RA(i).c);$("nm").textContent=iname(t);
+ const [e,...n]=t.split(" "),o=$("orb");
+ o.style.setProperty("--rc",RA(i).c);$("em").textContent=e;$("nm").textContent=iname(t);
  $("rr").textContent=rn(i)+(extra?" · "+extra:"");$("rr").style.color=RA(i).c;
  o.classList.remove("reveal");void o.offsetWidth;o.classList.add("reveal");
  if(i>=4){const f=$("flash");f.style.setProperty("--fc",RA(i).c);f.classList.remove("go");void f.offsetWidth;f.classList.add("go")}
@@ -400,10 +400,10 @@ function render(){
   return `<div class="od"><span style="color:${r.c};font-weight:700">${r.n}</span><span class="bar"><i style="width:${bw}%;background:${r.c}"></i></span><span>${fmtP(p)}</span></div>`}).join("")+(ev().ex?`<div class="od"><span style="color:${XR.c};font-weight:700">Exclusive</span><span class="bar"><i style="width:${Math.max(2,Math.min(100,Math.log10(exChance()*100*1e4+1)/6*100))}%;background:${XR.c}"></i></span><span>${fmtP(exChance()*100)}</span></div>`:"");
  const wm=weights(MAXLUCK),pm=wm[7]/wm.reduce((a,b)=>a+b,0)*100;$("maxd").textContent=tr("maxd",MAXLUCK,pm.toFixed(3),fmtP(pm));
  if(typeof TT!=="undefined"&&$("pwrap").classList.contains("open")){updTitles();updShop();if($("trp").style.display==="block")$("trbal").textContent="🪙 "+fmt(S.coins)}
- const got=ALL.filter(a=>S.found[a.t]).length;$("colcount").textContent=tr("colcnt",got,ALL.length,setsDone()*10)+" · "+rname(X)+" "+EXALL.filter(a=>S.found[a.t]).length+"/"+EXALL.length;
+ const got=ALL.filter(a=>S.found[a.t]).length;$("colcount").textContent=tr("colcnt",got,ALL.length,setsDone()*10)+" · ✨ "+EXALL.filter(a=>S.found[a.t]).length+"/"+EXALL.length;
  $("col").innerHTML=ALL.map(a=>{const n=S.found[a.t]||0,e=a.t.split(" ")[0];
-  return `<div class="glass it ${n?"":"off"}" style="${n?"border-color:"+R[a.i].c:""}">${n?iname(a.t):"???"}<div style="color:${R[a.i].c};font-size:12px">${rname(a.i)}${n?" ×"+n:""}</div></div>`}).join("")+EXALL.map(a=>{const n=S.found[a.t]||0,e=a.t.split(" ")[0];
-  return `<div class="glass it ${n?"":"off"}" style="${n?"border-color:"+XR.c+";box-shadow:0 0 14px "+XR.c+"55":""}">${n?iname(a.t):"???"}<div style="color:${XR.c};font-size:12px">${rname(X)}${n?" ×"+n:""}</div></div>`}).join("");
+  return `<div class="glass it ${n?"":"off"}" style="${n?"border-color:"+R[a.i].c:""}"><div class="e">${n?e:"❔"}</div>${n?iname(a.t):"???"}<div style="color:${R[a.i].c};font-size:12px">${rname(a.i)}${n?" ×"+n:""}</div></div>`}).join("")+EXALL.map(a=>{const n=S.found[a.t]||0,e=a.t.split(" ")[0];
+  return `<div class="glass it ${n?"":"off"}" style="${n?"border-color:"+XR.c+";box-shadow:0 0 14px "+XR.c+"55":""}"><div class="e">${n?e:"❔"}</div>${n?iname(a.t):"???"}<div style="color:${XR.c};font-size:12px">${rname(X)} ${EVD[a.k].e}${n?" ×"+n:""}</div></div>`}).join("");
 }
 $("fuse").onclick=e=>{const b=e.target.closest("[data-f]");if(b&&!b.disabled)fuse(+b.dataset.f)};
 $("inc").onclick=()=>{const c=incCost();if(S.inc<MAXINC&&S.coins>=c){S.coins-=c;S.inc++;render();save()}};
@@ -563,7 +563,7 @@ let EVNEXT=0,EVAUTO=true;
 function renderEv(){const bar=$("evbar"),en=LANG==="en";
  if(EVN&&Date.now()<EVN.until&&EVD[EVN.id]){
   const d=EVD[EVN.id],n=d[en?"en":"ru"];bar.style.display="flex";bar.style.borderColor=d.c;
-  bar.innerHTML=`<span style="font-size:28px">${d.e}</span><div style="flex:1;min-width:0"><b style="color:${d.c}">${esc(n[0])}</b><div style="color:var(--mute);font-size:12px">${esc(n[1])}</div>${d.ex?`<div style="font-size:12px;color:${XR.c}">Exclusive ${fmtP(exChance()*100)}: ${d.ex.map(iname).join(", ")}</div>`:""}</div><b id="evt" style="font:800 15px var(--fh);flex:none"></b>`;tickEv();return}
+  bar.innerHTML=`<span style="font-size:28px">${d.e}</span><div style="flex:1;min-width:0"><b style="color:${d.c}">${esc(n[0])}</b><div style="color:var(--mute);font-size:12px">${esc(n[1])}</div>${d.ex?`<div style="font-size:12px;color:${XR.c}">✨ Exclusive ${fmtP(exChance()*100)}: ${d.ex.map(t=>t.split(" ")[0]).join(" ")}</div>`:""}</div><b id="evt" style="font:800 15px var(--fh);flex:none"></b>`;tickEv();return}
  if(EVNEXT>Date.now()){bar.style.display="flex";bar.style.borderColor="";
   bar.innerHTML=`<span style="font-size:24px">⏳</span><div style="flex:1;min-width:0;color:var(--mute);font-size:13px">${tr("evnext")}</div><b id="evt" style="font:800 15px var(--fh);flex:none"></b>`;tickEv();return}
  bar.style.display="none"}
