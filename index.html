@@ -250,17 +250,17 @@ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale
 <script>
 const R=[
  {n:"Common",ru:"Обычный",w:0,v:1,c:"var(--c0)",items:["🪨 Камень","🍂 Лист","🥄 Ложка","🧦 Носок"]},
- {n:"Uncommon",ru:"Необычный",w:28.5,v:1,c:"var(--c1)",items:["🍀 Клевер","🗝️ Ключ","🕯️ Свеча","🧪 Зелье"]},
- {n:"Rare",ru:"Редкий",w:17.5,v:2,c:"var(--c2)",items:["💎 Сапфир","🛡️ Щит","📜 Свиток","🦉 Сова"]},
- {n:"Epic",ru:"Эпический",w:8.5,v:5,c:"var(--c3)",items:["🔮 Шар судьбы","🗡️ Клинок теней","🦄 Единорог"]},
- {n:"Legendary",ru:"Легендарный",w:1,v:20,c:"var(--c4)",items:["👑 Корона королей","🐉 Дракон","⚡ Молния Зевса"]},
- {n:"Mythic",ru:"Мифический",w:.05,v:75,c:"var(--c5)",items:["🔥 Феникс","🌌 Осколок галактики","🐙 Кракен"]},
- {n:"Secret",ru:"Секретный",w:.004,v:300,c:"var(--c6)",items:["🕳️ Чёрная дыра","🎭 Маска незнакомца","⌛ Забытое время"]},
+ {n:"Uncommon",ru:"Необычный",w:28.5,v:2,c:"var(--c1)",items:["🍀 Клевер","🗝️ Ключ","🕯️ Свеча","🧪 Зелье"]},
+ {n:"Rare",ru:"Редкий",w:17.5,v:4,c:"var(--c2)",items:["💎 Сапфир","🛡️ Щит","📜 Свиток","🦉 Сова"]},
+ {n:"Epic",ru:"Эпический",w:8.5,v:10,c:"var(--c3)",items:["🔮 Шар судьбы","🗡️ Клинок теней","🦄 Единорог"]},
+ {n:"Legendary",ru:"Легендарный",w:1,v:40,c:"var(--c4)",items:["👑 Корона королей","🐉 Дракон","⚡ Молния Зевса"]},
+ {n:"Mythic",ru:"Мифический",w:.05,v:150,c:"var(--c5)",items:["🔥 Феникс","🌌 Осколок галактики","🐙 Кракен"]},
+ {n:"Secret",ru:"Секретный",w:.004,v:600,c:"var(--c6)",items:["🕳️ Чёрная дыра","🎭 Маска незнакомца","⌛ Забытое время"]},
  {n:"Divine",ru:"Божественный",w:.0004,v:2500,c:"var(--c7)",items:["☀️ Сердце солнца","👁️ Око вселенной","✨ Первая звезда"]}
 ];
 R[0].w=+(100-R.slice(1).reduce((a,r)=>a+r.w,0)).toFixed(4);
 const ALL=[];R.forEach((r,i)=>r.items.forEach(t=>ALL.push({i,t})));
-const X=8,EXC20=.00016,XR={n:"Exclusive",ru:"Эксклюзивный",v:250,c:"#ff5ce1"},RA=i=>i===X?XR:R[i];
+const X=8,EXC20=.00005,XR={n:"Exclusive",ru:"Эксклюзивный",v:250,c:"#ff5ce1"},RA=i=>i===X?XR:R[i];
 const $=id=>document.getElementById(id);
 
 let LANG="ru";try{LANG=localStorage.getItem("gacha-lang")||(/^(ru|uk|be|kk)/i.test(navigator.language||"ru")?"ru":"en")}catch(e){}
