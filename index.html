@@ -188,7 +188,9 @@ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale
   <div id="tgtw" style="display:none;margin:10px 0"><div style="color:var(--mute);font-size:13px">Кого изменить:</div><div class="row" style="margin-top:6px"><select id="a_who"></select></div><div id="a_st" style="font-size:14px;min-height:18px;margin-top:6px"></div></div>
   <div style="margin:10px 0;padding:10px;border:1px dashed var(--line);border-radius:12px"><b style="font-size:14px">Ивенты (для всех игроков)</b>
    <div class="row"><select id="a_ev"></select></div>
-   <div class="row"><input id="a_evm" type="number" min="1" max="1440" value="30" placeholder="Минут"><button id="a_evgo" style="flex:none">Запустить ивент</button></div>
+   <div class="row"><input id="a_evm" type="number" min="1" value="30" placeholder="Кол-во"><select id="a_evu" style="flex:none;width:auto"><option value="1">Минуты</option><option value="60">Часы</option><option value="1440">Дни</option></select></div>
+   <div style="color:var(--mute);font-size:12px">Максимум 30 дней</div>
+   <div class="row"><button id="a_evgo">Запустить ивент</button></div>
    <div class="row"><button class="alt" id="a_evstop">Остановить ивент</button></div>
    <div class="row"><button class="alt" id="a_evauto"></button></div>
    <div id="a_evst" style="font-size:14px;min-height:18px;margin-top:6px"></div></div>
@@ -240,7 +242,7 @@ maxd:["На максимуме удачи ({0}) шанс Divine: {1}% ({2})","At
 colcnt:["{0}/{1} · бонус монет +{2}%","{0}/{1} · coin bonus +{2}%"],oneIn:["1 из ","1 in "],fusion:["слияние","fusion"],byadm:["Выдано админом","Given by admin"],
 meopt:["Я (себя)","Me (myself)"],edited:["Изменено у {0}","Updated {0}"],ownerdel:["Владелец не может удалить аккаунт","The owner cannot delete the account"],delmis:["Ник не совпадает","Nickname does not match"],error:["Ошибка","Error"],tlogin:["Войдите в аккаунт, чтобы переводить монеты","Sign in to transfer coins"],tnick:["Введите ник получателя","Enter the recipient's nickname"],tamt:["Введите сумму","Enter an amount"],
 tself:["Нельзя переводить самому себе","You can't send coins to yourself"],tmoney:["Недостаточно монет","Not enough coins"],tsent:["Отправлено {0} 🪙 игроку {1}","Sent {0} 🪙 to {1}"],
-tgot:["Вам перевели монеты","You received coins"],tgotx:["Получено {0} 🪙 от: {1}","Received {0} 🪙 from: {1}"],tnot:["Переводы пока не включены на сервере","Transfers are not enabled on the server yet"],evon:["Ивент запущен на {0} мин.","Event started for {0} min"],evoff:["Ивент остановлен","Event stopped"],evnext:["Следующий ивент через","Next event in"],evaon:["Автоивенты: включены (нажми, чтобы выключить)","Auto events: on (tap to turn off)"],evaoff:["Автоивенты: выключены (нажми, чтобы включить)","Auto events: off (tap to turn on)"],topnot:["Топ пока не включён на сервере (нужен top.sql)","Leaderboard is not enabled on the server yet (top.sql needed)"],topme:["Твоё место: #{0} · 🪙 {1}","Your rank: #{0} · 🪙 {1}"],topempty:["Пока никого нет","Nobody here yet"],exnone:["Exclusive можно выдать только во время сезонного ивента","Exclusive items can only be given during a seasonal event"],evnot:["Ивенты не включены на сервере (нужен events.sql)","Events are not enabled on the server (events.sql needed)"],done:["Готово","Done"],wiped:["Прогресс всех игроков успешно обнулён.","All players' progress has been wiped."]};
+tgot:["Вам перевели монеты","You received coins"],tgotx:["Получено {0} 🪙 от: {1}","Received {0} 🪙 from: {1}"],tnot:["Переводы пока не включены на сервере","Transfers are not enabled on the server yet"],evon:["Ивент запущен: {0}","Event started: {0}"],evmax:["Максимум — 30 дней","Maximum is 30 days"],evmin:["Укажите длительность","Enter a duration"],evoff:["Ивент остановлен","Event stopped"],evnext:["Следующий ивент через","Next event in"],evaon:["Автоивенты: включены (нажми, чтобы выключить)","Auto events: on (tap to turn off)"],evaoff:["Автоивенты: выключены (нажми, чтобы включить)","Auto events: off (tap to turn on)"],topnot:["Топ пока не включён на сервере (нужен top.sql)","Leaderboard is not enabled on the server yet (top.sql needed)"],topme:["Твоё место: #{0} · 🪙 {1}","Your rank: #{0} · 🪙 {1}"],topempty:["Пока никого нет","Nobody here yet"],exnone:["Exclusive можно выдать только во время сезонного ивента","Exclusive items can only be given during a seasonal event"],evnot:["Ивенты не включены на сервере (нужен events.sql)","Events are not enabled on the server (events.sql needed)"],done:["Готово","Done"],wiped:["Прогресс всех игроков успешно обнулён.","All players' progress has been wiped."]};
 const tr=(k,...a)=>{let s=D[k][LANG==="en"?1:0];a.forEach((v,i)=>s=s.split("{"+i+"}").join(v));return s};
 const EN=[["Stone","Leaf","Spoon","Sock"],["Clover","Key","Candle","Potion"],["Sapphire","Shield","Scroll","Owl"],["Orb of Fate","Shadow Blade","Unicorn"],["Crown of Kings","Dragon","Zeus's Lightning"],["Phoenix","Galaxy Shard","Kraken"],["Black Hole","Stranger's Mask","Forgotten Time"],["Heart of the Sun","Eye of the Universe","First Star"]];
 const IT={};R.forEach((r,i)=>r.items.forEach((t,j)=>IT[t]=EN[i][j]));
@@ -258,7 +260,7 @@ const TX={"Кристальный алтарь":"Crystal Altar","Бросай, �
 "Выдать монеты":"Give coins","Забрать монеты":"Take coins","Уровень удачи":"Luck level","Выдать предмет":"Give item","Открыть всю коллекцию":"Unlock the whole collection",
 "⚠️ Обнуление прогресса":"⚠️ Progress wipe","Вы уверены, что хотите обнулить прогресс всех игроков?":"Are you sure you want to wipe all players' progress?","Это действие нельзя отменить.":"This cannot be undone.",
 "Отмена":"Cancel","Обнулить":"Wipe","Понятно":"OK","Регистрация":"Sign up","Вход":"Sign in","Позже":"Later",
-"Новый ник":"New nickname","Текущий пароль":"Current password","Новый пароль (от 4 символов)":"New password (4+ characters)","Никнейм":"Nickname","Пароль (от 4 символов)":"Password (4+ characters)","Меню":"Menu","Закрыть":"Close","Удалить аккаунт":"Delete account","⚠️ Удаление аккаунта":"⚠️ Delete account","Аккаунт и весь ваш прогресс будут удалены навсегда. Для подтверждения введите свой ник.":"Your account and all progress will be permanently deleted. Type your nickname to confirm.","Удалить":"Delete","Кого изменить:":"Whom to edit:","Уровень дохода":"Income level","Титулы":"Titles","Топ по монетам":"Coins leaderboard","Топ":"Top","Ивенты (для всех игроков)":"Events (for all players)","Запустить ивент":"Start event","Остановить ивент":"Stop event","Минут":"Minutes","Переводы":"Transfers","💸 Переводы":"💸 Transfers","Отправь монеты другому игроку":"Send coins to another player","Ник получателя":"Recipient nickname","Сумма":"Amount","Отправить":"Send","Магазин":"Shop","🛒 Магазин":"🛒 Shop","Покупай титулы за монеты":"Buy titles with coins","🏆 Титулы":"🏆 Titles"};
+"Новый ник":"New nickname","Текущий пароль":"Current password","Новый пароль (от 4 символов)":"New password (4+ characters)","Никнейм":"Nickname","Пароль (от 4 символов)":"Password (4+ characters)","Меню":"Menu","Закрыть":"Close","Удалить аккаунт":"Delete account","⚠️ Удаление аккаунта":"⚠️ Delete account","Аккаунт и весь ваш прогресс будут удалены навсегда. Для подтверждения введите свой ник.":"Your account and all progress will be permanently deleted. Type your nickname to confirm.","Удалить":"Delete","Кого изменить:":"Whom to edit:","Уровень дохода":"Income level","Титулы":"Titles","Топ по монетам":"Coins leaderboard","Топ":"Top","Ивенты (для всех игроков)":"Events (for all players)","Запустить ивент":"Start event","Остановить ивент":"Stop event","Минут":"Minutes","Кол-во":"Amount","Минуты":"Minutes","Часы":"Hours","Дни":"Days","Максимум 30 дней":"Maximum 30 days","Переводы":"Transfers","💸 Переводы":"💸 Transfers","Отправь монеты другому игроку":"Send coins to another player","Ник получателя":"Recipient nickname","Сумма":"Amount","Отправить":"Send","Магазин":"Shop","🛒 Магазин":"🛒 Shop","Покупай титулы за монеты":"Buy titles with coins","🏆 Титулы":"🏆 Titles"};
 const o0=new WeakMap();
 function applyStatic(){const en=LANG==="en",w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
  while(n=w.nextNode()){if(n.parentNode.tagName==="SCRIPT")continue;const o=o0.has(n)?o0.get(n):n.nodeValue,k=o.trim();if(TX[k]){o0.set(n,o);n.nodeValue=en?o.replace(k,TX[k]):o}}
@@ -515,8 +517,8 @@ function tickEv(){
  const tgt=EVN?EVN.until:EVNEXT;if(!tgt)return;
  const l=Math.ceil((tgt-Date.now())/1000);
  if(l<=0){if(EVN){EVN=null;render();if($("shp").style.display==="block")renderShop()}EVNEXT=0;renderEv();pollEv();return}
- const t=$("evt"),h=Math.floor(l/3600),m=Math.floor(l%3600/60),s2=l%60,z=x=>String(x).padStart(2,"0");
- if(t)t.textContent=(h?h+":":"")+z(m)+":"+z(s2)}
+ const t=$("evt"),dd=Math.floor(l/86400),h=Math.floor(l%86400/3600),m=Math.floor(l%3600/60),s2=l%60,z=x=>String(x).padStart(2,"0");
+ if(t)t.textContent=(dd?dd+(LANG==="en"?"d ":"д "):"")+(dd||h?(dd?z(h):h)+":":"")+z(m)+":"+z(s2)}
 setInterval(tickEv,1000);
 function updAuto(){const b=$("a_evauto");if(b)b.textContent=EVAUTO?tr("evaon"):tr("evaoff")}
 async function pollEv(){if(evOff)return;const r=await rpc("gacha_event_get",{});
@@ -531,8 +533,10 @@ function evSel(){const s=$("a_ev"),v=s.value,i=LANG==="en"?1:0;
 const evMsg=(t,ok)=>{const e=$("a_evst");e.textContent=t;e.style.color=ok?"var(--c1)":"var(--c5)"};
 async function evSet(id,m){const r=await rpc("gacha_event_set",{p_token:TOKEN,p_ev:id,p_minutes:m});
  if(r.error)return evMsg(/Could not find|schema cache/i.test(r.error)?tr("evnot"):r.error);
- evMsg(id?tr("evon",m):tr("evoff"),1);evOff=false;pollEv()}
-$("a_evgo").onclick=()=>evSet($("a_ev").value,Math.min(1440,Math.max(1,Math.floor(+$("a_evm").value||0))));
+ evMsg(id?tr("evon",fmtDur(m)):tr("evoff"),1);evOff=false;pollEv()}
+const fmtDur=m=>{const d=Math.floor(m/1440),h=Math.floor(m%1440/60),n=m%60,en=LANG==="en";return [d&&d+(en?"d":" д"),h&&h+(en?"h":" ч"),n&&n+(en?"m":" мин")].filter(Boolean).join(" ")};
+$("a_evgo").onclick=()=>{const m=Math.floor((+$("a_evm").value||0)*(+$("a_evu").value||1));
+ if(m<1)return evMsg(tr("evmin"));if(m>43200)return evMsg(tr("evmax"));evSet($("a_ev").value,m)};
 $("a_evstop").onclick=()=>evSet("",0);
 $("a_evauto").onclick=async()=>{const r=await rpc("gacha_event_auto",{p_token:TOKEN,p_on:!EVAUTO});
  if(r.error)return evMsg(/Could not find|schema cache/i.test(r.error)?tr("evnot"):r.error);evOff=false;pollEv()};
