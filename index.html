@@ -105,6 +105,7 @@ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale
 .csel-b:hover:not(:disabled){border-color:rgba(255,255,255,.32)}.csel-b:disabled{opacity:.5;cursor:default}.csel[data-fit]{flex:none;width:auto}.csel[data-fit] .csel-b{min-width:84px}select.csel-n{display:none}
 #selPop .modal-box{text-align:left;max-width:380px}.sp-list{max-height:min(52vh,400px);overflow:auto;display:flex;flex-direction:column;gap:6px;overscroll-behavior:contain}
 .sp-o .avimg,.csel-b .avimg{width:1.5em;height:1.5em;margin-right:4px;vertical-align:-.45em}.sp-list.grid{display:grid;grid-template-columns:repeat(5,1fr)}.sp-o{padding:11px 12px;font-size:14px;text-align:left;box-shadow:none;flex:none}.sp-list.grid .sp-o{text-align:center;padding:11px 0}
+.evr{display:flex;align-items:center;gap:10px}.evr+.evr{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}#a_evlive .gr:first-child{margin-top:8px}
 .adm-sub{color:var(--mute);font-size:13px;margin:4px 0 4px}
 .ac{margin-top:12px;padding:14px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border:1px solid var(--line)}
 .ac h3{margin:0 0 4px;font:800 14px var(--fh);display:flex;align-items:center;gap:9px}
@@ -307,10 +308,11 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
   </section>
 
   <section class="ac"><h3><i>⚡</i>Ивенты (для всех игроков)</h3>
+   <div id="a_evlive"></div>
    <div class="row"><select id="a_ev"></select></div>
    <div class="row"><input id="a_evm" type="number" min="1" value="30" placeholder="Кол-во"><select id="a_evu" style="flex:none;width:auto"><option value="1">Минуты</option><option value="60">Часы</option><option value="1440">Дни</option></select></div>
    <div class="ac-note">Максимум 30 дней</div>
-   <div class="ac-grid"><button id="a_evgo">Запустить ивент</button><button class="alt" id="a_evstop">Остановить ивент</button></div>
+   <div class="ac-grid"><button id="a_evgo">Запустить ивент</button><button class="alt" id="a_evstop">Остановить все</button></div>
    <div class="row"><button class="alt" id="a_evauto"></button></div>
   </section>
 
@@ -427,11 +429,17 @@ const EVD={
  halloween:{e:"🎃",c:"#ff7a18",rare:1.5,ex:["🎃 Тыква-фонарь","🦇 Лунная летучая мышь","💀 Проклятый череп"],exen:["Jack-o'-Lantern","Moon Bat","Cursed Skull"],tt:["Повелитель тыкв","Pumpkin Lord"],ru:["Хэллоуин","Legendary+ ×1.5 · эксклюзивные предметы"],en:["Halloween","Legendary+ ×1.5 · exclusive items"]},
  mega:{e:"🌈",c:"var(--c7)",lk:1.5,coin:1.5,ru:["Мега-событие","Удача ×1.5 и монеты ×1.5"],en:["Mega Event","Luck ×1.5 and coins ×1.5"]}
 };
-let EVN=null;
+let EVL=[],_evc=null,_evt=0;const setEvl=l=>{EVL=l;_evc=null};const evActive=()=>EVL.filter(x=>Date.now()<x.until&&EVD[x.id]);
 const EXALL=[];Object.keys(EVD).forEach(k=>{const d=EVD[k];if(d.ex)d.ex.forEach((t,j)=>{IT[t]=d.exen[j];EXALL.push({k,t})})});
 const exChance=()=>{const w=weights(),t=w.reduce((x,y)=>x+y,0);return w[7]/t/2.5};
 function exRoll(){const e=ev();return e.ex&&Math.random()<exChance()?e.ex[Math.floor(Math.random()*e.ex.length)]:null}
-const ev=()=>EVN&&Date.now()<EVN.until&&EVD[EVN.id]?EVD[EVN.id]:{};
+const EVMUL=["lk","coin","inc","disc","shop","pity","gain","rare"];
+const ev=()=>{const now=Date.now();if(_evc&&now<_evt)return _evc;
+ const a=evActive();_evt=now+1000;
+ if(!a.length)return _evc={};
+ if(a.length===1)return _evc=EVD[a[0].id];
+ const m={};a.forEach(x=>{const d=EVD[x.id];EVMUL.forEach(k=>{if(d[k]!=null)m[k]=(m[k]||1)*d[k]});if(d.la)m.la=(m.la||0)+d.la;if(d.ex)m.ex=[...new Set([...(m.ex||[]),...d.ex])]});
+ return _evc=m};
 const TH=n=>Math.max(2,Math.ceil(n/(ev().pity||1)));
 const pr=t=>Math.floor(t.price*(ev().shop||1));
 const setsDone=()=>R.filter(r=>r.items.every(t=>S.found[t])).length;
@@ -739,27 +747,32 @@ $("titlist").onclick=e=>{const b=e.target.closest("[data-eq]");if(!b)return;cons
 /* ивенты: баннер, опрос сервера, управление */
 let evOff=false;
 let EVNEXT=0,EVAUTO=true;
-function renderEv(){const bar=$("evbar"),en=LANG==="en";
- if(EVN&&Date.now()<EVN.until&&EVD[EVN.id]){
-  const d=EVD[EVN.id],n=d[en?"en":"ru"];bar.style.display="flex";bar.style.borderColor=d.c;
-  bar.innerHTML=`<span style="font-size:28px">${d.e}</span><div style="flex:1;min-width:0"><b style="color:${d.c}">${esc(n[0])}</b><div style="color:var(--mute);font-size:12px">${esc(n[1])}</div>${d.ex?`<div style="font-size:12px;color:${XR.c}">✨ Exclusive ${fmtP(exChance()*100)}: ${d.ex.map(t=>t.split(" ")[0]).join(" ")}</div>`:""}</div><b id="evt" style="font:800 15px var(--fh);flex:none"></b>`;tickEv();return}
- if(EVNEXT>Date.now()){bar.style.display="flex";bar.style.borderColor="";
-  bar.innerHTML=`<span style="font-size:24px">⏳</span><div style="flex:1;min-width:0;color:var(--mute);font-size:13px">${tr("evnext")}</div><b id="evt" style="font:800 15px var(--fh);flex:none"></b>`;tickEv();return}
+const fmtT=l=>{const dd=Math.floor(l/86400),h=Math.floor(l%86400/3600),m=Math.floor(l%3600/60),s2=l%60,z=x=>String(x).padStart(2,"0");
+ return (dd?dd+(LANG==="en"?"d ":"д "):"")+(dd||h?(dd?z(h):h)+":":"")+z(m)+":"+z(s2)};
+function renderEv(){const bar=$("evbar"),en=LANG==="en",a=evActive();renderEvLive();
+ if(a.length){bar.style.display="block";bar.style.borderColor=EVD[a[0].id].c;
+  bar.innerHTML=a.map(x=>{const d=EVD[x.id],n=d[en?"en":"ru"];
+   return `<div class="evr"><span style="font-size:28px">${d.e}</span><div style="flex:1;min-width:0"><b style="color:${d.c}">${esc(n[0])}</b><div style="color:var(--mute);font-size:12px">${esc(n[1])}</div>${d.ex?`<div style="font-size:12px;color:${XR.c}">✨ Exclusive ${fmtP(exChance()*100)}: ${d.ex.map(t=>t.split(" ")[0]).join(" ")}</div>`:""}</div><b class="evt" data-u="${x.until}" style="font:800 15px var(--fh);flex:none"></b></div>`}).join("");tickEv();return}
+ if(EVNEXT>Date.now()){bar.style.display="block";bar.style.borderColor="";
+  bar.innerHTML=`<div class="evr"><span style="font-size:24px">⏳</span><div style="flex:1;min-width:0;color:var(--mute);font-size:13px">${tr("evnext")}</div><b class="evt" data-u="${EVNEXT}" style="font:800 15px var(--fh);flex:none"></b></div>`;tickEv();return}
  bar.style.display="none"}
-function tickEv(){
- const tgt=EVN?EVN.until:EVNEXT;if(!tgt)return;
- const l=Math.ceil((tgt-Date.now())/1000);
- if(l<=0){if(EVN){EVN=null;render();if($("shp").style.display==="block")renderShop()}EVNEXT=0;renderEv();pollEv();return}
- const t=$("evt"),dd=Math.floor(l/86400),h=Math.floor(l%86400/3600),m=Math.floor(l%3600/60),s2=l%60,z=x=>String(x).padStart(2,"0");
- if(t)t.textContent=(dd?dd+(LANG==="en"?"d ":"д "):"")+(dd||h?(dd?z(h):h)+":":"")+z(m)+":"+z(s2)}
+function renderEvLive(){const el=$("a_evlive");if(!el)return;const en=LANG==="en",a=evActive();
+ el.innerHTML=a.length?a.map(x=>{const d=EVD[x.id],n=d[en?"en":"ru"];
+  return `<div class="gr"><span>${d.e} ${esc(n[0])} · <b class="evt" data-u="${x.until}"></b></span>${x.auto?`<i style="color:var(--mute);font-size:12px">${L2("авто","auto")}</i>`:`<button class="alt" data-stop="${x.id}">✕</button>`}</div>`}).join(""):`<div class="ac-note">${L2("Сейчас ивентов нет","No events running")}</div>`;tickEv()}
+function tickEv(){let exp=false;
+ document.querySelectorAll(".evt[data-u]").forEach(t=>{const l=Math.ceil((+t.dataset.u-Date.now())/1000);if(l<=0){exp=true;return}t.textContent=fmtT(l)});
+ if(exp){setEvl(EVL.filter(x=>Date.now()<x.until));if(EVNEXT&&EVNEXT<=Date.now())EVNEXT=0;renderEv();render();if($("shp").style.display==="block")renderShop();pollEv()}}
 setInterval(tickEv,1000);
 function updAuto(){const b=$("a_evauto");if(b)b.textContent=EVAUTO?tr("evaon"):tr("evaoff")}
+const evSig=()=>evActive().map(x=>x.id).sort().join(",");
 async function pollEv(){if(evOff)return;const r=await rpc("gacha_event_get",{});
  if(r.error){if(/Could not find|schema cache/i.test(r.error))evOff=true;return}
- const d=r.data,old=EVN?EVN.id:"";
- EVN=d&&d.ev&&d.left>0&&EVD[d.ev]?{id:d.ev,until:Date.now()+d.left*1000}:null;
- EVNEXT=d&&d.next>0?Date.now()+d.next*1000:0;EVAUTO=!d||d.auto_on!==false;updAuto();
- renderEv();render();if((EVN?EVN.id:"")!==old&&$("shp").style.display==="block")renderShop()}
+ const d=r.data,old=evSig(),now=Date.now();let list=[];
+ if(d&&Array.isArray(d.list))list=d.list.filter(x=>x&&x.ev&&x.left>0&&EVD[x.ev]).map(x=>({id:x.ev,until:now+x.left*1000,auto:!!x.auto}));
+ else if(d&&d.ev&&d.left>0&&EVD[d.ev])list=[{id:d.ev,until:now+d.left*1000,auto:false}];
+ setEvl(list);
+ EVNEXT=d&&d.next>0?now+d.next*1000:0;EVAUTO=!d||d.auto_on!==false;updAuto();
+ renderEv();render();if(evSig()!==old&&$("shp").style.display==="block")renderShop()}
 setInterval(pollEv,15000);pollEv();
 function evSel(){const s=$("a_ev"),v=s.value,i=LANG==="en"?1:0;
  s.innerHTML=Object.keys(EVD).map(k=>{const n=i?EVD[k].en:EVD[k].ru;return `<option value="${k}">${EVD[k].e} ${n[0]} — ${n[1]}</option>`}).join("");if(v)s.value=v}
@@ -771,6 +784,10 @@ const fmtDur=m=>{const d=Math.floor(m/1440),h=Math.floor(m%1440/60),n=m%60,en=LA
 $("a_evgo").onclick=()=>{const m=Math.floor((+$("a_evm").value||0)*(+$("a_evu").value||1));
  if(m<1)return evMsg(tr("evmin"));if(m>43200)return evMsg(tr("evmax"));evSet($("a_ev").value,m)};
 $("a_evstop").onclick=()=>evSet("",0);
+async function evStop(id){const r=await rpc("gacha_event_stop",{p_token:TOKEN,p_ev:id});
+ if(r.error){if(/Could not find|schema cache/i.test(r.error))return evSet("",0);return evMsg(r.error)}
+ evMsg(tr("evoff"),1);evOff=false;pollEv()}
+$("a_evlive").onclick=e=>{const b=e.target.closest("[data-stop]");if(b)evStop(b.dataset.stop)};
 $("a_evauto").onclick=async()=>{const r=await rpc("gacha_event_auto",{p_token:TOKEN,p_on:!EVAUTO});
  if(r.error)return evMsg(/Could not find|schema cache/i.test(r.error)?tr("evnot"):r.error);evOff=false;pollEv()};
 /* топ по монетам */
@@ -988,7 +1005,7 @@ function toast(text,kind){const box=$("toasts");if(!box||!text)return;
  const kill=()=>{if(!t.parentNode)return;t.classList.add("out");setTimeout(()=>t.remove(),260)};
  t.onclick=kill;box.appendChild(t);while(box.children.length>3)box.firstChild.remove();setTimeout(kill,3400)}
 $("a_chips").onclick=e=>{const b=e.target.closest("[data-v]");if(b)$("a_coins").value=b.dataset.v};
-Object.assign(TX,{"Управление игроками, экономикой и ивентами":"Manage players, economy and events","Игрок":"Player","Монеты и алмазы":"Coins and gems","Прокачка":"Progression","Коллекция и титулы":"Collection and titles","Сумма":"Amount"});
+Object.assign(TX,{"Остановить все":"Stop all","Управление игроками, экономикой и ивентами":"Manage players, economy and events","Игрок":"Player","Монеты и алмазы":"Coins and gems","Прокачка":"Progression","Коллекция и титулы":"Collection and titles","Сумма":"Amount"});
 $("lang").onclick=$("lang2").onclick=()=>setLang(LANG==="en"?"ru":"en");
 setLang(LANG);
 </script>
