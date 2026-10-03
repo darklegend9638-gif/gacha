@@ -101,7 +101,7 @@ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale
 .ti .pb{height:5px;border-radius:4px;background:var(--line);margin-top:5px;overflow:hidden}.ti .pb i{display:block;height:100%;border-radius:4px}
 .ti button{flex:0 0 auto;padding:7px 12px;font-size:13px}.ti.eq{box-shadow:0 0 0 2px var(--c4)}
 .confirm-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(5,3,15,.72);z-index:1000}.confirm-modal.show{display:flex}.confirm-modal .modal-box{width:100%;max-width:390px;padding:22px;background:var(--bg2);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 60px rgba(0,0,0,.45);text-align:center}.confirm-modal .modal-title{font:800 19px var(--fh);margin-bottom:10px}.confirm-modal .modal-text{color:var(--mute);font-size:14px;margin-bottom:18px}.confirm-modal .modal-actions{display:flex;gap:10px}.confirm-modal .modal-actions button{flex:1}
-.stat b{font:800 21px var(--fh)}.tag{font-family:var(--fh);font-size:11px}h2{font-family:var(--fh);font-size:13px}
+.stat b{font:800 17px/1.2 var(--fh);white-space:nowrap}.tag{font-family:var(--fh);font-size:11px}h2{font-family:var(--fh);font-size:13px}
 
 /* polish */
 #r1,#r10{font-size:17px;padding:16px 14px;box-shadow:0 8px 22px rgba(123,77,255,.45)}
@@ -144,6 +144,8 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 #prof .chip{height:46px}
 #prof .pw{display:flex;flex-direction:column;justify-content:center;min-width:0;line-height:1.15;text-align:left}
 #prof .ps{display:block;margin-top:1px;font-size:10.5px;font-weight:700;letter-spacing:.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stat.wide b{font-size:18px}
+.stat .mx{display:block;margin-top:1px;font-size:10px;font-weight:800;letter-spacing:.9px;line-height:1;color:var(--c4)}
 </style>
 </head>
 <body>
@@ -438,7 +440,7 @@ function render(){
  const lc=luckCost(),mx=S.luck>=MAXLUCK;$("luck").textContent=mx?tr("luckmax",MAXLUCK):tr("luckup",S.luck+1,fmt(lc));$("luck").disabled=mx||S.coins<lc;
  $("inc").textContent=S.inc>=MAXINC?tr("incmax"):tr("incup",inc(),incAt(S.inc+1),fmt(incCost()));$("inc").disabled=S.inc>=MAXINC||S.coins<incCost();
  $("pity").textContent=tr("pity",fmt(Math.max(1,TH(PL)-(S.pl||0))),fmt(Math.max(1,TH(PM)-(S.pm||0))),fmt(Math.max(1,TH(PS)-(S.ps||0))),inc());
- setH($("fuse"),R.slice(0,6).map((r,i)=>`<button class="alt" data-f="${i}" ${dupes(i)<5?"disabled":""} style="border-color:${r.c}">${r.n}: ${dupes(i)}/5 → ${R[i+1].n}</button>`).join(""));$("lucklv").textContent=S.luck+(mx?" (MAX)":"");
+ setH($("fuse"),R.slice(0,6).map((r,i)=>`<button class="alt" data-f="${i}" ${dupes(i)<5?"disabled":""} style="border-color:${r.c}">${r.n}: ${dupes(i)}/5 → ${R[i+1].n}</button>`).join(""));$("lucklv").innerHTML=S.luck+(mx?'<span class="mx">MAX</span>':"");
  const w=weights(),t=w.reduce((a,b)=>a+b,0);
  setH($("odds"),R.map((r,i)=>{const p=w[i]/t*100*(ev().ex?1-exChance():1),bw=Math.max(2,Math.min(100,Math.log10(p*1e4+1)/6*100));
   return `<div class="od"><span style="color:${r.c};font-weight:700">${r.n}</span><span class="bar"><i style="width:${bw}%;background:${r.c}"></i></span><span>${fmtP(p)}</span></div>`}).join("")+(ev().ex?`<div class="od"><span style="color:${XR.c};font-weight:700">Exclusive</span><span class="bar"><i style="width:${Math.max(2,Math.min(100,Math.log10(exChance()*100*1e4+1)/6*100))}%;background:${XR.c}"></i></span><span>${fmtP(exChance()*100)}</span></div>`:""));
