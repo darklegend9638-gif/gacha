@@ -146,6 +146,7 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 #prof .ps{display:block;margin-top:1px;font-size:10.5px;font-weight:700;letter-spacing:.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .stat.wide b{font-size:18px}
 .stat .mx{display:block;margin-top:1px;font-size:10px;font-weight:800;letter-spacing:.9px;line-height:1;color:var(--c4)}
+.gmg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0}.gmc{aspect-ratio:1;padding:0;font-size:22px;border-radius:12px;min-width:0}.gmc:disabled{opacity:1;cursor:default}.bjc{display:inline-block;min-width:40px;padding:8px 6px;margin:3px;text-align:center;border-radius:8px;background:#f4f1ff;color:#1d1536;font-weight:800}.bjc.red{color:#d6264b}#gm_tabs{flex-wrap:wrap}#gm_tabs button{flex:1 1 40%}
 </style>
 </head>
 <body>
@@ -165,6 +166,7 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 <linearGradient id="gU" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9bf5ff"/><stop offset="1" stop-color="#3a8dff"/></linearGradient>
 <linearGradient id="gW" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd27a"/><stop offset="1" stop-color="#ff6a3d"/></linearGradient>
 <linearGradient id="gR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9fb0"/><stop offset="1" stop-color="#ff3d63"/></linearGradient>
+<symbol id="i-games" viewBox="0 0 24 24"><rect x="2" y="6.5" width="20" height="11.5" rx="5.5" fill="url(#gP)"/><path d="M8 9.6v5.6M5.2 12.4h5.6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><circle cx="15.5" cy="11" r="1.4" fill="#fff"/><circle cx="18.3" cy="13.8" r="1.4" fill="#fff"/></symbol>
 <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="url(#gG)"/><g fill="none" stroke="#fff" stroke-opacity=".85" stroke-width="1.3" stroke-linecap="round"><ellipse cx="12" cy="12" rx="4" ry="9.5"/><path d="M2.8 9h18.4M2.8 15h18.4"/></g></symbol>
 <symbol id="i-titles" viewBox="0 0 24 24"><path d="M7.5 13.5L5.5 21.5l4.2-2.2 2.3 3 1.2-6.4z" fill="url(#gP)" opacity=".8"/><path d="M16.5 13.5l2 8-4.2-2.2-1.3 1.6-1.1-5.4z" fill="url(#gP)"/><circle cx="12" cy="9" r="7" fill="url(#gP)"/><circle cx="12" cy="9" r="5.2" fill="none" stroke="#fff" stroke-opacity=".5"/><path d="M12 5.4l1.2 2.5 2.7.4-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.4z" fill="#fff"/></symbol>
 <symbol id="i-transfer" viewBox="0 0 24 24"><path d="M3.5 8h14.5M14.5 4.5L18 8l-3.5 3.5M20.5 16H6M9.5 12.5L6 16l3.5 3.5" fill="none" stroke="url(#gM)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.2" fill="url(#gT)" stroke="rgba(120,60,0,.4)" stroke-width=".7"/></symbol>
@@ -184,6 +186,7 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 <button class="alt" id="menuBtn" aria-label="Меню" aria-expanded="false" style="display:none"><svg class="mb" viewBox="0 0 24 24" aria-hidden="true"><path class="l1" d="M5 7h14"/><path class="l2" d="M5 12h14"/><path class="l3" d="M5 17h14"/></svg></button>
 <div id="menu">
  <button class="alt" id="lang"></button>
+ <button class="alt" id="gmb"><svg class="ico"><use href="#i-games"/></svg>Мини-игры</button>
  <button class="alt" id="titb"><svg class="ico"><use href="#i-titles"/></svg>Титулы</button>
  <button class="alt" id="trb"><svg class="ico"><use href="#i-transfer"/></svg>Переводы</button>
  <button class="alt" id="adm" style="display:none"><svg class="ico"><use href="#i-admin"/></svg>Админ панель</button>
@@ -254,6 +257,13 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
   <div style="color:var(--mute);font-size:13px;margin-top:4px">Покупай титулы за монеты</div>
   <div id="shbal" style="font:800 17px var(--fh);margin-top:8px"></div>
   <div id="shlist"></div>
+</div>
+<div id="gmp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
+  <b class="hd"><svg class="ico"><use href="#i-games"/></svg>Мини-игры</b>
+  <div style="color:var(--mute);font-size:13px;margin-top:4px">🪙 <b id="gm_bal"></b></div>
+  <div class="row" id="gm_tabs"></div>
+  <div class="row"><input id="gm_bet" type="number" min="1" value="10" inputmode="numeric"><button class="alt" data-q="h" style="flex:none">½</button><button class="alt" data-q="d" style="flex:none">x2</button><button class="alt" data-q="m" style="flex:none">MAX</button></div>
+  <div id="gm_area" style="margin-top:6px"></div><div id="gm_msg" style="min-height:22px;margin-top:8px;font-weight:700"></div>
 </div>
 <div id="titp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
   <b class="hd"><svg class="ico"><use href="#i-titles"/></svg>Титулы</b>
@@ -332,7 +342,7 @@ const iname=t=>LANG==="en"&&IT[t]?IT[t]:t.slice(t.indexOf(" ")+1),iview=t=>t.spl
 const rname=i=>LANG==="ru"?RA(i).ru:RA(i).n,rn=i=>LANG==="ru"?RA(i).n+" · "+RA(i).ru:RA(i).n;
 const SRV={"Этот ник уже занят":"This nickname is already taken","Неверный ник или пароль":"Wrong nickname or password","Текущий пароль неверный":"Current password is incorrect","Нет доступа":"Access denied","Ошибка сервера":"Server error","Игрок не найден":"Player not found","Некорректное сохранение":"Invalid save","Владелец не может удалить аккаунт":"The owner cannot delete the account","Недостаточно монет":"Not enough coins","Нельзя переводить себе":"You can't send coins to yourself","Некорректная сумма":"Invalid amount"};
 const srv=m=>LANG==="en"&&SRV[m]?SRV[m]:m;
-const TX={"Кристальный алтарь":"Crystal Altar","Бросай, качай удачу, собери всё — вплоть до Divine":"Roll, upgrade your luck, collect everything — up to Divine",
+const TX={"Мини-игры":"Mini-games","Кристальный алтарь":"Crystal Altar","Бросай, качай удачу, собери всё — вплоть до Divine":"Roll, upgrade your luck, collect everything — up to Divine",
 "Изменить профиль":"Edit profile","Выйти":"Log out","Админ панель":"Admin panel","Очистить весь прогресс":"Wipe all progress","👤 Изменить профиль":"👤 Edit profile","🛠️ Админ панель":"🛠️ Admin panel","🗑️ Очистить весь прогресс":"🗑️ Wipe all progress",
 "🪙 Монеты":"🪙 Coins","🍀 Удача":"🍀 Luck","🎲 Броски":"🎲 Rolls","Лучшая редкость (рекорд)":"Best rarity (record)",
 "Сделай первый бросок":"Make your first roll","Копи монеты и бросай":"Save coins and roll","Бросок · 10":"Roll · 10",
@@ -383,10 +393,16 @@ const pr=t=>Math.floor(t.price*(ev().shop||1));
 const setsDone=()=>R.filter(r=>r.items.every(t=>S.found[t])).length;
 const FRESH=()=>({coins:30,luck:0,rolls:0,found:{},best:-1,inc:0,pl:0,pm:0,ps:0,tb:[]});
 let S=FRESH(),busy=false;
-const SB_URL="https://ybjnbrioosiumcnoqvbz.supabase.co",SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inliam5icmlvb3NpdW1jbm9xdmJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4NjMyMTksImV4cCI6MjEwNjQzOTIxOX0.PO15psCKHeawvXdS50UwF7u7Gq1scL02TM2djXWwIBs";
+const GENV=(/[?&]env=test\b/.test(location.search)||/test\.html$/i.test(location.pathname))?"test":"prod",GPX=GENV==="test"?"test-":"";
+let GTC={};try{GTC=JSON.parse(localStorage.getItem("gacha-testcfg")||"{}")}catch(e){}
+{const q=new URLSearchParams(location.search);if(GENV==="test"&&q.get("sb")&&q.get("key")){GTC={url:q.get("sb").replace(/\/+$/,""),key:q.get("key")};try{localStorage.setItem("gacha-testcfg",JSON.stringify(GTC))}catch(e){}}}
+const GCFG={prod:{url:"https://ybjnbrioosiumcnoqvbz.supabase.co",key:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inliam5icmlvb3NpdW1jbm9xdmJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4NjMyMTksImV4cCI6MjEwNjQzOTIxOX0.PO15psCKHeawvXdS50UwF7u7Gq1scL02TM2djXWwIBs"},test:{url:GTC.url||"",key:GTC.key||""}};
+const SB_URL=GCFG[GENV].url,SB_KEY=GCFG[GENV].key;
+if(GENV==="test"){const b=document.createElement("div");b.textContent=SB_URL?"TEST · "+SB_URL.replace(/^https?:\/\//,"").split(".")[0]:"TEST · сервер не настроен";
+ b.style.cssText="position:fixed;top:env(safe-area-inset-top,0);left:0;z-index:2000;background:#ff4d6d;color:#fff;font:700 11px sans-serif;padding:3px 10px;border-radius:0 0 10px 0;pointer-events:none";document.body.appendChild(b)}
 async function rpc(fn,args,keep){try{const r=await fetch(SB_URL+"/rest/v1/rpc/"+fn,{method:"POST",keepalive:!!keep,headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json"},body:JSON.stringify(args||{})});
  const j=await r.json().catch(()=>null);if(!r.ok)return{error:srv((j&&j.message)||"Ошибка сервера")};return{data:j}}catch(e){return{error:tr("noconn"),net:true}}}
-const BASE="gacha-v2",KEY=BASE;let TOKEN=null;try{TOKEN=localStorage.getItem("gacha-token")}catch(e){}
+const BASE=GPX+"gacha-v2",KEY=BASE;let TOKEN=null;try{TOKEN=localStorage.getItem(GPX+"gacha-token")}catch(e){}
 let ready=!TOKEN,dirty=false;
 function normS(){if(!Array.isArray(S.tb))S.tb=[];S.luck=Math.min(S.luck,MAXLUCK);if(S.best<0)ALL.forEach(a=>{if(S.found[a.t]&&a.i>S.best)S.best=a.i})}
 if(!TOKEN){try{const s=localStorage.getItem(KEY)||localStorage.getItem("gacha-v1");if(s)S=Object.assign(S,JSON.parse(s))}catch(e){}}
@@ -481,13 +497,13 @@ function renderProf(){$("menuBtn").style.display="";$("shopBtn").style.display="
  $("out").style.display=me?"":"none";
  if($("pchip"))$("pchip").onclick=()=>$("setb").onclick();
  if($("inb"))$("inb").onclick=()=>openReg()}
-$("out").onclick=()=>{try{localStorage.removeItem("gacha-token")}catch(e){}location.reload()};
+$("out").onclick=()=>{try{localStorage.removeItem(GPX+"gacha-token")}catch(e){}location.reload()};
 function openReg(m){if(m)mode=m;const r=mode==="reg";$("reg").style.display="flex";$("reg_t").textContent=r?tr("createProf"):tr("signin");
  $("t_reg").style.opacity=r?1:.5;$("t_in").style.opacity=r?.5:1;$("avs").style.display=r?"grid":"none";$("reg_ok").textContent=r?tr("create"):tr("signin");$("reg_st").textContent="";
  avGrid("avs")}
 $("t_reg").onclick=()=>openReg("reg");$("t_in").onclick=()=>openReg("in");$("reg_x").onclick=()=>{$("reg").style.display="none"};
 function applyMe(d){me={nick:d.nick,avatar:d.avatar,role:d.role||"",nickAt:+d.nick_at||0};isOwner=me.role==="owner";granted=me.role==="admin";
- S=Object.assign(FRESH(),d.save||{});normS();ready=true;dirty=false;try{localStorage.setItem("gacha-seen","1")}catch(e){}
+ S=Object.assign(FRESH(),d.save||{});normS();ready=true;dirty=false;try{localStorage.setItem(GPX+"gacha-seen","1")}catch(e){}
  renderProf();const a=isOwner||granted;$("adm").style.display=a?"":"none";$("reset").style.display=isOwner?"":"none";$("setb").style.display="";
  $("tgtw").style.display=isOwner?"block":"none";if(isOwner){$("own").style.display="block";renderGrants()}$("reg").style.display="none";render()}
 $("reg_ok").onclick=async()=>{const n=$("reg_nick").value.trim(),p=$("reg_pw").value,st=$("reg_st");
@@ -496,7 +512,7 @@ $("reg_ok").onclick=async()=>{const n=$("reg_nick").value.trim(),p=$("reg_pw").v
  st.textContent=tr("wait");
  const r=mode==="reg"?await rpc("gacha_register",{p_nick:n,p_pass:p,p_avatar:pickAv,p_save:S}):await rpc("gacha_login",{p_nick:n,p_pass:p});
  if(r.error){st.textContent=r.error;return}
- TOKEN=r.data.token;try{localStorage.setItem("gacha-token",TOKEN)}catch(e){}applyMe(r.data)};
+ TOKEN=r.data.token;try{localStorage.setItem(GPX+"gacha-token",TOKEN)}catch(e){}applyMe(r.data)};
 async function setRole(k,r){const x=await rpc("gacha_set_role",{p_token:TOKEN,p_key:k,p_role:r});if(x.error)alert(x.error);renderGrants()}
 function grTxt(){$("g_give").textContent=tr("ggive");$("g_take").textContent=tr("gtake");const o=$("g_who").options[0];if(o)o.textContent=tr("gwho")}
 let GP=[];
@@ -530,19 +546,19 @@ $("s_nb").onclick=async()=>{const n=$("s_nick").value.trim();
 $("s_pb").onclick=async()=>{const o=$("s_old").value,n=$("s_new").value;
  if(n.length<4)return sMsg(tr("pwmin2"));
  const r=await rpc("gacha_change_password",{p_token:TOKEN,p_old:o,p_new:n});if(r.error)return sMsg(r.error);
- TOKEN=r.data.token;try{localStorage.setItem("gacha-token",TOKEN)}catch(e){}
+ TOKEN=r.data.token;try{localStorage.setItem(GPX+"gacha-token",TOKEN)}catch(e){}
  $("s_old").value=$("s_new").value="";sMsg(tr("pwok"),1)};
 $("s_del").onclick=()=>{if(isOwner)return sMsg(tr("ownerdel"));$("del_nick").value="";$("del_st").textContent="";$("delModal").classList.add("show")};
 $("delNo").onclick=()=>$("delModal").classList.remove("show");
 $("delYes").onclick=async()=>{if($("del_nick").value.trim().toLowerCase()!==me.nick.toLowerCase()){$("del_st").textContent=tr("delmis");return}
  const r=await rpc("gacha_delete_account",{p_token:TOKEN});if(r.error){$("del_st").textContent=r.error;return}
- TOKEN=null;ready=false;dirty=false;try{localStorage.removeItem("gacha-token")}catch(e){}location.reload()};
+ TOKEN=null;ready=false;dirty=false;try{localStorage.removeItem(GPX+"gacha-token")}catch(e){}location.reload()};
 async function boot(){const r=await rpc("gacha_me",{p_token:TOKEN});
  if(r.net){$("pity").textContent=tr("retry");setTimeout(boot,4000);return}
- if(r.error){TOKEN=null;try{localStorage.removeItem("gacha-token")}catch(e){}ready=true;renderProf();openReg("in");return}
+ if(r.error){TOKEN=null;try{localStorage.removeItem(GPX+"gacha-token")}catch(e){}ready=true;renderProf();openReg("in");return}
  applyMe(r.data)}
 renderProf();
-if(TOKEN)boot();else{let seen=null;try{seen=localStorage.getItem("gacha-seen")}catch(e){}openReg(seen?"in":"reg")}
+if(TOKEN)boot();else{let seen=null;try{seen=localStorage.getItem(GPX+"gacha-seen")}catch(e){}openReg(seen?"in":"reg")}
 const aMsg=(t,ok)=>{const e=$("a_st");e.textContent=t;e.style.color=ok?"var(--c1)":"var(--c5)"};
 async function adm(f){const k=isOwner?$("a_who").value:"";
  if(!k){f(S);render();save();return}
@@ -566,8 +582,75 @@ setInterval(()=>{if(!ready)return;S.coins+=inc()*(ev().inc||1)*(ev().coin||1);re
  const io=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle("in",e.isIntersecting)),{threshold:.08,rootMargin:"0px 0px -6% 0px"});
  els.forEach(el=>{el.classList.add("rv");io.observe(el)});
 })();
+/* мини-игры */
+const G=(a,b)=>LANG==="en"?b:a;
+const rnd=n=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%n};
+let gmTab="mines",MN=null,BJ=null,DC={side:"u",t:50};
+const gmMsg=(t,c)=>{const e=$("gm_msg");e.textContent=t;e.style.color=c||"var(--text)"};
+const gmBal=()=>{$("gm_bal").textContent=fmt(S.coins)};
+const gmBet=()=>Math.floor(+$("gm_bet").value||0);
+const gmLocked=()=>!!((MN&&MN.on)||(BJ&&BJ.on));
+function gmTake(b){if(!ready)return false;if(b<1){gmMsg(G("Укажите ставку","Enter a bet"),"var(--c5)");return false}
+ if(b>S.coins){gmMsg(G("Не хватает монет","Not enough coins"),"var(--c5)");return false}S.coins-=b;render();save();gmBal();return true}
+function gmPay(x){x=Math.floor(x);if(x>0){S.coins+=x;render();save()}gmBal()}
+const gmNames=()=>({mines:G("Мины","Mines"),bj:G("Блэкджек","Blackjack"),coin:G("Монетка","Coin"),dice:G("Кости","Dice")});
+function gmDraw(){gmBal();const N=gmNames(),lk=gmLocked();
+ $("gm_tabs").innerHTML=Object.keys(N).map(k=>`<button class="${k===gmTab?"":"alt"}" data-g="${k}" style="padding:10px;min-width:0">${N[k]}</button>`).join("");
+ document.querySelectorAll("#gm_tabs [data-g]").forEach(b=>b.onclick=()=>{if(gmLocked())return gmMsg(G("Сначала закончите раунд","Finish the round first"),"var(--c5)");gmTab=b.dataset.g;gmMsg("");gmDraw()});
+ $("gm_bet").disabled=lk;document.querySelectorAll("[data-q]").forEach(b=>b.disabled=lk);
+ ({mines:drawMines,bj:drawBJ,coin:drawCoin,dice:drawDice})[gmTab]()}
+document.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{const v=gmBet()||1,q=b.dataset.q;$("gm_bet").value=q==="h"?Math.max(1,Math.floor(v/2)):q==="d"?v*2:Math.max(1,Math.floor(S.coins))});
+/* мины */
+const MNf=(k,m)=>{let p=1;for(let i=0;i<k;i++)p*=(25-i)/(25-m-i);return p*.97};
+function mnCash(){if(!MN||!MN.on)return;const w=Math.floor(MN.bet*MNf(MN.open.size,MN.m));MN.on=false;gmPay(w);gmMsg(G("Забрано ","Cashed out ")+fmt(w)+" 🪙 (+"+fmt(w-MN.bet)+")","var(--c1)");gmDraw()}
+function drawMines(){const g=MN,live=g&&g.on,k=g?g.open.size:0,cur=g&&!g.lost?MNf(k,g.m):0;let h="";
+ if(!live)h+=`<div class="row" style="align-items:center;margin-top:0"><span style="flex:none;font-size:14px">${G("Мин","Mines")}:</span><select id="mn_m" style="flex:none">${Array.from({length:24},(_,i)=>`<option value="${i+1}"${(g?g.m:3)===i+1?" selected":""}>${i+1}</option>`).join("")}</select><button id="mn_go">${G("Начать","Start")}</button></div>`;
+ if(g){h+=`<div style="font-size:14px;margin-top:10px">${G("Множитель","Multiplier")}: <b>x${cur.toFixed(2)}</b>${live&&k<25-g.m?` · ${G("следующий","next")} x${MNf(k+1,g.m).toFixed(2)}`:""}</div><div class="gmg">`+
+  Array.from({length:25},(_,i)=>{const o=g.open.has(i),mi=g.mines.has(i),sh=o||(!live&&mi);return `<button class="alt gmc" data-c="${i}"${live&&!o?"":" disabled"}>${sh?(mi?"💣":"💎"):"❔"}</button>`}).join("")+`</div>`;
+  if(live&&k>0)h+=`<button id="mn_cash" style="width:100%;background:linear-gradient(135deg,#1fa85a,#17c29a)">${G("Забрать","Cash out")} ${fmt(Math.floor(g.bet*cur))}</button>`}
+ $("gm_area").innerHTML=h;
+ if($("mn_go"))$("mn_go").onclick=()=>{const m=+$("mn_m").value,b=gmBet();if(!gmTake(b))return;const mines=new Set();while(mines.size<m)mines.add(rnd(25));MN={on:true,mines,open:new Set(),m,bet:b,lost:false};gmMsg("");gmDraw()};
+ if($("mn_cash"))$("mn_cash").onclick=mnCash;
+ document.querySelectorAll(".gmc").forEach(el=>el.onclick=()=>{const i=+el.dataset.c;if(!MN||!MN.on||MN.open.has(i))return;
+  if(MN.mines.has(i)){MN.on=false;MN.lost=true;gmMsg(G("Мина! Ставка проиграна","Boom! Bet lost"),"var(--c5)");gmDraw();return}
+  MN.open.add(i);if(MN.open.size===25-MN.m)mnCash();else gmDraw()})}
+/* блэкджек */
+const SU=["♠","♥","♦","♣"],RK=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+const bjTot=h=>{let t=0,a=0;h.forEach(c=>{t+=c.r===1?11:Math.min(c.r,10);if(c.r===1)a++});while(t>21&&a){t-=10;a--}return t};
+const bjCard=(c,hide)=>`<span class="bjc${c.s===1||c.s===2?" red":""}">${hide?"?":RK[c.r-1]+SU[c.s]}</span>`;
+function bjEnd(){const g=BJ,pt=bjTot(g.p);g.on=false;
+ if(pt<=21)while(bjTot(g.d)<17)g.d.push(g.deck.pop());
+ const dt=bjTot(g.d),nat=g.p.length===2&&pt===21&&!g.dbl,dn=g.d.length===2&&dt===21;let w=0,m;
+ if(pt>21){m=G("Перебор, проигрыш","Bust, you lose")}
+ else if(nat&&!dn){w=g.bet*2.5;m=G("Блэкджек! x2.5","Blackjack! x2.5")}
+ else if(dt>21||pt>dt){w=g.bet*2;m=G("Победа!","You win!")}
+ else if(pt===dt){w=g.bet;m=G("Ничья, ставка возвращена","Push, bet returned")}
+ else m=G("Дилер выиграл","Dealer wins");
+ gmPay(w);gmMsg(m+(w>g.bet?" +"+fmt(Math.floor(w-g.bet))+" 🪙":""),w>g.bet?"var(--c1)":w===g.bet?"var(--text)":"var(--c5)");gmDraw()}
+function drawBJ(){const g=BJ,on=g&&g.on;let h="";
+ if(g)h+=`<div style="font-size:13px;color:var(--mute)">${G("Дилер","Dealer")}${on?"":" · "+bjTot(g.d)}</div><div>${g.d.map((c,i)=>bjCard(c,on&&i===1)).join("")}</div><div style="font-size:13px;color:var(--mute);margin-top:6px">${G("Вы","You")} · ${bjTot(g.p)}</div><div>${g.p.map(c=>bjCard(c)).join("")}</div>`;
+ h+=on?`<div class="row"><button id="bj_h">${G("Ещё","Hit")}</button><button id="bj_s">${G("Хватит","Stand")}</button>${g.p.length===2&&g.bet<=S.coins?`<button class="alt" id="bj_d">x2</button>`:""}</div>`:`<button id="bj_go" style="width:100%;margin-top:10px">${G("Раздать","Deal")}</button>`;
+ $("gm_area").innerHTML=h;
+ if($("bj_go"))$("bj_go").onclick=()=>{const b=gmBet();if(!gmTake(b))return;const deck=[];for(let s=0;s<4;s++)for(let r=1;r<=13;r++)deck.push({r,s});
+  for(let i=51;i>0;i--){const j=rnd(i+1);[deck[i],deck[j]]=[deck[j],deck[i]]}
+  BJ={on:true,deck,p:[deck.pop(),deck.pop()],d:[deck.pop(),deck.pop()],bet:b,dbl:false};gmMsg("");if(bjTot(BJ.p)===21)bjEnd();else gmDraw()};
+ if($("bj_h"))$("bj_h").onclick=()=>{BJ.p.push(BJ.deck.pop());const t=bjTot(BJ.p);if(t>=21)bjEnd();else gmDraw()};
+ if($("bj_s"))$("bj_s").onclick=bjEnd;
+ if($("bj_d"))$("bj_d").onclick=()=>{if(!gmTake(BJ.bet))return;BJ.bet*=2;BJ.dbl=true;BJ.p.push(BJ.deck.pop());bjEnd()}}
+/* монетка */
+function drawCoin(){$("gm_area").innerHTML=`<div id="cf_r" style="font-size:56px;text-align:center">🪙</div><div style="text-align:center;font-size:13px;color:var(--mute)">${G("Выигрыш","Payout")} x1.94</div><div class="row"><button data-s="0">${G("Орёл","Heads")}</button><button class="alt" data-s="1">${G("Решка","Tails")}</button></div>`;
+ document.querySelectorAll("#gm_area [data-s]").forEach(b=>b.onclick=()=>{const bet=gmBet();if(!gmTake(bet))return;const r=rnd(2),win=r===+b.dataset.s;
+  $("cf_r").textContent=r?"🌑":"🦅";if(win)gmPay(bet*1.94);gmMsg(win?G("Угадали! +","Won! +")+fmt(Math.floor(bet*.94))+" 🪙":G("Не угадали","Wrong guess"),win?"var(--c1)":"var(--c5)")})}
+/* кости */
+function drawDice(){const upd=()=>{const p=DC.side==="u"?(DC.t-1)/100:(100-DC.t)/100;$("dc_i").innerHTML=`${G("Шанс","Chance")} <b>${Math.round(p*100)}%</b> · x<b>${(.97/p).toFixed(2)}</b>`;$("dc_t").textContent=(DC.side==="u"?"< ":"> ")+DC.t};
+ $("gm_area").innerHTML=`<div class="row" style="margin-top:0"><button id="dc_u" class="${DC.side==="u"?"":"alt"}">${G("Меньше","Under")}</button><button id="dc_o" class="${DC.side==="o"?"":"alt"}">${G("Больше","Over")}</button></div><div id="dc_t" style="text-align:center;font:800 28px var(--fh);margin:10px 0 4px"></div><input id="dc_s" type="range" min="5" max="95" value="${DC.t}" style="width:100%;padding:0"><div id="dc_i" style="text-align:center;font-size:14px;margin:6px 0"></div><div id="dc_r" style="text-align:center;font:800 34px var(--fh);min-height:44px"></div><button id="dc_go" style="width:100%">${G("Бросить","Roll")}</button>`;
+ upd();$("dc_u").onclick=()=>{DC.side="u";drawDice()};$("dc_o").onclick=()=>{DC.side="o";drawDice()};
+ $("dc_s").oninput=e=>{DC.t=+e.target.value;upd()};
+ $("dc_go").onclick=()=>{const b=gmBet();if(!gmTake(b))return;const roll=rnd(100)+1,win=DC.side==="u"?roll<DC.t:roll>DC.t,p=DC.side==="u"?(DC.t-1)/100:(100-DC.t)/100;
+  $("dc_r").textContent=roll;if(win){const w=Math.floor(b*.97/p);gmPay(w);gmMsg(G("Победа! +","You win! +")+fmt(w-b)+" 🪙","var(--c1)")}else gmMsg(G("Проигрыш","You lose"),"var(--c5)")}}
+$("gmb").onclick=()=>{gmMsg("");gmDraw();openPanel("gmp")};
 /* окна по центру экрана */
-function openPanel(id){["setp","admp","titp","shp","trp","topp"].forEach(x=>$(x).style.display=x===id?"block":"none");$("pwrap").classList.add("open");$(id).scrollTop=0}
+function openPanel(id){["setp","admp","titp","shp","trp","topp","gmp"].forEach(x=>$(x).style.display=x===id?"block":"none");$("pwrap").classList.add("open");$(id).scrollTop=0}
 function closePanel(){$("pwrap").classList.remove("open")}
 $("pwrap").onclick=e=>{if(e.target===$("pwrap"))closePanel()};
 document.querySelectorAll(".pclose").forEach(b=>b.onclick=closePanel);
