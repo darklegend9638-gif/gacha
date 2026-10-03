@@ -141,6 +141,9 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 .pclose:hover:not(:disabled){transform:rotate(90deg);background:linear-gradient(145deg,rgba(255,79,109,.55),rgba(255,79,109,.25));border-color:rgba(255,120,140,.6)}
 .pclose:active:not(:disabled){transform:rotate(90deg) scale(.92)}
 #setb{display:none!important}
+#prof .chip{height:46px}
+#prof .pw{display:flex;flex-direction:column;justify-content:center;min-width:0;line-height:1.15;text-align:left}
+#prof .ps{display:block;margin-top:1px;font-size:10.5px;font-weight:700;letter-spacing:.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -468,7 +471,9 @@ function avGrid(id){const el=$(id);avCb=()=>avGrid(id);
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 $("a_rar").innerHTML=R.map((r,i)=>`<option value="${i}">${r.n}</option>`).join("")+`<option value="x">Exclusive</option>`;
 $("adm").onclick=()=>{openPanel("admp");renderGrants()};
-function renderProf(){$("menuBtn").style.display="";$("shopBtn").style.display="";$("topBtn").style.display="";$("prof").innerHTML=me?`<button class="alt chip" id="pchip"><span class="av">${avH(me.avatar)}</span><b class="pn">${esc(me.nick)}</b></button>`:`<button class="chip" id="inb"><svg class="ico"><use href="#i-user"/></svg>${tr("login")}</button>`;
+function profSub(){const rc=isOwner?"#ffb02e":granted?"#6cb4ff":"#3fe0b0",t=eqTitle();
+ return `<span style="color:${rc}">${tr(isOwner?"owner":granted?"admin":"player")}</span>`+(t?` <span style="opacity:.6">·</span> <span style="color:${t.c}">${esc(tnm(t)[0])}</span>`:"")}
+function renderProf(){$("menuBtn").style.display="";$("shopBtn").style.display="";$("topBtn").style.display="";$("prof").innerHTML=me?`<button class="alt chip" id="pchip"><span class="av">${avH(me.avatar)}</span><span class="pw"><b class="pn">${esc(me.nick)}</b><small class="ps">${profSub()}</small></span></button>`:`<button class="chip" id="inb"><svg class="ico"><use href="#i-user"/></svg>${tr("login")}</button>`;
  $("out").style.display=me?"":"none";
  if($("pchip"))$("pchip").onclick=()=>$("setb").onclick();
  if($("inb"))$("inb").onclick=()=>openReg()}
