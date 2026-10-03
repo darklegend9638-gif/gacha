@@ -240,7 +240,7 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
   <div id="s_st" style="font-size:14px;min-height:20px;margin-top:8px"></div>
 </div>
 <div id="topp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
-  <b class="hd"><svg class="ico"><use href="#i-top"/></svg>Топ по монетам</b>
+  <b class="hd"><svg class="ico"><use href="#i-top"/></svg><span id="toptitle">Топ по монетам</span></b>
   <div class="row" id="toptabs"><button data-tp="c"></button><button class="alt" data-tp="g"></button></div>
   <div id="topme" style="color:var(--mute);font-size:13px;margin-top:6px;min-height:18px"></div>
   <div id="toplist"></div>
@@ -365,7 +365,7 @@ function applyStatic(){const en=LANG==="en",w=document.createTreeWalker(document
  document.querySelectorAll("[placeholder],[aria-label]").forEach(e=>["placeholder","aria-label"].forEach(a=>{const v=e.getAttribute(a);if(v===null)return;const k="_"+a,o=e[k]||v;if(TX[o]){e[k]=o;e.setAttribute(a,en?TX[o]:o)}}));
  document.title=en?"Crystal Altar — Gacha":"Кристальный алтарь — Гача"}
 function setLang(l){LANG=l;try{localStorage.setItem("gacha-lang",l)}catch(e){}document.documentElement.lang=l;applyStatic();
- $("lang").innerHTML=$("lang2").innerHTML='<svg class="ico"><use href="#i-globe"/></svg>'+(l==="en"?"Русский":"English");render();renderProf();evSel();renderEv();updAuto();grTxt();
+ $("lang").innerHTML=$("lang2").innerHTML='<svg class="ico"><use href="#i-globe"/></svg>'+(l==="en"?"Русский":"English");render();renderProf();evSel();renderEv();updAuto();grTxt();topTabs();
  if($("reg").style.display==="flex")openReg();if(me&&$("setp").style.display==="block")renderSet()}
 const INCOME=1,MAXLUCK=20,MAXINC=15,PL=99,PM=1000,PS=10000;
 const PB=[1,2,5,12,30,80,200,500],PP=[5,12,30,80,200,500,1200,3000];
@@ -463,7 +463,7 @@ function roll(n){
 }
 const setH=(el,h)=>{if(el._h!==h){el._h=h;el.innerHTML=h}};
 function render(){const gb=$("gm_bal");if(gb)gb.textContent=fmt(S.coins);
- $("coins").textContent=fmt(S.coins);$("gems").textContent=fmt(S.gem||0);{const g=$("shp");if(g&&g.style.display==="block")renderGem()}$("rolls").textContent=S.rolls;
+ $("coins").textContent=fmt(S.coins);$("gems").textContent=fmt(S.gem||0);{const g=$("shp");if(g&&g.style.display==="block")renderGem()}if(typeof drawTop==="function"&&$("topp").style.display==="block")drawTop();$("rolls").textContent=S.rolls;
  const b=$("best");if(S.best>=0){b.textContent=rn(S.best);b.style.color=R[S.best].c}else{b.textContent="—";b.style.color=""}
  $("r1").disabled=busy||S.coins<10;$("r10").disabled=busy||S.coins<100;
  const lc=luckCost(),mx=S.luck>=MAXLUCK;$("luck").textContent=mx?tr("luckmax",MAXLUCK):tr("luckup",S.luck+1,fmt(lc));$("luck").disabled=mx||busy||S.coins<lc;
@@ -741,18 +741,34 @@ $("a_evstop").onclick=()=>evSet("",0);
 $("a_evauto").onclick=async()=>{const r=await rpc("gacha_event_auto",{p_token:TOKEN,p_on:!EVAUTO});
  if(r.error)return evMsg(/Could not find|schema cache/i.test(r.error)?tr("evnot"):r.error);evOff=false;pollEv()};
 /* топ по монетам */
-let topTab="c";
+let topTab="c",TOPD=null,topSeq=0,topBusy=false,topOld=false;
 async function loadTop(){
- const r=await rpc("gacha_top",{p_token:TOKEN,p_limit:topTab==="g"?500:20});
- if(r.error){$("topme").textContent="";$("toplist").innerHTML=`<div style="color:var(--c5);margin-top:10px">${esc(/Could not find|schema cache/i.test(r.error)?tr("topnot"):r.error)}</div>`;return}
- const d=r.data||{},G=topTab==="g",full=G?(d.top||[]).filter(p=>p.gem!=null).sort((a,b)=>b.gem-a.gem):(d.top||[]),list=G?full.slice(0,20):full,medal=i=>`<svg class="ico" style="width:30px;height:30px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="url(#g-${["gold","silver","bronze"][i]})"/><circle cx="12" cy="12" r="7.8" fill="none" stroke="rgba(255,255,255,.6)"/><text x="12" y="16.1" text-anchor="middle" font-size="11" font-weight="800" fill="#2a1700" font-family="Nunito,sans-serif">${i+1}</text></svg>`;
- $("topme").textContent=G?(me&&full.findIndex(p=>p.nick===me.nick)>=0?L2("Ваше место: ","Your rank: ")+(full.findIndex(p=>p.nick===me.nick)+1):""):(d.me?tr("topme",d.me.rank,fmt(+d.me.coins)):"");
- $("toplist").innerHTML=list.length?list.map((p,i)=>{const mine=me&&p.nick===me.nick;
-  return `<div class="glass ti${mine?" eq":""}"><div class="ic">${i<3?medal(i):"#"+(i+1)}</div><div class="tx"><b>${avH(p.avatar)} ${esc(p.nick)}</b></div><b style="flex:none">${G?"💎 "+fmt(+p.gem):"🪙 "+fmt(+p.coins)}</b></div>`}).join(""):`<div style="color:var(--mute);margin-top:10px">${G?L2("Сервер пока не отдаёт алмазы игроков: в функцию gacha_top нужно добавить поле gem.","The server does not return players' gems yet: add a gem field to gacha_top."):tr("topempty")}</div>`}
-function topTabs(){document.querySelectorAll("#toptabs [data-tp]").forEach(b=>{b.className=b.dataset.tp===topTab?"":"alt";b.textContent=b.dataset.tp==="c"?"🪙 "+L2("Монеты","Coins"):"💎 "+L2("Алмазы","Gems")})}
-$("toptabs").onclick=e=>{const b=e.target.closest("[data-tp]");if(!b)return;topTab=b.dataset.tp;topTabs();loadTop()};
-$("topBtn").onclick=()=>{topTabs();openPanel("topp");loadTop()};
-setInterval(()=>{if($("topp").style.display==="block")loadTop()},20000);
+ if(topBusy)return;topBusy=true;
+ try{
+  await push();                                   /* свои цифры уходят на сервер сразу */
+  const G=topTab==="g",my=++topSeq;
+  let r=await rpc("gacha_top",{p_token:TOKEN,p_limit:20,p_by:G?"gem":"coins"});topOld=false;
+  if(r.error&&/Could not find|schema cache/i.test(r.error)){topOld=true;r=await rpc("gacha_top",{p_token:TOKEN,p_limit:G?500:20})}
+  if(my!==topSeq)return;
+  if(r.error){TOPD=null;$("topme").textContent="";$("toplist").innerHTML=`<div style="color:var(--c5);margin-top:10px">${esc(/Could not find|schema cache/i.test(r.error)?tr("topnot"):r.error)}</div>`;return}
+  TOPD=r.data||{};drawTop();
+ }finally{topBusy=false}}
+function drawTop(){
+ if(!TOPD)return;
+ const G=topTab==="g",V=p=>G?(+p.gem||0):(+p.coins||0),ic=G?"💎 ":"🪙 ";
+ const rows=(TOPD.top||[]).map(p=>Object.assign({},p));
+ if(me){const m=rows.find(p=>p.nick===me.nick);if(m){m.coins=S.coins;m.gem=S.gem||0}}   /* свои значения обновляются вживую */
+ rows.sort((a,b)=>V(b)-V(a));
+ const list=rows.slice(0,20),idx=me?rows.findIndex(p=>p.nick===me.nick):-1;
+ const medal=i=>`<svg class="ico" style="width:30px;height:30px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="url(#g-${["gold","silver","bronze"][i]})"/><circle cx="12" cy="12" r="7.8" fill="none" stroke="rgba(255,255,255,.6)"/><text x="12" y="16.1" text-anchor="middle" font-size="11" font-weight="800" fill="#2a1700" font-family="Nunito,sans-serif">${i+1}</text></svg>`;
+ const rk=L2("Твоё место: #","Your rank: #");
+ $("topme").textContent=idx>=0?rk+(idx+1)+" · "+ic+fmt(V(rows[idx])):(TOPD.me&&!topOld?rk+TOPD.me.rank+" · "+ic+fmt(+(G?TOPD.me.gem:TOPD.me.coins)||0):"");
+ $("toplist").innerHTML=list.length&&!(G&&rows.every(p=>p.gem==null))?list.map((p,i)=>{const mine=me&&p.nick===me.nick;
+  return `<div class="glass ti${mine?" eq":""}"><div class="ic">${i<3?medal(i):"#"+(i+1)}</div><div class="tx"><b>${avH(p.avatar)} ${esc(p.nick)}</b></div><b style="flex:none">${ic}${fmt(V(p))}</b></div>`}).join(""):`<div style="color:var(--mute);margin-top:10px">${G?L2("Сервер пока не отдаёт алмазы игроков: обнови функцию gacha_top (top_gems.sql).","The server does not return players' gems yet: update gacha_top (top_gems.sql)."):tr("topempty")}</div>`}
+function topTabs(){$("toptitle").textContent=topTab==="g"?L2("Топ по алмазам","Gems leaderboard"):L2("Топ по монетам","Coins leaderboard");document.querySelectorAll("#toptabs [data-tp]").forEach(b=>{b.className=b.dataset.tp===topTab?"":"alt";b.textContent=b.dataset.tp==="c"?"🪙 "+L2("Монеты","Coins"):"💎 "+L2("Алмазы","Gems")})}
+$("toptabs").onclick=e=>{const b=e.target.closest("[data-tp]");if(!b)return;topTab=b.dataset.tp;TOPD=null;topSeq++;$("toplist").innerHTML="";$("topme").textContent="";topTabs();loadTop()};
+$("topBtn").onclick=()=>{TOPD=null;$("toplist").innerHTML="";topTabs();openPanel("topp");loadTop()};
+setInterval(()=>{if($("topp").style.display==="block")loadTop()},3000);
 /* переводы монет между игроками */
 const tMsg=(t,ok)=>{const e=$("t_st");e.textContent=t;e.style.color=ok?"var(--c1)":"var(--c5)"};
 let tBusy=false,claimOff=false;
