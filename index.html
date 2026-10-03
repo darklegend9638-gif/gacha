@@ -419,26 +419,28 @@ function show(i,t,extra){
  if(i>=4){const f=$("flash");f.style.setProperty("--fc",RA(i).c);f.classList.remove("go");void f.offsetWidth;f.classList.add("go")}
 }
 function roll(n){
- const cost=10*n;if(busy||!ready||S.coins<cost)return;S.coins-=cost;busy=true;
- let best=-1,bi=null,gain=0;
+ const cost=10*n;if(busy||!ready||S.coins<cost)return;busy=true;render();
+ let best=-1,bi=null,bn=-1,raw=0;const got=[],e_=ev();
  for(let k=0;k<n;k++){
   let i,t;const xt=exRoll();
   if(xt){i=X;t=xt}else{i=pick();const its=R[i].items;t=its[Math.floor(Math.random()*its.length)]}
-  S.rolls++;S.found[t]=(S.found[t]||0)+1;gain+=RA(i).v;
-  if(i>best){best=i;bi=t}if(i<X&&i>S.best)S.best=i;
+  got.push(t);raw+=RA(i).v;
+  if(i>best){best=i;bi=t}if(i<X&&i>bn)bn=i;
  }
- const e_=ev();gain=Math.floor(gain*(1+.1*setsDone())*(e_.coin||1)*(e_.gain||1));S.coins+=gain;render();save();
  const o=$("orb");o.classList.add("charge");$("nm").textContent="…";$("rr").textContent="";
- setTimeout(()=>{o.classList.remove("charge");show(best,bi);
-  busy=false;render()},n>1?650:450);
+ setTimeout(()=>{
+  o.classList.remove("charge");
+  S.coins-=cost;S.rolls+=n;got.forEach(t=>{S.found[t]=(S.found[t]||0)+1});if(bn>S.best)S.best=bn;
+  S.coins+=Math.floor(raw*(1+.1*setsDone())*(e_.coin||1)*(e_.gain||1));
+  show(best,bi);busy=false;render();save()},n>1?650:450);
 }
 const setH=(el,h)=>{if(el._h!==h){el._h=h;el.innerHTML=h}};
 function render(){
  $("coins").textContent=fmt(S.coins);$("rolls").textContent=S.rolls;
  const b=$("best");if(S.best>=0){b.textContent=rn(S.best);b.style.color=R[S.best].c}else{b.textContent="—";b.style.color=""}
  $("r1").disabled=busy||S.coins<10;$("r10").disabled=busy||S.coins<100;
- const lc=luckCost(),mx=S.luck>=MAXLUCK;$("luck").textContent=mx?tr("luckmax",MAXLUCK):tr("luckup",S.luck+1,fmt(lc));$("luck").disabled=mx||S.coins<lc;
- $("inc").textContent=S.inc>=MAXINC?tr("incmax"):tr("incup",inc(),incAt(S.inc+1),fmt(incCost()));$("inc").disabled=S.inc>=MAXINC||S.coins<incCost();
+ const lc=luckCost(),mx=S.luck>=MAXLUCK;$("luck").textContent=mx?tr("luckmax",MAXLUCK):tr("luckup",S.luck+1,fmt(lc));$("luck").disabled=mx||busy||S.coins<lc;
+ $("inc").textContent=S.inc>=MAXINC?tr("incmax"):tr("incup",inc(),incAt(S.inc+1),fmt(incCost()));$("inc").disabled=S.inc>=MAXINC||busy||S.coins<incCost();
  $("pity").textContent=tr("pity",fmt(Math.max(1,TH(PL)-(S.pl||0))),fmt(Math.max(1,TH(PM)-(S.pm||0))),fmt(Math.max(1,TH(PS)-(S.ps||0))),inc());
  setH($("fuse"),R.slice(0,6).map((r,i)=>`<button class="alt" data-f="${i}" ${dupes(i)<5?"disabled":""} style="border-color:${r.c}">${r.n}: ${dupes(i)}/5 → ${R[i+1].n}</button>`).join(""));$("lucklv").innerHTML=S.luck+(mx?'<span class="mx">MAX</span>':"");
  const w=weights(),t=w.reduce((a,b)=>a+b,0);
@@ -452,9 +454,9 @@ function render(){
   return `<div class="glass it ${n?"":"off"}" style="${n?"border-color:"+XR.c+";box-shadow:0 0 14px "+XR.c+"55":""}"><div class="e">${n?e:"❔"}</div>${n?iname(a.t):"???"}<div style="color:${XR.c};font-size:12px">${rname(X)} ${EVD[a.k].e}${n?" ×"+n:""}</div></div>`}).join(""));
 }
 $("fuse").onclick=e=>{const b=e.target.closest("[data-f]");if(b&&!b.disabled)fuse(+b.dataset.f)};
-$("inc").onclick=()=>{const c=incCost();if(S.inc<MAXINC&&S.coins>=c){S.coins-=c;S.inc++;render();save()}};
+$("inc").onclick=()=>{const c=incCost();if(!busy&&S.inc<MAXINC&&S.coins>=c){S.coins-=c;S.inc++;render();save()}};
 $("r1").onclick=()=>roll(1);$("r10").onclick=()=>roll(10);
-$("luck").onclick=()=>{const c=luckCost();if(S.luck<MAXLUCK&&S.coins>=c){S.coins-=c;S.luck++;render();save()}};
+$("luck").onclick=()=>{const c=luckCost();if(!busy&&S.luck<MAXLUCK&&S.coins>=c){S.coins-=c;S.luck++;render();save()}};
 function showNotice(title,text,ok=true){$("noticeTitle").textContent=(ok?"✨ ":"⚠️ ")+title;$("noticeText").textContent=text;$("noticeModal").classList.add("show")}$("noticeOk").onclick=()=>$("noticeModal").classList.remove("show");$("noticeModal").onclick=e=>{if(e.target===$("noticeModal"))$("noticeModal").classList.remove("show")};$("reset").onclick=async()=>{if(!isOwner||!TOKEN)return;$("confirmModal").classList.add("show")};$("confirmNo").onclick=()=>$("confirmModal").classList.remove("show");$("confirmModal").onclick=e=>{if(e.target===$("confirmModal"))$("confirmModal").classList.remove("show")};$("confirmYes").onclick=async()=>{$("confirmModal").classList.remove("show");const r=await rpc("gacha_reset_all",{p_token:TOKEN});if(r.error){showNotice(tr("error"),r.error,false);return}S=FRESH();dirty=false;render();showNotice(tr("done"),tr("wiped"),true)};
 let isOwner=false,granted=false,me=null,pickAv="😀",mode="reg";
 const AV=["😀","😎","🤖","👻","🐱","🦊","🐼","🐸","🦄","🐲","👑","🧙","🥷","🚀","🌟","💀"];
@@ -666,7 +668,7 @@ $("t_list").onclick=e=>{const b=e.target.closest("[data-n]");if(!b)return;tSel=b
 $("t_nick").oninput=()=>{if($("t_nick").value!==tSel)tSel="";drawPl()};
 $("trb").onclick=()=>{$("trbal").textContent="🪙 "+fmt(S.coins);tMsg(TOKEN?"":tr("tlogin"));$("t_nick").value="";tSel="";drawPl();openPanel("trp");loadPlayers()};
 $("t_send").onclick=async()=>{
- if(!TOKEN||!me)return tMsg(tr("tlogin"));if(tBusy||!ready)return;
+ if(!TOKEN||!me)return tMsg(tr("tlogin"));if(tBusy||busy||!ready)return;
  const n=$("t_nick").value.trim(),a=Math.floor(+$("t_amt").value||0);
  if(!n)return tMsg(tr("tnick"));if(a<1)return tMsg(tr("tamt"));
  if(n.toLowerCase()===me.nick.toLowerCase())return tMsg(tr("tself"));
@@ -715,7 +717,7 @@ function renderShop(){
 function updShop(){if($("shp").style.display!=="block")return;if(shLang!==LANG)return renderShop();
  $("shbal").textContent="🪙 "+fmt(S.coins);
  document.querySelectorAll("#shlist [data-buy]").forEach(b=>{const t=TT.find(x=>x.id===b.dataset.buy);b.disabled=tUnl(t)||S.coins<pr(t);if(!tUnl(t))b.textContent="🪙 "+fmt(pr(t))})}
-$("shlist").onclick=e=>{const b=e.target.closest("[data-buy]");if(!b||b.disabled||!ready)return;
+$("shlist").onclick=e=>{const b=e.target.closest("[data-buy]");if(!b||b.disabled||!ready||busy)return;
  const t=TT.find(x=>x.id===b.dataset.buy);if(!t||!t.shop||tUnl(t)||S.coins<pr(t))return;
  S.coins-=pr(t);S.tb.push(t.id);render();save();renderShop()};
 $("shopBtn").onclick=()=>{renderShop();openPanel("shp")};
