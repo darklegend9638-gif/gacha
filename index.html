@@ -125,6 +125,21 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 #prof .chip .av{display:grid;place-items:center;width:32px;height:32px;font-size:22px;line-height:1;border-radius:50%}
 #prof .chip .av .avimg{width:32px;height:32px;box-shadow:0 0 0 2px rgba(255,255,255,.2)}
 #prof .chip .pn{display:block;min-width:0;font-size:14px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* menu button + close buttons */
+#menuBtn{background:linear-gradient(145deg,rgba(123,77,255,.42),rgba(192,77,255,.26));border:1px solid rgba(255,255,255,.24);box-shadow:0 6px 18px rgba(123,77,255,.38),inset 0 1px 0 rgba(255,255,255,.28);transition:background .3s,box-shadow .3s,transform .1s}
+#menuBtn.open{background:linear-gradient(145deg,rgba(255,79,109,.5),rgba(192,77,255,.4));box-shadow:0 6px 20px rgba(255,79,109,.4),inset 0 1px 0 rgba(255,255,255,.3)}
+#menuBtn .mb{width:24px;height:24px;display:block;overflow:visible}
+#menuBtn .mb path{fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;transform-origin:12px 12px;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .2s ease}
+#menuBtn .l1{transform:translateY(0)}#menuBtn .l3{transform:translateY(0)}
+#menuBtn.open .l1{transform:rotate(45deg) translateY(5px)}
+#menuBtn.open .l2{opacity:0;transform:scaleX(.2)}
+#menuBtn.open .l3{transform:rotate(-45deg) translateY(-5px)}
+.pclose{display:grid;place-items:center;border-radius:50%!important;background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.2);box-shadow:0 4px 12px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.18);transition:transform .25s cubic-bezier(.2,.8,.2,1),background .2s,border-color .2s}
+.pclose svg{width:18px;height:18px;display:block}
+.pclose svg path{fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
+.pclose:hover:not(:disabled){transform:rotate(90deg);background:linear-gradient(145deg,rgba(255,79,109,.55),rgba(255,79,109,.25));border-color:rgba(255,120,140,.6)}
+.pclose:active:not(:disabled){transform:rotate(90deg) scale(.92)}
 </style>
 </head>
 <body>
@@ -160,7 +175,7 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 </defs></svg>
  <button class="alt" id="topBtn" aria-label="Топ" style="display:none"><svg class="ico"><use href="#i-top"/></svg></button>
 <button class="alt" id="shopBtn" aria-label="Магазин" style="display:none"><svg class="ico"><use href="#i-shop"/></svg></button>
-<button class="alt" id="menuBtn" aria-label="Меню" aria-expanded="false" style="display:none">☰</button>
+<button class="alt" id="menuBtn" aria-label="Меню" aria-expanded="false" style="display:none"><svg class="mb" viewBox="0 0 24 24" aria-hidden="true"><path class="l1" d="M5 7h14"/><path class="l2" d="M5 12h14"/><path class="l3" d="M5 17h14"/></svg></button>
 <div id="menu">
  <button class="alt" id="lang"></button>
  <button class="alt" id="titb"><svg class="ico"><use href="#i-titles"/></svg>Титулы</button>
@@ -202,7 +217,7 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 <div class="grid" id="col"></div>
 
 </main>
-<div id="pwrap"><div id="setp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть">×</button>
+<div id="pwrap"><div id="setp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
   <b class="hd"><svg class="ico"><use href="#i-user"/></svg>Настройки профиля</b>
   <div style="color:var(--mute);font-size:13px;margin-top:10px">Аватарка</div><div id="s_avs"></div>
   <div class="row" style="margin-top:0"><button id="s_av">Сохранить аватарку</button></div>
@@ -214,12 +229,12 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
   <div class="row"><button class="alt" id="s_del" style="border-color:var(--c5);color:var(--c5)">Удалить аккаунт</button></div>
   <div id="s_st" style="font-size:14px;min-height:20px;margin-top:8px"></div>
 </div>
-<div id="topp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть">×</button>
+<div id="topp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
   <b class="hd"><svg class="ico"><use href="#i-top"/></svg>Топ по монетам</b>
   <div id="topme" style="color:var(--mute);font-size:13px;margin-top:6px;min-height:18px"></div>
   <div id="toplist"></div>
 </div>
-<div id="trp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть">×</button>
+<div id="trp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
   <b class="hd"><svg class="ico"><use href="#i-transfer"/></svg>Переводы</b>
   <div style="color:var(--mute);font-size:13px;margin-top:4px">Отправь монеты другому игроку</div>
   <div id="trbal" style="font:800 17px var(--fh);margin-top:8px"></div>
@@ -228,18 +243,18 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
   <div class="row"><input id="t_amt" type="number" min="1" inputmode="numeric" placeholder="Сумма"><button id="t_send" style="flex:none">Отправить</button></div>
   <div id="t_st" style="font-size:14px;min-height:20px;margin-top:8px"></div>
 </div>
-<div id="shp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть">×</button>
+<div id="shp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
   <b class="hd"><svg class="ico"><use href="#i-shop"/></svg>Магазин</b>
   <div style="color:var(--mute);font-size:13px;margin-top:4px">Покупай титулы за монеты</div>
   <div id="shbal" style="font:800 17px var(--fh);margin-top:8px"></div>
   <div id="shlist"></div>
 </div>
-<div id="titp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть">×</button>
+<div id="titp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
   <b class="hd"><svg class="ico"><use href="#i-titles"/></svg>Титулы</b>
   <div id="titcnt" style="color:var(--mute);font-size:13px;margin-top:4px"></div>
   <div id="titlist"></div>
 </div>
-<div id="admp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть">×</button>
+<div id="admp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
   <b class="hd"><svg class="ico"><use href="#i-admin"/></svg>Админ-панель</b>
   <div id="own" style="display:none;margin:10px 0;padding:10px;border:1px dashed var(--line);border-radius:12px"><b style="font-size:14px">Выдать доступ к админке</b>
    <div style="color:var(--mute);font-size:13px;margin-top:6px">Есть доступ:</div><div id="g_list" style="font-size:14px"></div>
@@ -700,7 +715,7 @@ $("titb").onclick=()=>{renderTitles();openPanel("titp")};
 /* меню-бургер */
 (function(){
  const b=$("menuBtn"),m=$("menu");
- const set=o=>{m.classList.toggle("open",o);b.classList.toggle("open",o);b.textContent=o?"✕":"☰";b.setAttribute("aria-expanded",o)};
+ const set=o=>{m.classList.toggle("open",o);b.classList.toggle("open",o);b.setAttribute("aria-expanded",o)};
  b.onclick=e=>{e.stopPropagation();set(!m.classList.contains("open"))};
  document.addEventListener("click",e=>{if(!m.contains(e.target))set(false)});
  document.addEventListener("keydown",e=>{if(e.key==="Escape")set(false)});
