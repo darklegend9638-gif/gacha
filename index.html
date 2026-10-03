@@ -140,6 +140,7 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 .pclose svg path{fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
 .pclose:hover:not(:disabled){transform:rotate(90deg);background:linear-gradient(145deg,rgba(255,79,109,.55),rgba(255,79,109,.25));border-color:rgba(255,120,140,.6)}
 .pclose:active:not(:disabled){transform:rotate(90deg) scale(.92)}
+#setb{display:none!important}
 </style>
 </head>
 <body>
@@ -180,11 +181,11 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
  <button class="alt" id="lang"></button>
  <button class="alt" id="titb"><svg class="ico"><use href="#i-titles"/></svg>Титулы</button>
  <button class="alt" id="trb"><svg class="ico"><use href="#i-transfer"/></svg>Переводы</button>
- <button class="alt" id="setb" style="display:none"><svg class="ico"><use href="#i-user"/></svg>Изменить профиль</button>
  <button class="alt" id="adm" style="display:none"><svg class="ico"><use href="#i-admin"/></svg>Админ панель</button>
  <button class="alt" id="reset" style="display:none"><svg class="ico"><use href="#i-trash"/></svg>Очистить весь прогресс</button>
  <button class="alt" id="out" style="display:none"><svg class="ico"><use href="#i-out"/></svg>Выйти</button>
 </div>
+<button id="setb" hidden tabindex="-1" aria-hidden="true"></button>
 <main>
 <h1>Кристальный алтарь</h1>
 <p class="sub">Бросай, качай удачу, собери всё — вплоть до Divine</p>
