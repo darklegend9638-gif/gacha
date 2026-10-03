@@ -451,7 +451,7 @@ function roll(n){
   show(best,bi);busy=false;render();save()},n>1?650:450);
 }
 const setH=(el,h)=>{if(el._h!==h){el._h=h;el.innerHTML=h}};
-function render(){
+function render(){const gb=$("gm_bal");if(gb)gb.textContent=fmt(S.coins);
  $("coins").textContent=fmt(S.coins);$("rolls").textContent=S.rolls;
  const b=$("best");if(S.best>=0){b.textContent=rn(S.best);b.style.color=R[S.best].c}else{b.textContent="—";b.style.color=""}
  $("r1").disabled=busy||S.coins<10;$("r10").disabled=busy||S.coins<100;
