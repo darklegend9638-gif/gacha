@@ -187,7 +187,8 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 <div id="menu">
  <button class="alt" id="lang"></button>
  <button class="alt" id="gmb"><svg class="ico"><use href="#i-games"/></svg>Мини-игры</button>
- <button class="alt" id="titb"><svg class="ico"><use href="#i-titles"/></svg>Титулы</button>
+ <button class="alt" id="gemb">Питомцы и алмазы</button>
+  <button class="alt" id="titb"><svg class="ico"><use href="#i-titles"/></svg>Титулы</button>
  <button class="alt" id="trb"><svg class="ico"><use href="#i-transfer"/></svg>Переводы</button>
  <button class="alt" id="adm" style="display:none"><svg class="ico"><use href="#i-admin"/></svg>Админ панель</button>
  <button class="alt" id="reset" style="display:none"><svg class="ico"><use href="#i-trash"/></svg>Очистить весь прогресс</button>
@@ -203,12 +204,13 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 <div class="top">
   <div class="glass stat"><small>🪙 Монеты</small><b id="coins">0</b></div>
   <div class="glass stat"><small>🍀 Удача</small><b id="lucklv">0</b></div>
-  <div class="glass stat"><small>🎲 Броски</small><b id="rolls">0</b></div>
+  <div class="glass stat"><small>💎 Алмазы</small><b id="gems">0</b></div>
+   <div class="glass stat"><small>🎲 Броски</small><b id="rolls">0</b></div>
   <div class="glass stat wide"><small>Лучшая редкость (рекорд)</small><b id="best">—</b></div>
 </div>
 
 <div class="glass stage">
-  <div class="orb" id="orb"><div class="ring"></div><div class="glow"></div><div class="inner" id="em">🔮</div></div>
+  <div class="orb" id="orb"><div class="ring"></div><div class="glow"></div><div class="inner" id="em"></div></div>
   <div id="nm">Сделай первый бросок</div><div id="rr" style="color:var(--mute)">Копи монеты и бросай</div>
   <div class="row"><button id="r1">Бросок · 10</button><button id="r10">×10 · 100</button></div>
   <div class="row"><button class="alt" id="luck"></button><button class="alt" id="inc"></button></div>
@@ -270,6 +272,9 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
   <div id="titcnt" style="color:var(--mute);font-size:13px;margin-top:4px"></div>
   <div id="titlist"></div>
 </div>
+<div id="gemp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
+  <b class="hd" id="gemhd"></b><div id="gembal" style="font:800 17px var(--fh);margin-top:8px"></div><div id="gemsub" style="color:var(--mute);font-size:13px;margin-top:4px"></div>
+  <h2 id="gph"></h2><div id="pets"></div><h2 id="gth"></h2><div id="gtl"></div></div>
 <div id="admp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
   <b class="hd"><svg class="ico"><use href="#i-admin"/></svg>Админ-панель</b>
   <div id="own" style="display:none;margin:10px 0;padding:10px;border:1px dashed var(--line);border-radius:12px"><b style="font-size:14px">Выдать доступ к админке</b>
@@ -288,6 +293,8 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
    <div id="a_evst" style="font-size:14px;min-height:18px;margin-top:6px"></div></div>
   <div class="row"><input id="a_coins" type="number" value="1000"><button id="a_give">Выдать монеты</button></div>
   <div class="row"><button class="alt" id="a_take">Забрать монеты</button></div>
+   <div class="row"><button id="a_gem">Выдать алмазы</button><button class="alt" id="a_gemt">Забрать алмазы</button></div>
+   <div class="row"><button id="a_bug">Выдать титул «Баг-хантер»</button></div>
   <div class="row"><input id="a_luck" type="number" value="10"><button id="a_setluck">Уровень удачи</button></div>
   <div class="row"><input id="a_inc" type="number" value="5"><button id="a_setinc">Уровень дохода</button></div>
   <div class="row"><select id="a_rar"></select><button id="a_item">Выдать предмет</button></div>
@@ -338,7 +345,7 @@ tgot:["Вам перевели монеты","You received coins"],tgotx:["По�
 const tr=(k,...a)=>{let s=D[k][LANG==="en"?1:0];a.forEach((v,i)=>s=s.split("{"+i+"}").join(v));return s};
 const EN=[["Stone","Leaf","Spoon","Sock"],["Clover","Key","Candle","Potion"],["Sapphire","Shield","Scroll","Owl"],["Orb of Fate","Shadow Blade","Unicorn"],["Crown of Kings","Dragon","Zeus's Lightning"],["Phoenix","Galaxy Shard","Kraken"],["Black Hole","Stranger's Mask","Forgotten Time"],["Heart of the Sun","Eye of the Universe","First Star"]];
 const IT={};R.forEach((r,i)=>r.items.forEach((t,j)=>IT[t]=EN[i][j]));
-const iname=t=>LANG==="en"&&IT[t]?IT[t]:t.slice(t.indexOf(" ")+1),iview=t=>t.split(" ")[0]+" "+iname(t);
+const iname=t=>LANG==="en"&&IT[t]?IT[t]:t.slice(t.indexOf(" ")+1),iview=t=>iname(t);
 const rname=i=>LANG==="ru"?RA(i).ru:RA(i).n,rn=i=>LANG==="ru"?RA(i).n+" · "+RA(i).ru:RA(i).n;
 const SRV={"Этот ник уже занят":"This nickname is already taken","Неверный ник или пароль":"Wrong nickname or password","Текущий пароль неверный":"Current password is incorrect","Нет доступа":"Access denied","Ошибка сервера":"Server error","Игрок не найден":"Player not found","Некорректное сохранение":"Invalid save","Владелец не может удалить аккаунт":"The owner cannot delete the account","Недостаточно монет":"Not enough coins","Нельзя переводить себе":"You can't send coins to yourself","Некорректная сумма":"Invalid amount"};
 const srv=m=>LANG==="en"&&SRV[m]?SRV[m]:m;
@@ -362,7 +369,12 @@ function setLang(l){LANG=l;try{localStorage.setItem("gacha-lang",l)}catch(e){}do
  $("lang").innerHTML=$("lang2").innerHTML='<svg class="ico"><use href="#i-globe"/></svg>'+(l==="en"?"Русский":"English");render();renderProf();evSel();renderEv();updAuto();grTxt();
  if($("reg").style.display==="flex")openReg();if(me&&$("setp").style.display==="block")renderSet()}
 const INCOME=1,MAXLUCK=20,MAXINC=15,PL=99,PM=1000,PS=10000;
-const incAt=l=>INCOME+l,inc=()=>incAt(S.inc),incCost=()=>Math.floor(80*Math.pow(1.6,S.inc)*(ev().disc||1));
+const PB=[1,2,5,12,30,80,200,500],PP=[5,12,30,80,200,500,1200,3000];
+const PN=[["Мышка","Mouse","Воробей","Sparrow"],["Лиса","Fox","Заяц","Hare"],["Волк","Wolf","Сова","Owl"],["Единорог","Unicorn","Грифон","Griffin"],["Дракончик","Dragonet","Левиафан","Leviathan"],["Феникс","Phoenix","Кракен","Kraken"],["Теневой кот","Shadow Cat","Хронодракон","Chrono Drake"],["Солнечный лев","Sun Lion","Звёздный кит","Star Whale"]];
+const PETS=[];PN.forEach((n,r)=>[0,1].forEach(j=>PETS.push({id:"p"+r+j,r,ru:n[j*2],en:n[j*2+1],inc:j?Math.ceil(PB[r]*1.5):PB[r],price:j?Math.ceil(PP[r]*1.6):PP[r]})));
+function petInc(){return (S.pt||[]).reduce((a,id)=>{const p=PETS.find(x=>x.id===id);return a+(p?p.inc:0)},0)}
+const GEMP=[.02,.02,.03,.05,.12,.3,.6,1,1],gemDrop=i=>Math.random()<GEMP[Math.min(i,8)]?(i>=7?10:i>=5?5:i>=3?2:1):0;
+const incAt=l=>INCOME+l,inc=()=>incAt(S.inc)+petInc(),incCost=()=>Math.floor(80*Math.pow(1.6,S.inc)*(ev().disc||1));
 /* ивенты (глобальные, запускает админ) */
 const EVD={
  luck2:{e:"✨",c:"var(--c3)",lk:1.5,ru:["Повышенная удача","Уровень удачи ×1.5"],en:["Lucky Hour","Luck level ×1.5"]},
@@ -391,7 +403,7 @@ const ev=()=>EVN&&Date.now()<EVN.until&&EVD[EVN.id]?EVD[EVN.id]:{};
 const TH=n=>Math.max(2,Math.ceil(n/(ev().pity||1)));
 const pr=t=>Math.floor(t.price*(ev().shop||1));
 const setsDone=()=>R.filter(r=>r.items.every(t=>S.found[t])).length;
-const FRESH=()=>({coins:30,luck:0,rolls:0,found:{},best:-1,inc:0,pl:0,pm:0,ps:0,tb:[]});
+const FRESH=()=>({gem:0,pt:[],coins:30,luck:0,rolls:0,found:{},best:-1,inc:0,pl:0,pm:0,ps:0,tb:[]});
 let S=FRESH(),busy=false;
 const GENV=(/[?&]env=test\b/.test(location.search)||/test\.html$/i.test(location.pathname))?"test":"prod",GPX=GENV==="test"?"test-":"";
 let GTC={};try{GTC=JSON.parse(localStorage.getItem("gacha-testcfg")||"{}")}catch(e){}
@@ -404,7 +416,7 @@ async function rpc(fn,args,keep){try{const r=await fetch(SB_URL+"/rest/v1/rpc/"+
  const j=await r.json().catch(()=>null);if(!r.ok)return{error:srv((j&&j.message)||"Ошибка сервера")};return{data:j}}catch(e){return{error:tr("noconn"),net:true}}}
 const BASE=GPX+"gacha-v2",KEY=BASE;let TOKEN=null;try{TOKEN=localStorage.getItem(GPX+"gacha-token")}catch(e){}
 let ready=!TOKEN,dirty=false;
-function normS(){if(!Array.isArray(S.tb))S.tb=[];S.luck=Math.min(S.luck,MAXLUCK);if(S.best<0)ALL.forEach(a=>{if(S.found[a.t]&&a.i>S.best)S.best=a.i})}
+function normS(){if(!Array.isArray(S.tb))S.tb=[];if(!Array.isArray(S.pt))S.pt=[];if(typeof S.gem!=="number")S.gem=0;S.luck=Math.min(S.luck,MAXLUCK);if(S.best<0)ALL.forEach(a=>{if(S.found[a.t]&&a.i>S.best)S.best=a.i})}
 if(!TOKEN){try{const s=localStorage.getItem(KEY)||localStorage.getItem("gacha-v1");if(s)S=Object.assign(S,JSON.parse(s))}catch(e){}}
 normS();
 const save=()=>{if(!ready)return;if(TOKEN)dirty=true;else try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
@@ -429,18 +441,18 @@ function fuse(i){if(i>=6||busy||dupes(i)<5)return;let need=5;
  show(i+1,t,tr("fusion"));render();save()}
 function show(i,t,extra){
  const [e,...n]=t.split(" "),o=$("orb");
- o.style.setProperty("--rc",RA(i).c);$("em").textContent=e;$("nm").textContent=iname(t);
+ o.style.setProperty("--rc",RA(i).c);$("em").textContent="";$("nm").textContent=iname(t);
  $("rr").textContent=rn(i)+(extra?" · "+extra:"");$("rr").style.color=RA(i).c;
  o.classList.remove("reveal");void o.offsetWidth;o.classList.add("reveal");
  if(i>=4){const f=$("flash");f.style.setProperty("--fc",RA(i).c);f.classList.remove("go");void f.offsetWidth;f.classList.add("go")}
 }
 function roll(n){
  const cost=10*n;if(busy||!ready||S.coins<cost)return;busy=true;render();
- let best=-1,bi=null,bn=-1,raw=0;const got=[],e_=ev();
+ let best=-1,bi=null,bn=-1,raw=0;const got=[],e_=ev();let gm=0;
  for(let k=0;k<n;k++){
   let i,t;const xt=exRoll();
   if(xt){i=X;t=xt}else{i=pick();const its=R[i].items;t=its[Math.floor(Math.random()*its.length)]}
-  got.push(t);raw+=RA(i).v;
+  got.push(t);raw+=RA(i).v;gm+=gemDrop(i);
   if(i>best){best=i;bi=t}if(i<X&&i>bn)bn=i;
  }
  const o=$("orb");o.classList.add("charge");$("nm").textContent="…";$("rr").textContent="";
@@ -448,15 +460,15 @@ function roll(n){
   o.classList.remove("charge");
   S.coins-=cost;S.rolls+=n;got.forEach(t=>{S.found[t]=(S.found[t]||0)+1});if(bn>S.best)S.best=bn;
   S.coins+=Math.floor(raw*(1+.1*setsDone())*(e_.coin||1)*(e_.gain||1));
-  show(best,bi);busy=false;render();save()},n>1?650:450);
+  S.gem+=gm;show(best,bi);if(gm)$("rr").textContent+=" · +"+gm+" 💎";busy=false;render();save()},n>1?650:450);
 }
 const setH=(el,h)=>{if(el._h!==h){el._h=h;el.innerHTML=h}};
 function render(){const gb=$("gm_bal");if(gb)gb.textContent=fmt(S.coins);
- $("coins").textContent=fmt(S.coins);$("rolls").textContent=S.rolls;
+ $("coins").textContent=fmt(S.coins);$("gems").textContent=fmt(S.gem||0);{const g=$("gemp");if(g&&g.style.display==="block")renderGem()}$("rolls").textContent=S.rolls;
  const b=$("best");if(S.best>=0){b.textContent=rn(S.best);b.style.color=R[S.best].c}else{b.textContent="—";b.style.color=""}
  $("r1").disabled=busy||S.coins<10;$("r10").disabled=busy||S.coins<100;
  const lc=luckCost(),mx=S.luck>=MAXLUCK;$("luck").textContent=mx?tr("luckmax",MAXLUCK):tr("luckup",S.luck+1,fmt(lc));$("luck").disabled=mx||busy||S.coins<lc;
- $("inc").textContent=S.inc>=MAXINC?tr("incmax"):tr("incup",inc(),incAt(S.inc+1),fmt(incCost()));$("inc").disabled=S.inc>=MAXINC||busy||S.coins<incCost();
+ $("inc").textContent=S.inc>=MAXINC?tr("incmax"):tr("incup",inc(),incAt(S.inc+1)+petInc(),fmt(incCost()));$("inc").disabled=S.inc>=MAXINC||busy||S.coins<incCost();
  $("pity").textContent=tr("pity",fmt(Math.max(1,TH(PL)-(S.pl||0))),fmt(Math.max(1,TH(PM)-(S.pm||0))),fmt(Math.max(1,TH(PS)-(S.ps||0))),inc());
  setH($("fuse"),R.slice(0,6).map((r,i)=>`<button class="alt" data-f="${i}" ${dupes(i)<5?"disabled":""} style="border-color:${r.c}">${r.n}: ${dupes(i)}/5 → ${R[i+1].n}</button>`).join(""));$("lucklv").innerHTML=S.luck+(mx?'<span class="mx">MAX</span>':"");
  const w=weights(),t=w.reduce((a,b)=>a+b,0);
@@ -466,8 +478,8 @@ function render(){const gb=$("gm_bal");if(gb)gb.textContent=fmt(S.coins);
  if(typeof TT!=="undefined"&&$("pwrap").classList.contains("open")){updTitles();updShop();if($("trp").style.display==="block")$("trbal").textContent="🪙 "+fmt(S.coins)}
  const got=ALL.filter(a=>S.found[a.t]).length;$("colcount").textContent=tr("colcnt",got,ALL.length,setsDone()*10)+" · ✨ "+EXALL.filter(a=>S.found[a.t]).length+"/"+EXALL.length;
  setH($("col"),ALL.map(a=>{const n=S.found[a.t]||0,e=a.t.split(" ")[0];
-  return `<div class="glass it ${n?"":"off"}" style="${n?"border-color:"+R[a.i].c:""}"><div class="e">${n?e:"❔"}</div>${n?iname(a.t):"???"}<div style="color:${R[a.i].c};font-size:12px">${rname(a.i)}${n?" ×"+n:""}</div></div>`}).join("")+EXALL.map(a=>{const n=S.found[a.t]||0,e=a.t.split(" ")[0];
-  return `<div class="glass it ${n?"":"off"}" style="${n?"border-color:"+XR.c+";box-shadow:0 0 14px "+XR.c+"55":""}"><div class="e">${n?e:"❔"}</div>${n?iname(a.t):"???"}<div style="color:${XR.c};font-size:12px">${rname(X)} ${EVD[a.k].e}${n?" ×"+n:""}</div></div>`}).join(""));
+  return `<div class="glass it ${n?"":"off"}" style="${n?"border-color:"+R[a.i].c:""}">${n?iname(a.t):"???"}<div style="color:${R[a.i].c};font-size:12px">${rname(a.i)}${n?" ×"+n:""}</div></div>`}).join("")+EXALL.map(a=>{const n=S.found[a.t]||0,e=a.t.split(" ")[0];
+  return `<div class="glass it ${n?"":"off"}" style="${n?"border-color:"+XR.c+";box-shadow:0 0 14px "+XR.c+"55":""}">${n?iname(a.t):"???"}<div style="color:${XR.c};font-size:12px">${rname(X)} ${EVD[a.k].e}${n?" ×"+n:""}</div></div>`}).join(""));
 }
 $("fuse").onclick=e=>{const b=e.target.closest("[data-f]");if(b&&!b.disabled)fuse(+b.dataset.f)};
 $("inc").onclick=()=>{const c=incCost();if(!busy&&S.inc<MAXINC&&S.coins>=c){S.coins-=c;S.inc++;render();save()}};
@@ -650,7 +662,7 @@ function drawDice(){const upd=()=>{const p=DC.side==="u"?(DC.t-1)/100:(100-DC.t)
   $("dc_r").textContent=roll;if(win){const w=Math.floor(b*.97/p);gmPay(w);gmMsg(G("Победа! +","You win! +")+fmt(w-b)+" 🪙","var(--c1)")}else gmMsg(G("Проигрыш","You lose"),"var(--c5)")}}
 $("gmb").onclick=()=>{gmMsg("");gmDraw();openPanel("gmp")};
 /* окна по центру экрана */
-function openPanel(id){["setp","admp","titp","shp","trp","topp","gmp"].forEach(x=>$(x).style.display=x===id?"block":"none");$("pwrap").classList.add("open");$(id).scrollTop=0}
+function openPanel(id){["setp","admp","titp","shp","trp","topp","gmp","gemp"].forEach(x=>$(x).style.display=x===id?"block":"none");$("pwrap").classList.add("open");$(id).scrollTop=0}
 function closePanel(){$("pwrap").classList.remove("open")}
 $("pwrap").onclick=e=>{if(e.target===$("pwrap"))closePanel()};
 document.querySelectorAll(".pclose").forEach(b=>b.onclick=closePanel);
@@ -686,7 +698,7 @@ function renderTitles(){
  $("titcnt").textContent=(LANG==="en"?"Unlocked: ":"Открыто: ")+n+"/"+TT.length;
  $("titlist").innerHTML=TT.map(t=>{const u=tUnl(t),on=eq&&eq.id===t.id,nm=tnm(t),p=Math.min(t.cur(),t.goal);
   const prog=!u&&t.goal>1?`<div class="pb"><i style="width:${p/t.goal*100}%;background:${t.c}"></i></div>`:"";
-  const btn=u?`<button class="${on?"alt":""}" data-eq="${t.id}">${on?(LANG==="en"?"Remove":"Снять"):(LANG==="en"?"Equip":"Надеть")}</button>`:`<span style="font-size:12px;color:var(--mute);flex:none">${t.shop?'<svg class="ico"><use href="#i-shop"/></svg> '+fmt(pr(t)):t.goal>1?fmt(p)+"/"+fmt(t.goal):"🔒"}</span>`;
+  const btn=u?`<button class="${on?"alt":""}" data-eq="${t.id}">${on?(LANG==="en"?"Remove":"Снять"):(LANG==="en"?"Equip":"Надеть")}</button>`:`<span style="font-size:12px;color:var(--mute);flex:none">${t.gprice?"💎 "+t.gprice:t.shop?'<svg class="ico"><use href="#i-shop"/></svg> '+fmt(pr(t)):t.goal>1?fmt(p)+"/"+fmt(t.goal):"🔒"}</span>`;
   return `<div class="glass ti ${u?"":"off"} ${on?"eq":""}" style="${u?"border-color:"+t.c:""}"><div class="ic">${u?t.e:"🔒"}</div><div class="tx"><b style="color:${u?t.c:"inherit"}">${esc(nm[0])}</b><span>${esc(nm[1])}</span>${prog}</div>${btn}</div>`}).join("");
  titSig=titleSig()}
 const titleSig=()=>TT.map(t=>Math.min(t.cur(),t.goal)).join(",")+"|"+getEq()+"|"+LANG;
@@ -698,7 +710,7 @@ let EVNEXT=0,EVAUTO=true;
 function renderEv(){const bar=$("evbar"),en=LANG==="en";
  if(EVN&&Date.now()<EVN.until&&EVD[EVN.id]){
   const d=EVD[EVN.id],n=d[en?"en":"ru"];bar.style.display="flex";bar.style.borderColor=d.c;
-  bar.innerHTML=`<span style="font-size:28px">${d.e}</span><div style="flex:1;min-width:0"><b style="color:${d.c}">${esc(n[0])}</b><div style="color:var(--mute);font-size:12px">${esc(n[1])}</div>${d.ex?`<div style="font-size:12px;color:${XR.c}">✨ Exclusive ${fmtP(exChance()*100)}: ${d.ex.map(t=>t.split(" ")[0]).join(" ")}</div>`:""}</div><b id="evt" style="font:800 15px var(--fh);flex:none"></b>`;tickEv();return}
+  bar.innerHTML=`<span style="font-size:28px">${d.e}</span><div style="flex:1;min-width:0"><b style="color:${d.c}">${esc(n[0])}</b><div style="color:var(--mute);font-size:12px">${esc(n[1])}</div>${d.ex?`<div style="font-size:12px;color:${XR.c}">✨ Exclusive ${fmtP(exChance()*100)}: ${d.ex.map(t=>iname(t)).join(", ")}</div>`:""}</div><b id="evt" style="font:800 15px var(--fh);flex:none"></b>`;tickEv();return}
  if(EVNEXT>Date.now()){bar.style.display="flex";bar.style.borderColor="";
   bar.innerHTML=`<span style="font-size:24px">⏳</span><div style="flex:1;min-width:0;color:var(--mute);font-size:13px">${tr("evnext")}</div><b id="evt" style="font:800 15px var(--fh);flex:none"></b>`;tickEv();return}
  bar.style.display="none"}
@@ -788,6 +800,8 @@ const SH=[
  ["s14","🏰","var(--c6)",1e8,"Император Алтаря","Весь алтарь у его ног","Altar Emperor","The whole altar at his feet"],
  ["s15","👁️","var(--c7)",1e9,"Бессмертный","Легенда, которой нет конца","The Immortal","A legend without end"]
 ];
+TT.push({id:"bug",e:"🐞",c:"var(--c6)",ru:["Баг-хантер","Нашёл баг и сообщил о нём (выдаёт админ)"],en:["Bug Hunter","Found and reported a bug (given by admin)"],cur:()=>S.tb.includes("bug")?1:0,goal:1});
+[["gt1","💎","var(--c2)","Кристальщик","Gem Hunter",20],["gt2","🐾","var(--c1)","Зверолов","Beastmaster",60],["gt3","🦁","var(--c4)","Владыка зверей","Beast Lord",300],["gt4","👑","#ff5ce1","Алмазный король","Diamond King",1000]].forEach(a=>TT.push({id:a[0],e:a[1],c:a[2],ru:[a[3],"Купить за алмазы"],en:[a[4],"Buy with gems"],gprice:a[5],cur:()=>S.tb.includes(a[0])?1:0,goal:1}));
 Object.keys(EVD).forEach(k=>{const d=EVD[k];if(!d.ex)return;
  TT.push({id:"ex_"+k,e:d.e,c:d.c,ru:[d.tt[0],"Собрать все эксклюзивные предметы ивента «"+d.ru[0]+"»"],en:[d.tt[1],"Collect all exclusive items of the "+d.en[0]+" event"],cur:()=>d.ex.filter(t=>S.found[t]).length,goal:d.ex.length})});
 TT.push({id:"ex_all",e:"👑",c:XR.c,ru:["Хранитель сезонов","Собрать все эксклюзивные предметы"],en:["Keeper of Seasons","Collect all exclusive items"],cur:()=>EXALL.filter(a=>S.found[a.t]).length,goal:EXALL.length});
@@ -866,6 +880,26 @@ $("titb").onclick=()=>{renderTitles();openPanel("titp")};
  addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{if(innerWidth!==W||Math.abs(innerHeight-H)>150)size()},150)});
  const sc=()=>{mkSprites();size()};lightMQ.addEventListener?lightMQ.addEventListener("change",sc):lightMQ.addListener(sc);
 })();
+
+/* алмазы и питомцы */
+const L2=(a,b)=>LANG==="en"?b:a;
+Object.assign(TX,{"💎 Алмазы":"💎 Gems","Питомцы и алмазы":"Pets & gems","Выдать алмазы":"Give gems","Забрать алмазы":"Take gems","Выдать титул «Баг-хантер»":"Give «Bug Hunter» title"});
+function renderGem(){
+ $("gemhd").textContent=L2("Питомцы и алмазы","Pets & gems");$("gembal").textContent="💎 "+fmt(S.gem||0);
+ $("gemsub").textContent=L2("Алмазы редко падают при бросках. Питомцы дают монеты каждую секунду: сейчас +","Gems drop rarely while rolling. Pets earn coins every second: now +")+petInc()+"/"+L2("с","s");
+ $("gph").textContent=L2("Питомцы","Pets");$("gth").textContent=L2("Титулы за алмазы","Titles for gems");
+ setH($("pets"),PETS.map(p=>{const o=S.pt.includes(p.id),r=R[p.r];
+  return `<div class="glass ti" style="border-color:${r.c}"><div class="ic" style="color:${r.c};font:800 20px var(--fh)">${esc((L2(p.ru,p.en))[0])}</div><div class="tx"><b style="color:${r.c}">${esc(L2(p.ru,p.en))}</b><span>${rname(p.r)} · +${p.inc}/${L2("с","s")}</span></div><button data-pet="${p.id}" ${o||S.gem<p.price?"disabled":""}>${o?L2("Куплен","Owned"):"💎 "+fmt(p.price)}</button></div>`}).join(""));
+ setH($("gtl"),TT.filter(t=>t.gprice).map(t=>{const o=tUnl(t),nm=tnm(t);
+  return `<div class="glass ti" style="border-color:${t.c}"><div class="ic">${t.e}</div><div class="tx"><b style="color:${t.c}">${esc(nm[0])}</b><span>${esc(nm[1])}</span></div><button data-gt="${t.id}" ${o||S.gem<t.gprice?"disabled":""}>${o?L2("Куплено","Owned"):"💎 "+fmt(t.gprice)}</button></div>`}).join(""))}
+$("gemp").onclick=e=>{if(!ready||busy)return;
+ const bp=e.target.closest("[data-pet]"),bt=e.target.closest("[data-gt]");
+ if(bp&&!bp.disabled){const p=PETS.find(x=>x.id===bp.dataset.pet);if(p&&!S.pt.includes(p.id)&&S.gem>=p.price){S.gem-=p.price;S.pt.push(p.id);render();save();renderGem()}}
+ if(bt&&!bt.disabled){const t=TT.find(x=>x.id===bt.dataset.gt);if(t&&t.gprice&&!tUnl(t)&&S.gem>=t.gprice){S.gem-=t.gprice;S.tb.push(t.id);render();save();renderGem()}}};
+$("gemb").onclick=()=>{renderGem();openPanel("gemp")};
+$("a_gem").onclick=()=>adm(o=>{o.gem=(o.gem||0)+Math.max(0,+$("a_coins").value||0)});
+$("a_gemt").onclick=()=>adm(o=>{o.gem=Math.max(0,(o.gem||0)-Math.max(0,+$("a_coins").value||0))});
+$("a_bug").onclick=()=>adm(o=>{if(!Array.isArray(o.tb))o.tb=[];if(!o.tb.includes("bug"))o.tb.push("bug")});
 $("lang").onclick=$("lang2").onclick=()=>setLang(LANG==="en"?"ru":"en");
 setLang(LANG);
 </script>
