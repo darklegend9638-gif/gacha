@@ -100,6 +100,11 @@ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale
 .ti .ic{font-size:26px;flex:none;width:34px;text-align:center}.ti .tx{flex:1;min-width:0;font-size:14px}.ti .tx b{display:block;font-size:15px}.ti .tx span{color:var(--mute);font-size:12px}
 .ti .pb{height:5px;border-radius:4px;background:var(--line);margin-top:5px;overflow:hidden}.ti .pb i{display:block;height:100%;border-radius:4px}
 .ti button{flex:0 0 auto;padding:7px 12px;font-size:13px}.ti.eq{box-shadow:0 0 0 2px var(--c4)}
+.csel{position:relative;flex:1;min-width:0}.csel-b{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;font:inherit;font-weight:600;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--inp);color:var(--text);box-shadow:none}
+.csel-b span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.csel-b::after{content:"";flex:none;width:7px;height:7px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg) translateY(-2px)}
+.csel-b:hover:not(:disabled){border-color:rgba(255,255,255,.32)}.csel-b:disabled{opacity:.5;cursor:default}.csel[data-fit]{flex:none;width:auto}.csel[data-fit] .csel-b{min-width:84px}select.csel-n{display:none}
+#selPop .modal-box{text-align:left;max-width:380px}.sp-list{max-height:min(52vh,400px);overflow:auto;display:flex;flex-direction:column;gap:6px;overscroll-behavior:contain}
+.sp-list.grid{display:grid;grid-template-columns:repeat(5,1fr)}.sp-o{padding:11px 12px;font-size:14px;text-align:left;box-shadow:none;flex:none}.sp-list.grid .sp-o{text-align:center;padding:11px 0}
 .adm-sub{color:var(--mute);font-size:13px;margin:4px 0 4px}
 .ac{margin-top:12px;padding:14px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border:1px solid var(--line)}
 .ac h3{margin:0 0 4px;font:800 14px var(--fh);display:flex;align-items:center;gap:9px}
@@ -326,6 +331,7 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
   </section>
 </div></div>
 <div id="toasts"></div>
+<div id="selPop" class="confirm-modal"><div class="modal-box"><div class="modal-title" id="sp_t" style="text-align:center"></div><input id="sp_q" style="width:100%;margin-bottom:10px" autocomplete="off"><div id="sp_list" class="sp-list"></div><div class="modal-actions" style="margin-top:12px"><button class="alt" id="sp_x"></button></div></div></div>
 <div id="confirmModal" class="confirm-modal"><div class="modal-box"><div class="modal-title">⚠️ Обнуление прогресса</div><div class="modal-text">Вы уверены, что хотите обнулить прогресс всех игроков?<br>Это действие нельзя отменить.</div><div class="modal-actions"><button class="alt" id="confirmNo">Отмена</button><button id="confirmYes">Обнулить</button></div></div></div><div id="noticeModal" class="confirm-modal"><div class="modal-box"><div class="modal-title" id="noticeTitle">Готово</div><div class="modal-text" id="noticeText"></div><div class="modal-actions"><button id="noticeOk">Понятно</button></div></div></div><div id="delModal" class="confirm-modal"><div class="modal-box"><div class="modal-title">⚠️ Удаление аккаунта</div><div class="modal-text">Аккаунт и весь ваш прогресс будут удалены навсегда. Для подтверждения введите свой ник.</div><input id="del_nick" maxlength="16" autocomplete="off" style="width:100%;margin-bottom:8px"><div id="del_st" style="color:var(--c5);font-size:14px;min-height:20px;margin-bottom:8px"></div><div class="modal-actions"><button class="alt" id="delNo">Отмена</button><button id="delYes">Удалить</button></div></div></div>
 <div id="reg"><div class="box"><button class="alt" id="lang2" style="float:right;flex:none;padding:6px 12px;font-size:13px"></button><b style="font-size:20px" id="reg_t">Создай профиль</b>
  <div class="row" style="margin:8px 0"><button class="alt" id="t_reg">Регистрация</button><button class="alt" id="t_in">Вход</button></div>
@@ -395,7 +401,7 @@ function setLang(l){LANG=l;try{localStorage.setItem("gacha-lang",l)}catch(e){}do
  $("lang").innerHTML=$("lang2").innerHTML='<svg class="ico"><use href="#i-globe"/></svg>'+(l==="en"?"Русский":"English");render();renderProf();evSel();renderEv();updAuto();grTxt();topTabs();
  if($("reg").style.display==="flex")openReg();if(me&&$("setp").style.display==="block")renderSet()}
 const INCOME=1,MAXLUCK=20,MAXINC=15,PL=99,PM=1000,PS=10000;
-const PB=[1,2,5,12,30,80,200,500],PP=[5,12,30,80,200,500,1200,3000];
+const PB=[1,1,3,6,15,40,100,250],PP=[5,12,30,80,200,500,1200,3000];
 const PN=[["Мышка","Mouse","Воробей","Sparrow"],["Лиса","Fox","Заяц","Hare"],["Волк","Wolf","Сова","Owl"],["Единорог","Unicorn","Грифон","Griffin"],["Дракончик","Dragonet","Левиафан","Leviathan"],["Феникс","Phoenix","Кракен","Kraken"],["Теневой кот","Shadow Cat","Хронодракон","Chrono Drake"],["Солнечный лев","Sun Lion","Звёздный кит","Star Whale"]];
 const PETS=[];PN.forEach((n,r)=>[0,1].forEach(j=>PETS.push({id:"p"+r+j,r,ru:n[j*2],en:n[j*2+1],inc:j?Math.ceil(PB[r]*1.5):PB[r],price:j?Math.ceil(PP[r]*1.6):PP[r]})));
 function petInc(){return (S.pt||[]).reduce((a,id)=>{const p=PETS.find(x=>x.id===id);return a+(p?p.inc:0)},0)}
@@ -948,6 +954,32 @@ $("shp").addEventListener("click",e=>{if(!ready||busy)return;
 $("a_gem").onclick=()=>adm(o=>{o.gem=(o.gem||0)+Math.max(0,+$("a_coins").value||0)});
 $("a_gemt").onclick=()=>adm(o=>{o.gem=Math.max(0,(o.gem||0)-Math.max(0,+$("a_coins").value||0))});
 $("a_bug").onclick=()=>adm(o=>{if(!Array.isArray(o.tb))o.tb=[];if(!o.tb.includes("bug"))o.tb.push("bug")});
+/* собственные списки вместо системных <select> */
+const SELD=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,"value");
+function enhanceSel(sel){
+ if(sel._cs||sel.classList.contains("csel-n"))return;
+ const w=document.createElement("div");w.className="csel";if(sel.style.flex==="none")w.setAttribute("data-fit","1");
+ const b=document.createElement("button");b.type="button";b.className="csel-b";b.innerHTML="<span></span>";
+ sel.parentNode.insertBefore(w,sel);w.appendChild(b);w.appendChild(sel);sel.classList.add("csel-n");
+ const refresh=()=>{const o=sel.selectedOptions[0];b.firstChild.textContent=o?o.textContent:"";b.disabled=sel.disabled};
+ Object.defineProperty(sel,"value",{get(){return SELD.get.call(sel)},set(v){SELD.set.call(sel,v);refresh()},configurable:true});
+ new MutationObserver(refresh).observe(sel,{childList:true,subtree:true,attributes:true,attributeFilter:["disabled"]});
+ b.onclick=()=>openSel(sel);sel._cs=1;refresh()}
+const SELT={g_who:["Игрок","Player"],a_who:["Игрок","Player"],a_ev:["Ивент","Event"],a_evu:["Единицы времени","Time unit"],a_rar:["Редкость","Rarity"],mn_m:["Количество мин","Number of mines"]};
+function closeSel(){$("selPop").classList.remove("show")}
+function openSel(sel){
+ const opts=[...sel.options],list=$("sp_list"),q=$("sp_q"),grid=opts.length>12&&opts.every(o=>o.textContent.length<=3),t=SELT[sel.id];
+ $("sp_t").textContent=t?L2(t[0],t[1]):L2("Выбор","Choose");$("sp_x").textContent=L2("Отмена","Cancel");q.placeholder=L2("Поиск","Search");
+ list.className="sp-list"+(grid?" grid":"");q.style.display=opts.length>8&&!grid?"":"none";q.value="";
+ const draw=f=>{list.innerHTML="";opts.filter(o=>!f||o.textContent.toLowerCase().includes(f)).forEach(o=>{
+   const bt=document.createElement("button");bt.type="button";bt.className="sp-o"+(o.value===sel.value?"":" alt");bt.textContent=o.textContent;
+   bt.onclick=()=>{sel.value=o.value;sel.dispatchEvent(new Event("change",{bubbles:true}));closeSel()};list.appendChild(bt)})};
+ q.oninput=()=>draw(q.value.trim().toLowerCase());draw("");$("selPop").classList.add("show");
+ const cur=list.querySelector(".sp-o:not(.alt)");if(cur)cur.scrollIntoView({block:"center"})}
+$("sp_x").onclick=closeSel;$("selPop").onclick=e=>{if(e.target===$("selPop"))closeSel()};
+addEventListener("keydown",e=>{if(e.key==="Escape")closeSel()});
+(function(){let q=0;const run=()=>{q=0;document.querySelectorAll("select:not(.csel-n)").forEach(enhanceSel)};
+ new MutationObserver(()=>{if(!q)q=requestAnimationFrame(run)}).observe(document.body,{childList:true,subtree:true});run()})();
 /* собственные уведомления */
 function toast(text,kind){const box=$("toasts");if(!box||!text)return;
  const t=document.createElement("div");t.className="toast "+(kind||"info");
