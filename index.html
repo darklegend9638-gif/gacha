@@ -25,7 +25,7 @@ background:linear-gradient(90deg,#ffe98a,#ff7ad9,#7bdcff,#ffe98a);background-siz
 @keyframes flow{to{background-position:300% 0}}
 .sub{text-align:center;color:var(--mute);margin:0 0 16px;font-size:14px}
 .glass{background:var(--glass);border:1px solid var(--line);border-radius:18px}
-.top{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.top{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
 .stat{padding:10px 12px}.stat small{color:var(--mute);display:block;font-size:12px;text-transform:uppercase;letter-spacing:.8px}.stat b{font-size:21px}
 .stat.wide{grid-column:1/-1}
 .stage{padding:18px;text-align:center}
@@ -210,7 +210,7 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 </div>
 
 <div class="glass stage">
-  <div class="orb" id="orb"><div class="ring"></div><div class="glow"></div><div class="inner" id="em"></div></div>
+  <div class="orb" id="orb"><div class="ring"></div><div class="glow"></div><div class="inner" id="em">🔮</div></div>
   <div id="nm">Сделай первый бросок</div><div id="rr" style="color:var(--mute)">Копи монеты и бросай</div>
   <div class="row"><button id="r1">Бросок · 10</button><button id="r10">×10 · 100</button></div>
   <div class="row"><button class="alt" id="luck"></button><button class="alt" id="inc"></button></div>
@@ -345,7 +345,7 @@ tgot:["Вам перевели монеты","You received coins"],tgotx:["По�
 const tr=(k,...a)=>{let s=D[k][LANG==="en"?1:0];a.forEach((v,i)=>s=s.split("{"+i+"}").join(v));return s};
 const EN=[["Stone","Leaf","Spoon","Sock"],["Clover","Key","Candle","Potion"],["Sapphire","Shield","Scroll","Owl"],["Orb of Fate","Shadow Blade","Unicorn"],["Crown of Kings","Dragon","Zeus's Lightning"],["Phoenix","Galaxy Shard","Kraken"],["Black Hole","Stranger's Mask","Forgotten Time"],["Heart of the Sun","Eye of the Universe","First Star"]];
 const IT={};R.forEach((r,i)=>r.items.forEach((t,j)=>IT[t]=EN[i][j]));
-const iname=t=>LANG==="en"&&IT[t]?IT[t]:t.slice(t.indexOf(" ")+1),iview=t=>iname(t);
+const iname=t=>LANG==="en"&&IT[t]?IT[t]:t.slice(t.indexOf(" ")+1),iview=t=>t.split(" ")[0]+" "+iname(t);
 const rname=i=>LANG==="ru"?RA(i).ru:RA(i).n,rn=i=>LANG==="ru"?RA(i).n+" · "+RA(i).ru:RA(i).n;
 const SRV={"Этот ник уже занят":"This nickname is already taken","Неверный ник или пароль":"Wrong nickname or password","Текущий пароль неверный":"Current password is incorrect","Нет доступа":"Access denied","Ошибка сервера":"Server error","Игрок не найден":"Player not found","Некорректное сохранение":"Invalid save","Владелец не может удалить аккаунт":"The owner cannot delete the account","Недостаточно монет":"Not enough coins","Нельзя переводить себе":"You can't send coins to yourself","Некорректная сумма":"Invalid amount"};
 const srv=m=>LANG==="en"&&SRV[m]?SRV[m]:m;
@@ -441,7 +441,7 @@ function fuse(i){if(i>=6||busy||dupes(i)<5)return;let need=5;
  show(i+1,t,tr("fusion"));render();save()}
 function show(i,t,extra){
  const [e,...n]=t.split(" "),o=$("orb");
- o.style.setProperty("--rc",RA(i).c);$("em").textContent="";$("nm").textContent=iname(t);
+ o.style.setProperty("--rc",RA(i).c);$("em").textContent=e;$("nm").textContent=iname(t);
  $("rr").textContent=rn(i)+(extra?" · "+extra:"");$("rr").style.color=RA(i).c;
  o.classList.remove("reveal");void o.offsetWidth;o.classList.add("reveal");
  if(i>=4){const f=$("flash");f.style.setProperty("--fc",RA(i).c);f.classList.remove("go");void f.offsetWidth;f.classList.add("go")}
@@ -478,8 +478,8 @@ function render(){const gb=$("gm_bal");if(gb)gb.textContent=fmt(S.coins);
  if(typeof TT!=="undefined"&&$("pwrap").classList.contains("open")){updTitles();updShop();if($("trp").style.display==="block")$("trbal").textContent="🪙 "+fmt(S.coins)}
  const got=ALL.filter(a=>S.found[a.t]).length;$("colcount").textContent=tr("colcnt",got,ALL.length,setsDone()*10)+" · ✨ "+EXALL.filter(a=>S.found[a.t]).length+"/"+EXALL.length;
  setH($("col"),ALL.map(a=>{const n=S.found[a.t]||0,e=a.t.split(" ")[0];
-  return `<div class="glass it ${n?"":"off"}" style="${n?"border-color:"+R[a.i].c:""}">${n?iname(a.t):"???"}<div style="color:${R[a.i].c};font-size:12px">${rname(a.i)}${n?" ×"+n:""}</div></div>`}).join("")+EXALL.map(a=>{const n=S.found[a.t]||0,e=a.t.split(" ")[0];
-  return `<div class="glass it ${n?"":"off"}" style="${n?"border-color:"+XR.c+";box-shadow:0 0 14px "+XR.c+"55":""}">${n?iname(a.t):"???"}<div style="color:${XR.c};font-size:12px">${rname(X)} ${EVD[a.k].e}${n?" ×"+n:""}</div></div>`}).join(""));
+  return `<div class="glass it ${n?"":"off"}" style="${n?"border-color:"+R[a.i].c:""}"><div class="e">${n?e:"❔"}</div>${n?iname(a.t):"???"}<div style="color:${R[a.i].c};font-size:12px">${rname(a.i)}${n?" ×"+n:""}</div></div>`}).join("")+EXALL.map(a=>{const n=S.found[a.t]||0,e=a.t.split(" ")[0];
+  return `<div class="glass it ${n?"":"off"}" style="${n?"border-color:"+XR.c+";box-shadow:0 0 14px "+XR.c+"55":""}"><div class="e">${n?e:"❔"}</div>${n?iname(a.t):"???"}<div style="color:${XR.c};font-size:12px">${rname(X)} ${EVD[a.k].e}${n?" ×"+n:""}</div></div>`}).join(""));
 }
 $("fuse").onclick=e=>{const b=e.target.closest("[data-f]");if(b&&!b.disabled)fuse(+b.dataset.f)};
 $("inc").onclick=()=>{const c=incCost();if(!busy&&S.inc<MAXINC&&S.coins>=c){S.coins-=c;S.inc++;render();save()}};
@@ -710,7 +710,7 @@ let EVNEXT=0,EVAUTO=true;
 function renderEv(){const bar=$("evbar"),en=LANG==="en";
  if(EVN&&Date.now()<EVN.until&&EVD[EVN.id]){
   const d=EVD[EVN.id],n=d[en?"en":"ru"];bar.style.display="flex";bar.style.borderColor=d.c;
-  bar.innerHTML=`<span style="font-size:28px">${d.e}</span><div style="flex:1;min-width:0"><b style="color:${d.c}">${esc(n[0])}</b><div style="color:var(--mute);font-size:12px">${esc(n[1])}</div>${d.ex?`<div style="font-size:12px;color:${XR.c}">✨ Exclusive ${fmtP(exChance()*100)}: ${d.ex.map(t=>iname(t)).join(", ")}</div>`:""}</div><b id="evt" style="font:800 15px var(--fh);flex:none"></b>`;tickEv();return}
+  bar.innerHTML=`<span style="font-size:28px">${d.e}</span><div style="flex:1;min-width:0"><b style="color:${d.c}">${esc(n[0])}</b><div style="color:var(--mute);font-size:12px">${esc(n[1])}</div>${d.ex?`<div style="font-size:12px;color:${XR.c}">✨ Exclusive ${fmtP(exChance()*100)}: ${d.ex.map(t=>t.split(" ")[0]).join(" ")}</div>`:""}</div><b id="evt" style="font:800 15px var(--fh);flex:none"></b>`;tickEv();return}
  if(EVNEXT>Date.now()){bar.style.display="flex";bar.style.borderColor="";
   bar.innerHTML=`<span style="font-size:24px">⏳</span><div style="flex:1;min-width:0;color:var(--mute);font-size:13px">${tr("evnext")}</div><b id="evt" style="font:800 15px var(--fh);flex:none"></b>`;tickEv();return}
  bar.style.display="none"}
