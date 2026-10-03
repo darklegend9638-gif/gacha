@@ -100,6 +100,19 @@ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale
 .ti .ic{font-size:26px;flex:none;width:34px;text-align:center}.ti .tx{flex:1;min-width:0;font-size:14px}.ti .tx b{display:block;font-size:15px}.ti .tx span{color:var(--mute);font-size:12px}
 .ti .pb{height:5px;border-radius:4px;background:var(--line);margin-top:5px;overflow:hidden}.ti .pb i{display:block;height:100%;border-radius:4px}
 .ti button{flex:0 0 auto;padding:7px 12px;font-size:13px}.ti.eq{box-shadow:0 0 0 2px var(--c4)}
+.adm-sub{color:var(--mute);font-size:13px;margin:4px 0 4px}
+.ac{margin-top:12px;padding:14px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border:1px solid var(--line)}
+.ac h3{margin:0 0 4px;font:800 14px var(--fh);display:flex;align-items:center;gap:9px}
+.ac h3 i{font-style:normal;flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:10px;font-size:16px;background:linear-gradient(135deg,var(--btn1),var(--btn2));box-shadow:0 4px 12px rgba(123,77,255,.35)}
+.ac .row{margin-top:9px}.ac .row button,.ac-grid button{padding:11px 10px;font-size:13px}
+.ac-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+.ac-note{color:var(--mute);font-size:12px;margin:8px 0 0}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.chips button{flex:none;padding:5px 13px;font-size:12px;border-radius:999px;box-shadow:none}
+.gr{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,.05)}.gr button{flex:none;padding:5px 10px;font-size:12px}
+#toasts{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:1200;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;padding:0 14px}
+.toast{pointer-events:auto;display:flex;align-items:center;gap:10px;max-width:420px;width:fit-content;padding:11px 16px;border-radius:16px;background:var(--bg2);border:1px solid var(--line);box-shadow:0 12px 36px rgba(0,0,0,.5);font-size:14px;font-weight:600;animation:tIn .28s cubic-bezier(.2,.9,.3,1.2);cursor:pointer}
+.toast i{font-style:normal;font-size:17px;flex:none}.toast.ok{border-color:var(--c1)}.toast.err{border-color:var(--c5)}.toast.out{opacity:0;transform:translateY(8px);transition:.25s}
+@keyframes tIn{from{opacity:0;transform:translateY(14px) scale(.95)}to{opacity:1;transform:none}}
 .confirm-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(5,3,15,.72);z-index:1000}.confirm-modal.show{display:flex}.confirm-modal .modal-box{width:100%;max-width:390px;padding:22px;background:var(--bg2);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 60px rgba(0,0,0,.45);text-align:center}.confirm-modal .modal-title{font:800 19px var(--fh);margin-bottom:10px}.confirm-modal .modal-text{color:var(--mute);font-size:14px;margin-bottom:18px}.confirm-modal .modal-actions{display:flex;gap:10px}.confirm-modal .modal-actions button{flex:1}
 .stat b{font:800 17px/1.2 var(--fh);white-space:nowrap}.tag{font-family:var(--fh);font-size:11px}h2{font-family:var(--fh);font-size:13px}
 
@@ -276,29 +289,43 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 </div>
 <div id="admp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
   <b class="hd"><svg class="ico"><use href="#i-admin"/></svg>Админ-панель</b>
-  <div id="own" style="display:none;margin:10px 0;padding:10px;border:1px dashed var(--line);border-radius:12px"><b style="font-size:14px">Выдать доступ к админке</b>
-   <div style="color:var(--mute);font-size:13px;margin-top:6px">Есть доступ:</div><div id="g_list" style="font-size:14px"></div>
+  <div class="adm-sub">Управление игроками, экономикой и ивентами</div>
+
+  <section class="ac" id="own" style="display:none"><h3><i>🛡️</i>Выдать доступ к админке</h3>
+   <div class="ac-note">Есть доступ:</div><div id="g_list" style="font-size:14px"></div>
    <div class="row"><select id="g_who"></select></div>
-   <div class="row"><button id="g_give">Выдать админа</button><button class="alt" id="g_take">Забрать админа</button></div>
-   <div id="g_st" style="font-size:13px;min-height:16px;margin-top:6px"></div></div>
-  <div id="tgtw" style="display:none;margin:10px 0"><div style="color:var(--mute);font-size:13px">Кого изменить:</div><div class="row" style="margin-top:6px"><select id="a_who"></select></div><div id="a_st" style="font-size:14px;min-height:18px;margin-top:6px"></div></div>
-  <div style="margin:10px 0;padding:10px;border:1px dashed var(--line);border-radius:12px"><b style="font-size:14px">Ивенты (для всех игроков)</b>
+   <div class="ac-grid"><button id="g_give">Выдать админа</button><button class="alt" id="g_take">Забрать админа</button></div>
+  </section>
+
+  <section class="ac" id="tgtw" style="display:none"><h3><i>🎯</i>Игрок</h3>
+   <div class="ac-note">Кого изменить:</div><div class="row"><select id="a_who"></select></div>
+  </section>
+
+  <section class="ac"><h3><i>⚡</i>Ивенты (для всех игроков)</h3>
    <div class="row"><select id="a_ev"></select></div>
    <div class="row"><input id="a_evm" type="number" min="1" value="30" placeholder="Кол-во"><select id="a_evu" style="flex:none;width:auto"><option value="1">Минуты</option><option value="60">Часы</option><option value="1440">Дни</option></select></div>
-   <div style="color:var(--mute);font-size:12px">Максимум 30 дней</div>
-   <div class="row"><button id="a_evgo">Запустить ивент</button></div>
-   <div class="row"><button class="alt" id="a_evstop">Остановить ивент</button></div>
+   <div class="ac-note">Максимум 30 дней</div>
+   <div class="ac-grid"><button id="a_evgo">Запустить ивент</button><button class="alt" id="a_evstop">Остановить ивент</button></div>
    <div class="row"><button class="alt" id="a_evauto"></button></div>
-   <div id="a_evst" style="font-size:14px;min-height:18px;margin-top:6px"></div></div>
-  <div class="row"><input id="a_coins" type="number" value="1000"><button id="a_give">Выдать монеты</button></div>
-  <div class="row"><button class="alt" id="a_take">Забрать монеты</button></div>
-   <div class="row"><button id="a_gem">Выдать алмазы</button><button class="alt" id="a_gemt">Забрать алмазы</button></div>
-   <div class="row"><button id="a_bug">Выдать титул «Баг-хантер»</button></div>
-  <div class="row"><input id="a_luck" type="number" value="10"><button id="a_setluck">Уровень удачи</button></div>
-  <div class="row"><input id="a_inc" type="number" value="5"><button id="a_setinc">Уровень дохода</button></div>
-  <div class="row"><select id="a_rar"></select><button id="a_item">Выдать предмет</button></div>
-  <div class="row"><button class="alt" id="a_all">Открыть всю коллекцию</button></div>
+  </section>
+
+  <section class="ac"><h3><i>💰</i>Монеты и алмазы</h3>
+   <div class="row"><input id="a_coins" type="number" value="1000" placeholder="Сумма"></div>
+   <div class="chips" id="a_chips"><button class="alt" data-v="1000">1K</button><button class="alt" data-v="1000000">1M</button><button class="alt" data-v="1000000000">1B</button><button class="alt" data-v="1000000000000">1T</button></div>
+   <div class="ac-grid"><button id="a_give">Выдать монеты</button><button class="alt" id="a_take">Забрать монеты</button><button id="a_gem">Выдать алмазы</button><button class="alt" id="a_gemt">Забрать алмазы</button></div>
+  </section>
+
+  <section class="ac"><h3><i>📈</i>Прокачка</h3>
+   <div class="row"><input id="a_luck" type="number" value="10"><button id="a_setluck">Уровень удачи</button></div>
+   <div class="row"><input id="a_inc" type="number" value="5"><button id="a_setinc">Уровень дохода</button></div>
+  </section>
+
+  <section class="ac"><h3><i>🎁</i>Коллекция и титулы</h3>
+   <div class="row"><select id="a_rar"></select><button id="a_item">Выдать предмет</button></div>
+   <div class="ac-grid"><button class="alt" id="a_all">Открыть всю коллекцию</button><button id="a_bug">Выдать титул «Баг-хантер»</button></div>
+  </section>
 </div></div>
+<div id="toasts"></div>
 <div id="confirmModal" class="confirm-modal"><div class="modal-box"><div class="modal-title">⚠️ Обнуление прогресса</div><div class="modal-text">Вы уверены, что хотите обнулить прогресс всех игроков?<br>Это действие нельзя отменить.</div><div class="modal-actions"><button class="alt" id="confirmNo">Отмена</button><button id="confirmYes">Обнулить</button></div></div></div><div id="noticeModal" class="confirm-modal"><div class="modal-box"><div class="modal-title" id="noticeTitle">Готово</div><div class="modal-text" id="noticeText"></div><div class="modal-actions"><button id="noticeOk">Понятно</button></div></div></div><div id="delModal" class="confirm-modal"><div class="modal-box"><div class="modal-title">⚠️ Удаление аккаунта</div><div class="modal-text">Аккаунт и весь ваш прогресс будут удалены навсегда. Для подтверждения введите свой ник.</div><input id="del_nick" maxlength="16" autocomplete="off" style="width:100%;margin-bottom:8px"><div id="del_st" style="color:var(--c5);font-size:14px;min-height:20px;margin-bottom:8px"></div><div class="modal-actions"><button class="alt" id="delNo">Отмена</button><button id="delYes">Удалить</button></div></div></div>
 <div id="reg"><div class="box"><button class="alt" id="lang2" style="float:right;flex:none;padding:6px 12px;font-size:13px"></button><b style="font-size:20px" id="reg_t">Создай профиль</b>
  <div class="row" style="margin:8px 0"><button class="alt" id="t_reg">Регистрация</button><button class="alt" id="t_in">Вход</button></div>
@@ -494,7 +521,7 @@ const avT=a=>isImg(a)?"🖼":(!a||bad(a)?"👤":a);
 let lastCust="",avCb=null;
 function fileToAv(f){return new Promise((res,rej)=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{const N=96,c=document.createElement("canvas");c.width=c.height=N;const x=c.getContext("2d"),m=Math.min(im.width,im.height);x.fillStyle="#120d26";x.fillRect(0,0,N,N);x.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,N,N);URL.revokeObjectURL(u);res(c.toDataURL("image/jpeg",.82))};im.onerror=()=>{URL.revokeObjectURL(u);rej()};im.src=u})}
 const upl=document.createElement("input");upl.type="file";upl.accept="image/*";upl.style.display="none";document.body.appendChild(upl);
-upl.onchange=async()=>{const f=upl.files[0];upl.value="";if(!f)return;try{lastCust=await fileToAv(f);pickAv=lastCust;if(avCb)avCb()}catch(e){alert(tr("avbad"))}};
+upl.onchange=async()=>{const f=upl.files[0];upl.value="";if(!f)return;try{lastCust=await fileToAv(f);pickAv=lastCust;if(avCb)avCb()}catch(e){toast(tr("avbad"),"err")}};
 function avGrid(id){const el=$(id);avCb=()=>avGrid(id);
  el.innerHTML=(lastCust?`<button class="alt avb${pickAv===lastCust?" sel":""}" data-c="1">${avH(lastCust)}</button>`:"")+AV.map(a=>`<button class="alt avb${a===pickAv?" sel":""}" data-a="${a}">${a}</button>`).join("")+`<button class="alt avup" data-up="1"><svg class="ico"><use href="#i-gallery"/></svg>${tr("gal")}</button>`;
  el.querySelectorAll(".avb").forEach(b=>b.onclick=()=>{pickAv=b.dataset.c?lastCust:b.dataset.a;avGrid(id)});
@@ -524,7 +551,7 @@ $("reg_ok").onclick=async()=>{const n=$("reg_nick").value.trim(),p=$("reg_pw").v
  const r=mode==="reg"?await rpc("gacha_register",{p_nick:n,p_pass:p,p_avatar:pickAv,p_save:S}):await rpc("gacha_login",{p_nick:n,p_pass:p});
  if(r.error){st.textContent=r.error;return}
  TOKEN=r.data.token;try{localStorage.setItem(GPX+"gacha-token",TOKEN)}catch(e){}applyMe(r.data)};
-async function setRole(k,r){const x=await rpc("gacha_set_role",{p_token:TOKEN,p_key:k,p_role:r});if(x.error)alert(x.error);renderGrants()}
+async function setRole(k,r){const x=await rpc("gacha_set_role",{p_token:TOKEN,p_key:k,p_role:r});if(x.error)toast(srv(x.error),"err");else toast(r?L2("Доступ к админке выдан","Admin access granted"):L2("Доступ к админке забран","Admin access revoked"),"ok");renderGrants()}
 function grTxt(){$("g_give").textContent=tr("ggive");$("g_take").textContent=tr("gtake");const o=$("g_who").options[0];if(o)o.textContent=tr("gwho")}
 let GP=[];
 async function renderGrants(){if(!isOwner)return;const r=await rpc("gacha_players",{p_token:TOKEN});if(r.error)return;let has="";const w=$("a_who"),cv=w.value;
@@ -534,9 +561,9 @@ GP=(r.data||[]).filter(x=>x.role!=="owner");
  $("g_list").innerHTML=has||"<i>"+tr("nobody")+"</i>";
  const g=$("g_who"),gv=g.value;g.innerHTML=`<option value="">${tr("gwho")}</option>`+GP.map(x=>`<option value="${esc(x.key)}">${avT(x.avatar)} ${esc(x.nick)}${x.role==="admin"?" ★":""}</option>`).join("");g.value=[...g.options].some(o=>o.value===gv)?gv:"";grTxt();
  document.querySelectorAll("[data-rv]").forEach(b=>b.onclick=()=>setRole(b.dataset.rv,""))}
-function grAct(role){const k=$("g_who").value,st=$("g_st");if(!k){st.style.color="var(--c5)";st.textContent=tr("gpick");return}
- const x=GP.find(p=>p.key===k);if(x&&x.role===role){st.style.color="var(--mute)";st.textContent=tr(role?"galready":"gnot");return}
- st.textContent="";setRole(k,role)}
+function grAct(role){const k=$("g_who").value;if(!k)return toast(tr("gpick"),"err");
+ const x=GP.find(p=>p.key===k);if(x&&x.role===role)return toast(tr(role?"galready":"gnot"),"info");
+ setRole(k,role)}
 $("g_give").onclick=()=>grAct("admin");$("g_take").onclick=()=>grAct("");
 const DAY7=7*864e5,NICKRE=/^[A-Za-z0-9_А-Яа-яЁё-]{3,16}$/;
 const sMsg=(t,ok)=>{const e=$("s_st");e.textContent=t;e.style.color=ok?"var(--c1)":"var(--c5)"};
@@ -570,7 +597,7 @@ async function boot(){const r=await rpc("gacha_me",{p_token:TOKEN});
  applyMe(r.data)}
 renderProf();
 if(TOKEN)boot();else{let seen=null;try{seen=localStorage.getItem(GPX+"gacha-seen")}catch(e){}openReg(seen?"in":"reg")}
-const aMsg=(t,ok)=>{const e=$("a_st");e.textContent=t;e.style.color=ok?"var(--c1)":"var(--c5)"};
+const aMsg=(t,ok)=>toast(srv(t),ok?"ok":"err");
 async function adm(f){const k=isOwner?$("a_who").value:"";
  if(!k){f(S);render();save();return}
  const g=await rpc("gacha_admin_get",{p_token:TOKEN,p_key:k});if(g.error)return aMsg(g.error);
@@ -730,7 +757,7 @@ async function pollEv(){if(evOff)return;const r=await rpc("gacha_event_get",{});
 setInterval(pollEv,15000);pollEv();
 function evSel(){const s=$("a_ev"),v=s.value,i=LANG==="en"?1:0;
  s.innerHTML=Object.keys(EVD).map(k=>{const n=i?EVD[k].en:EVD[k].ru;return `<option value="${k}">${EVD[k].e} ${n[0]} — ${n[1]}</option>`}).join("");if(v)s.value=v}
-const evMsg=(t,ok)=>{const e=$("a_evst");e.textContent=t;e.style.color=ok?"var(--c1)":"var(--c5)"};
+const evMsg=(t,ok)=>toast(srv(t),ok?"ok":"err");
 async function evSet(id,m){const r=await rpc("gacha_event_set",{p_token:TOKEN,p_ev:id,p_minutes:m});
  if(r.error)return evMsg(/Could not find|schema cache/i.test(r.error)?tr("evnot"):r.error);
  evMsg(id?tr("evon",fmtDur(m)):tr("evoff"),1);evOff=false;pollEv()}
@@ -921,6 +948,14 @@ $("shp").addEventListener("click",e=>{if(!ready||busy)return;
 $("a_gem").onclick=()=>adm(o=>{o.gem=(o.gem||0)+Math.max(0,+$("a_coins").value||0)});
 $("a_gemt").onclick=()=>adm(o=>{o.gem=Math.max(0,(o.gem||0)-Math.max(0,+$("a_coins").value||0))});
 $("a_bug").onclick=()=>adm(o=>{if(!Array.isArray(o.tb))o.tb=[];if(!o.tb.includes("bug"))o.tb.push("bug")});
+/* собственные уведомления */
+function toast(text,kind){const box=$("toasts");if(!box||!text)return;
+ const t=document.createElement("div");t.className="toast "+(kind||"info");
+ t.innerHTML=`<i>${kind==="ok"?"✅":kind==="err"?"⚠️":"ℹ️"}</i><span></span>`;t.lastChild.textContent=text;
+ const kill=()=>{if(!t.parentNode)return;t.classList.add("out");setTimeout(()=>t.remove(),260)};
+ t.onclick=kill;box.appendChild(t);while(box.children.length>3)box.firstChild.remove();setTimeout(kill,3400)}
+$("a_chips").onclick=e=>{const b=e.target.closest("[data-v]");if(b)$("a_coins").value=b.dataset.v};
+Object.assign(TX,{"Управление игроками, экономикой и ивентами":"Manage players, economy and events","Игрок":"Player","Монеты и алмазы":"Coins and gems","Прокачка":"Progression","Коллекция и титулы":"Collection and titles","Сумма":"Amount"});
 $("lang").onclick=$("lang2").onclick=()=>setLang(LANG==="en"?"ru":"en");
 setLang(LANG);
 </script>
