@@ -187,8 +187,7 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 <div id="menu">
  <button class="alt" id="lang"></button>
  <button class="alt" id="gmb"><svg class="ico"><use href="#i-games"/></svg>Мини-игры</button>
- <button class="alt" id="gemb">Питомцы и алмазы</button>
-  <button class="alt" id="titb"><svg class="ico"><use href="#i-titles"/></svg>Титулы</button>
+ <button class="alt" id="titb"><svg class="ico"><use href="#i-titles"/></svg>Титулы</button>
  <button class="alt" id="trb"><svg class="ico"><use href="#i-transfer"/></svg>Переводы</button>
  <button class="alt" id="adm" style="display:none"><svg class="ico"><use href="#i-admin"/></svg>Админ панель</button>
  <button class="alt" id="reset" style="display:none"><svg class="ico"><use href="#i-trash"/></svg>Очистить весь прогресс</button>
@@ -242,6 +241,7 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
 </div>
 <div id="topp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
   <b class="hd"><svg class="ico"><use href="#i-top"/></svg>Топ по монетам</b>
+  <div class="row" id="toptabs"><button data-tp="c"></button><button class="alt" data-tp="g"></button></div>
   <div id="topme" style="color:var(--mute);font-size:13px;margin-top:6px;min-height:18px"></div>
   <div id="toplist"></div>
 </div>
@@ -258,7 +258,9 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
   <b class="hd"><svg class="ico"><use href="#i-shop"/></svg>Магазин</b>
   <div style="color:var(--mute);font-size:13px;margin-top:4px">Покупай титулы за монеты</div>
   <div id="shbal" style="font:800 17px var(--fh);margin-top:8px"></div>
-  <div id="shlist"></div>
+  <div class="row" id="shtabs"><button data-st="t"></button><button class="alt" data-st="p"></button></div>
+  <div id="sh_t"><div id="shlist"></div><h2 id="gth"></h2><div id="gtl"></div></div>
+  <div id="sh_p" style="display:none"><div id="shpsub" style="color:var(--mute);font-size:13px;margin-top:8px"></div><div id="pets"></div></div>
 </div>
 <div id="gmp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
   <b class="hd"><svg class="ico"><use href="#i-games"/></svg>Мини-игры</b>
@@ -272,9 +274,6 @@ button.alt:hover:not(:disabled){border-color:rgba(255,255,255,.32)}
   <div id="titcnt" style="color:var(--mute);font-size:13px;margin-top:4px"></div>
   <div id="titlist"></div>
 </div>
-<div id="gemp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
-  <b class="hd" id="gemhd"></b><div id="gembal" style="font:800 17px var(--fh);margin-top:8px"></div><div id="gemsub" style="color:var(--mute);font-size:13px;margin-top:4px"></div>
-  <h2 id="gph"></h2><div id="pets"></div><h2 id="gth"></h2><div id="gtl"></div></div>
 <div id="admp" class="glass stage pbox" style="display:none;text-align:left"><button class="alt pclose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
   <b class="hd"><svg class="ico"><use href="#i-admin"/></svg>Админ-панель</b>
   <div id="own" style="display:none;margin:10px 0;padding:10px;border:1px dashed var(--line);border-radius:12px"><b style="font-size:14px">Выдать доступ к админке</b>
@@ -464,7 +463,7 @@ function roll(n){
 }
 const setH=(el,h)=>{if(el._h!==h){el._h=h;el.innerHTML=h}};
 function render(){const gb=$("gm_bal");if(gb)gb.textContent=fmt(S.coins);
- $("coins").textContent=fmt(S.coins);$("gems").textContent=fmt(S.gem||0);{const g=$("gemp");if(g&&g.style.display==="block")renderGem()}$("rolls").textContent=S.rolls;
+ $("coins").textContent=fmt(S.coins);$("gems").textContent=fmt(S.gem||0);{const g=$("shp");if(g&&g.style.display==="block")renderGem()}$("rolls").textContent=S.rolls;
  const b=$("best");if(S.best>=0){b.textContent=rn(S.best);b.style.color=R[S.best].c}else{b.textContent="—";b.style.color=""}
  $("r1").disabled=busy||S.coins<10;$("r10").disabled=busy||S.coins<100;
  const lc=luckCost(),mx=S.luck>=MAXLUCK;$("luck").textContent=mx?tr("luckmax",MAXLUCK):tr("luckup",S.luck+1,fmt(lc));$("luck").disabled=mx||busy||S.coins<lc;
@@ -662,7 +661,7 @@ function drawDice(){const upd=()=>{const p=DC.side==="u"?(DC.t-1)/100:(100-DC.t)
   $("dc_r").textContent=roll;if(win){const w=Math.floor(b*.97/p);gmPay(w);gmMsg(G("Победа! +","You win! +")+fmt(w-b)+" 🪙","var(--c1)")}else gmMsg(G("Проигрыш","You lose"),"var(--c5)")}}
 $("gmb").onclick=()=>{gmMsg("");gmDraw();openPanel("gmp")};
 /* окна по центру экрана */
-function openPanel(id){["setp","admp","titp","shp","trp","topp","gmp","gemp"].forEach(x=>$(x).style.display=x===id?"block":"none");$("pwrap").classList.add("open");$(id).scrollTop=0}
+function openPanel(id){["setp","admp","titp","shp","trp","topp","gmp"].forEach(x=>$(x).style.display=x===id?"block":"none");$("pwrap").classList.add("open");$(id).scrollTop=0}
 function closePanel(){$("pwrap").classList.remove("open")}
 $("pwrap").onclick=e=>{if(e.target===$("pwrap"))closePanel()};
 document.querySelectorAll(".pclose").forEach(b=>b.onclick=closePanel);
@@ -742,14 +741,17 @@ $("a_evstop").onclick=()=>evSet("",0);
 $("a_evauto").onclick=async()=>{const r=await rpc("gacha_event_auto",{p_token:TOKEN,p_on:!EVAUTO});
  if(r.error)return evMsg(/Could not find|schema cache/i.test(r.error)?tr("evnot"):r.error);evOff=false;pollEv()};
 /* топ по монетам */
+let topTab="c";
 async function loadTop(){
- const r=await rpc("gacha_top",{p_token:TOKEN,p_limit:20});
+ const r=await rpc("gacha_top",{p_token:TOKEN,p_limit:topTab==="g"?500:20});
  if(r.error){$("topme").textContent="";$("toplist").innerHTML=`<div style="color:var(--c5);margin-top:10px">${esc(/Could not find|schema cache/i.test(r.error)?tr("topnot"):r.error)}</div>`;return}
- const d=r.data||{},list=d.top||[],medal=i=>`<svg class="ico" style="width:30px;height:30px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="url(#g-${["gold","silver","bronze"][i]})"/><circle cx="12" cy="12" r="7.8" fill="none" stroke="rgba(255,255,255,.6)"/><text x="12" y="16.1" text-anchor="middle" font-size="11" font-weight="800" fill="#2a1700" font-family="Nunito,sans-serif">${i+1}</text></svg>`;
- $("topme").textContent=d.me?tr("topme",d.me.rank,fmt(+d.me.coins)):"";
+ const d=r.data||{},G=topTab==="g",full=G?(d.top||[]).filter(p=>p.gem!=null).sort((a,b)=>b.gem-a.gem):(d.top||[]),list=G?full.slice(0,20):full,medal=i=>`<svg class="ico" style="width:30px;height:30px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="url(#g-${["gold","silver","bronze"][i]})"/><circle cx="12" cy="12" r="7.8" fill="none" stroke="rgba(255,255,255,.6)"/><text x="12" y="16.1" text-anchor="middle" font-size="11" font-weight="800" fill="#2a1700" font-family="Nunito,sans-serif">${i+1}</text></svg>`;
+ $("topme").textContent=G?(me&&full.findIndex(p=>p.nick===me.nick)>=0?L2("Ваше место: ","Your rank: ")+(full.findIndex(p=>p.nick===me.nick)+1):""):(d.me?tr("topme",d.me.rank,fmt(+d.me.coins)):"");
  $("toplist").innerHTML=list.length?list.map((p,i)=>{const mine=me&&p.nick===me.nick;
-  return `<div class="glass ti${mine?" eq":""}"><div class="ic">${i<3?medal(i):"#"+(i+1)}</div><div class="tx"><b>${avH(p.avatar)} ${esc(p.nick)}</b></div><b style="flex:none">🪙 ${fmt(+p.coins)}</b></div>`}).join(""):`<div style="color:var(--mute);margin-top:10px">${tr("topempty")}</div>`}
-$("topBtn").onclick=()=>{openPanel("topp");loadTop()};
+  return `<div class="glass ti${mine?" eq":""}"><div class="ic">${i<3?medal(i):"#"+(i+1)}</div><div class="tx"><b>${avH(p.avatar)} ${esc(p.nick)}</b></div><b style="flex:none">${G?"💎 "+fmt(+p.gem):"🪙 "+fmt(+p.coins)}</b></div>`}).join(""):`<div style="color:var(--mute);margin-top:10px">${G?L2("Сервер пока не отдаёт алмазы игроков: в функцию gacha_top нужно добавить поле gem.","The server does not return players' gems yet: add a gem field to gacha_top."):tr("topempty")}</div>`}
+function topTabs(){document.querySelectorAll("#toptabs [data-tp]").forEach(b=>{b.className=b.dataset.tp===topTab?"":"alt";b.textContent=b.dataset.tp==="c"?"🪙 "+L2("Монеты","Coins"):"💎 "+L2("Алмазы","Gems")})}
+$("toptabs").onclick=e=>{const b=e.target.closest("[data-tp]");if(!b)return;topTab=b.dataset.tp;topTabs();loadTop()};
+$("topBtn").onclick=()=>{topTabs();openPanel("topp");loadTop()};
 setInterval(()=>{if($("topp").style.display==="block")loadTop()},20000);
 /* переводы монет между игроками */
 const tMsg=(t,ok)=>{const e=$("t_st");e.textContent=t;e.style.color=ok?"var(--c1)":"var(--c5)"};
@@ -808,11 +810,11 @@ TT.push({id:"ex_all",e:"👑",c:XR.c,ru:["Хранитель сезонов","С
 TT.push(...SH.map(a=>({id:a[0],e:a[1],c:a[2],price:a[3],shop:1,ru:[a[4],a[5]],en:[a[6],a[7]],cur:()=>S.tb.includes(a[0])?1:0,goal:1})));
 let shLang="";
 function renderShop(){
- $("shbal").textContent="🪙 "+fmt(S.coins);shLang=LANG;
+ $("shbal").textContent="🪙 "+fmt(S.coins)+"   💎 "+fmt(S.gem||0);shLang=LANG;
  $("shlist").innerHTML=TT.filter(t=>t.shop).map(t=>{const o=tUnl(t),nm=tnm(t);
   return `<div class="glass ti" style="border-color:${t.c}"><div class="ic">${t.e}</div><div class="tx"><b style="color:${t.c}">${esc(nm[0])}</b><span>${esc(nm[1])}</span></div><button data-buy="${t.id}" ${o||S.coins<pr(t)?"disabled":""}>${o?(LANG==="en"?"Owned":"Куплено"):"🪙 "+fmt(pr(t))}</button></div>`}).join("")}
 function updShop(){if($("shp").style.display!=="block")return;if(shLang!==LANG)return renderShop();
- $("shbal").textContent="🪙 "+fmt(S.coins);
+ $("shbal").textContent="🪙 "+fmt(S.coins)+"   💎 "+fmt(S.gem||0);
  document.querySelectorAll("#shlist [data-buy]").forEach(b=>{const t=TT.find(x=>x.id===b.dataset.buy);b.disabled=tUnl(t)||S.coins<pr(t);if(!tUnl(t))b.textContent="🪙 "+fmt(pr(t))})}
 $("shlist").onclick=e=>{const b=e.target.closest("[data-buy]");if(!b||b.disabled||!ready||busy)return;
  const t=TT.find(x=>x.id===b.dataset.buy);if(!t||!t.shop||tUnl(t)||S.coins<pr(t))return;
@@ -884,19 +886,22 @@ $("titb").onclick=()=>{renderTitles();openPanel("titp")};
 /* алмазы и питомцы */
 const L2=(a,b)=>LANG==="en"?b:a;
 Object.assign(TX,{"💎 Алмазы":"💎 Gems","Питомцы и алмазы":"Pets & gems","Выдать алмазы":"Give gems","Забрать алмазы":"Take gems","Выдать титул «Баг-хантер»":"Give «Bug Hunter» title"});
+let shTab="t";
+function applyShTab(){$("sh_t").style.display=shTab==="t"?"":"none";$("sh_p").style.display=shTab==="p"?"":"none";
+ document.querySelectorAll("#shtabs [data-st]").forEach(b=>{b.className=b.dataset.st===shTab?"":"alt";b.textContent=b.dataset.st==="t"?L2("Титулы","Titles"):L2("Питомцы","Pets")})}
 function renderGem(){
- $("gemhd").textContent=L2("Питомцы и алмазы","Pets & gems");$("gembal").textContent="💎 "+fmt(S.gem||0);
- $("gemsub").textContent=L2("Алмазы редко падают при бросках. Питомцы дают монеты каждую секунду: сейчас +","Gems drop rarely while rolling. Pets earn coins every second: now +")+petInc()+"/"+L2("с","s");
- $("gph").textContent=L2("Питомцы","Pets");$("gth").textContent=L2("Титулы за алмазы","Titles for gems");
+ applyShTab();$("gth").textContent=L2("Титулы за алмазы","Titles for gems");
+ $("shpsub").textContent=L2("Питомцы дают монеты каждую секунду (сейчас +","Pets earn coins every second (now +")+petInc()+"/"+L2("с","s")+L2("). Алмазы редко падают при бросках.",").  Gems drop rarely while rolling.");
  setH($("pets"),PETS.map(p=>{const o=S.pt.includes(p.id),r=R[p.r];
   return `<div class="glass ti" style="border-color:${r.c}"><div class="ic" style="color:${r.c};font:800 20px var(--fh)">${esc((L2(p.ru,p.en))[0])}</div><div class="tx"><b style="color:${r.c}">${esc(L2(p.ru,p.en))}</b><span>${rname(p.r)} · +${p.inc}/${L2("с","s")}</span></div><button data-pet="${p.id}" ${o||S.gem<p.price?"disabled":""}>${o?L2("Куплен","Owned"):"💎 "+fmt(p.price)}</button></div>`}).join(""));
  setH($("gtl"),TT.filter(t=>t.gprice).map(t=>{const o=tUnl(t),nm=tnm(t);
   return `<div class="glass ti" style="border-color:${t.c}"><div class="ic">${t.e}</div><div class="tx"><b style="color:${t.c}">${esc(nm[0])}</b><span>${esc(nm[1])}</span></div><button data-gt="${t.id}" ${o||S.gem<t.gprice?"disabled":""}>${o?L2("Куплено","Owned"):"💎 "+fmt(t.gprice)}</button></div>`}).join(""))}
-$("gemp").onclick=e=>{if(!ready||busy)return;
+{const _rs=renderShop;renderShop=function(){_rs();renderGem()}}
+$("shtabs").onclick=e=>{const b=e.target.closest("[data-st]");if(!b)return;shTab=b.dataset.st;renderGem()};
+$("shp").addEventListener("click",e=>{if(!ready||busy)return;
  const bp=e.target.closest("[data-pet]"),bt=e.target.closest("[data-gt]");
- if(bp&&!bp.disabled){const p=PETS.find(x=>x.id===bp.dataset.pet);if(p&&!S.pt.includes(p.id)&&S.gem>=p.price){S.gem-=p.price;S.pt.push(p.id);render();save();renderGem()}}
- if(bt&&!bt.disabled){const t=TT.find(x=>x.id===bt.dataset.gt);if(t&&t.gprice&&!tUnl(t)&&S.gem>=t.gprice){S.gem-=t.gprice;S.tb.push(t.id);render();save();renderGem()}}};
-$("gemb").onclick=()=>{renderGem();openPanel("gemp")};
+ if(bp&&!bp.disabled){const p=PETS.find(x=>x.id===bp.dataset.pet);if(p&&!S.pt.includes(p.id)&&S.gem>=p.price){S.gem-=p.price;S.pt.push(p.id);render();save();renderShop()}}
+ if(bt&&!bt.disabled){const t=TT.find(x=>x.id===bt.dataset.gt);if(t&&t.gprice&&!tUnl(t)&&S.gem>=t.gprice){S.gem-=t.gprice;S.tb.push(t.id);render();save();renderShop()}}});
 $("a_gem").onclick=()=>adm(o=>{o.gem=(o.gem||0)+Math.max(0,+$("a_coins").value||0)});
 $("a_gemt").onclick=()=>adm(o=>{o.gem=Math.max(0,(o.gem||0)-Math.max(0,+$("a_coins").value||0))});
 $("a_bug").onclick=()=>adm(o=>{if(!Array.isArray(o.tb))o.tb=[];if(!o.tb.includes("bug"))o.tb.push("bug")});
