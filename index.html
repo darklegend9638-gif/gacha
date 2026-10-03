@@ -104,7 +104,7 @@ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale
 .csel-b span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.csel-b::after{content:"";flex:none;width:7px;height:7px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg) translateY(-2px)}
 .csel-b:hover:not(:disabled){border-color:rgba(255,255,255,.32)}.csel-b:disabled{opacity:.5;cursor:default}.csel[data-fit]{flex:none;width:auto}.csel[data-fit] .csel-b{min-width:84px}select.csel-n{display:none}
 #selPop .modal-box{text-align:left;max-width:380px}.sp-list{max-height:min(52vh,400px);overflow:auto;display:flex;flex-direction:column;gap:6px;overscroll-behavior:contain}
-.sp-list.grid{display:grid;grid-template-columns:repeat(5,1fr)}.sp-o{padding:11px 12px;font-size:14px;text-align:left;box-shadow:none;flex:none}.sp-list.grid .sp-o{text-align:center;padding:11px 0}
+.sp-o .avimg,.csel-b .avimg{width:1.5em;height:1.5em;margin-right:4px;vertical-align:-.45em}.sp-list.grid{display:grid;grid-template-columns:repeat(5,1fr)}.sp-o{padding:11px 12px;font-size:14px;text-align:left;box-shadow:none;flex:none}.sp-list.grid .sp-o{text-align:center;padding:11px 0}
 .adm-sub{color:var(--mute);font-size:13px;margin:4px 0 4px}
 .ac{margin-top:12px;padding:14px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border:1px solid var(--line)}
 .ac h3{margin:0 0 4px;font:800 14px var(--fh);display:flex;align-items:center;gap:9px}
@@ -523,7 +523,7 @@ const AV=["😀","😎","🤖","👻","🐱","🦊","🐼","🐸","🦄","🐲",
 const isImg=a=>/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(a||"");
 const bad=a=>/^data:/.test(a||"")&&!isImg(a);
 const avH=a=>isImg(a)?`<img class="avimg" src="${a}" alt="">`:esc(!a||bad(a)?"👤":a);
-const avT=a=>isImg(a)?"🖼":(!a||bad(a)?"👤":a);
+const avT=a=>isImg(a)?"🖼":(!a||bad(a)?"👤":a),avP=a=>isImg(a)?"":avT(a)+" ",AVMAP={};
 let lastCust="",avCb=null;
 function fileToAv(f){return new Promise((res,rej)=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{const N=96,c=document.createElement("canvas");c.width=c.height=N;const x=c.getContext("2d"),m=Math.min(im.width,im.height);x.fillStyle="#120d26";x.fillRect(0,0,N,N);x.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,N,N);URL.revokeObjectURL(u);res(c.toDataURL("image/jpeg",.82))};im.onerror=()=>{URL.revokeObjectURL(u);rej()};im.src=u})}
 const upl=document.createElement("input");upl.type="file";upl.accept="image/*";upl.style.display="none";document.body.appendChild(upl);
@@ -560,12 +560,12 @@ $("reg_ok").onclick=async()=>{const n=$("reg_nick").value.trim(),p=$("reg_pw").v
 async function setRole(k,r){const x=await rpc("gacha_set_role",{p_token:TOKEN,p_key:k,p_role:r});if(x.error)toast(srv(x.error),"err");else toast(r?L2("Доступ к админке выдан","Admin access granted"):L2("Доступ к админке забран","Admin access revoked"),"ok");renderGrants()}
 function grTxt(){$("g_give").textContent=tr("ggive");$("g_take").textContent=tr("gtake");const o=$("g_who").options[0];if(o)o.textContent=tr("gwho")}
 let GP=[];
-async function renderGrants(){if(!isOwner)return;const r=await rpc("gacha_players",{p_token:TOKEN});if(r.error)return;let has="";const w=$("a_who"),cv=w.value;
- w.innerHTML=`<option value="">${tr("meopt")}</option>`+(r.data||[]).filter(x=>x.role!=="owner").map(x=>`<option value="${esc(x.key)}">${avT(x.avatar)} ${esc(x.nick)}</option>`).join("");w.value=[...w.options].some(o=>o.value===cv)?cv:"";
+async function renderGrants(){if(!isOwner)return;const r=await rpc("gacha_players",{p_token:TOKEN});if(r.error)return;(r.data||[]).forEach(x=>{AVMAP[x.key]=x.avatar});let has="";const w=$("a_who"),cv=w.value;
+ w.innerHTML=`<option value="">${tr("meopt")}</option>`+(r.data||[]).filter(x=>x.role!=="owner").map(x=>`<option value="${esc(x.key)}">${avP(x.avatar)}${esc(x.nick)}</option>`).join("");w.value=[...w.options].some(o=>o.value===cv)?cv:"";
 GP=(r.data||[]).filter(x=>x.role!=="owner");
  GP.forEach(x=>{if(x.role==="admin")has+=`<div class="gr"><span>${avH(x.avatar)} ${esc(x.nick)}</span><button class="alt" data-rv="${esc(x.key)}">${tr("revoke")}</button></div>`});
  $("g_list").innerHTML=has||"<i>"+tr("nobody")+"</i>";
- const g=$("g_who"),gv=g.value;g.innerHTML=`<option value="">${tr("gwho")}</option>`+GP.map(x=>`<option value="${esc(x.key)}">${avT(x.avatar)} ${esc(x.nick)}${x.role==="admin"?" ★":""}</option>`).join("");g.value=[...g.options].some(o=>o.value===gv)?gv:"";grTxt();
+ const g=$("g_who"),gv=g.value;g.innerHTML=`<option value="">${tr("gwho")}</option>`+GP.map(x=>`<option value="${esc(x.key)}">${avP(x.avatar)}${esc(x.nick)}${x.role==="admin"?" ★":""}</option>`).join("");g.value=[...g.options].some(o=>o.value===gv)?gv:"";grTxt();
  document.querySelectorAll("[data-rv]").forEach(b=>b.onclick=()=>setRole(b.dataset.rv,""))}
 function grAct(role){const k=$("g_who").value;if(!k)return toast(tr("gpick"),"err");
  const x=GP.find(p=>p.key===k);if(x&&x.role===role)return toast(tr(role?"galready":"gnot"),"info");
@@ -956,12 +956,13 @@ $("a_gemt").onclick=()=>adm(o=>{o.gem=Math.max(0,(o.gem||0)-Math.max(0,+$("a_coi
 $("a_bug").onclick=()=>adm(o=>{if(!Array.isArray(o.tb))o.tb=[];if(!o.tb.includes("bug"))o.tb.push("bug")});
 /* собственные списки вместо системных <select> */
 const SELD=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,"value");
+const optHTML=(sel,o)=>{const a=(sel.id==="a_who"||sel.id==="g_who")?AVMAP[o.value]:"";return (a&&isImg(a)?avH(a)+" ":"")+esc(o.textContent)};
 function enhanceSel(sel){
  if(sel._cs||sel.classList.contains("csel-n"))return;
  const w=document.createElement("div");w.className="csel";if(sel.style.flex==="none")w.setAttribute("data-fit","1");
  const b=document.createElement("button");b.type="button";b.className="csel-b";b.innerHTML="<span></span>";
  sel.parentNode.insertBefore(w,sel);w.appendChild(b);w.appendChild(sel);sel.classList.add("csel-n");
- const refresh=()=>{const o=sel.selectedOptions[0];b.firstChild.textContent=o?o.textContent:"";b.disabled=sel.disabled};
+ const refresh=()=>{const o=sel.selectedOptions[0];b.firstChild.innerHTML=o?optHTML(sel,o):"";b.disabled=sel.disabled};
  Object.defineProperty(sel,"value",{get(){return SELD.get.call(sel)},set(v){SELD.set.call(sel,v);refresh()},configurable:true});
  new MutationObserver(refresh).observe(sel,{childList:true,subtree:true,attributes:true,attributeFilter:["disabled"]});
  b.onclick=()=>openSel(sel);sel._cs=1;refresh()}
@@ -972,7 +973,7 @@ function openSel(sel){
  $("sp_t").textContent=t?L2(t[0],t[1]):L2("Выбор","Choose");$("sp_x").textContent=L2("Отмена","Cancel");q.placeholder=L2("Поиск","Search");
  list.className="sp-list"+(grid?" grid":"");q.style.display=opts.length>8&&!grid?"":"none";q.value="";
  const draw=f=>{list.innerHTML="";opts.filter(o=>!f||o.textContent.toLowerCase().includes(f)).forEach(o=>{
-   const bt=document.createElement("button");bt.type="button";bt.className="sp-o"+(o.value===sel.value?"":" alt");bt.textContent=o.textContent;
+   const bt=document.createElement("button");bt.type="button";bt.className="sp-o"+(o.value===sel.value?"":" alt");bt.innerHTML=optHTML(sel,o);
    bt.onclick=()=>{sel.value=o.value;sel.dispatchEvent(new Event("change",{bubbles:true}));closeSel()};list.appendChild(bt)})};
  q.oninput=()=>draw(q.value.trim().toLowerCase());draw("");$("selPop").classList.add("show");
  const cur=list.querySelector(".sp-o:not(.alt)");if(cur)cur.scrollIntoView({block:"center"})}
