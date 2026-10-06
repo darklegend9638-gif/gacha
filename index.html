@@ -238,6 +238,12 @@ $("pr_go").onclick=async()=>{
  toast(L2("Промокод активирован: ","Promo code redeemed: ")+[c?"🪙 "+fmt(c):"",g?"💎 "+fmt(g):""].filter(Boolean).join(" · "),"ok")};
 $("pr_code").addEventListener("keydown",e=>{e.key==="Enter"&&$("pr_go").click()});
 function promoAdmin(){const on=(isOwner||granted)&&!!TOKEN;$("pr_adm").style.display=on?"block":"none";on&&loadPromos()}
+let promoRefreshBusy=false;
+setInterval(async()=>{
+  if(promoRefreshBusy||document.hidden||$("promop").style.display!=="block"||!(isOwner||granted)||!TOKEN)return;
+  promoRefreshBusy=true;
+  try{await loadPromos()}finally{promoRefreshBusy=false}
+},3000);
 async function loadPromos(){const r=await rpc("gacha_promo_list",{p_token:TOKEN}),el=$("pr_list"),hint=t=>`<div style="color:var(--mute);font-size:13px">${esc(t)}</div>`;
  if(r.error){el.innerHTML=hint(promoErr(r.error));return}
  const a=Array.isArray(r.data)?r.data:[];
