@@ -435,6 +435,18 @@ taps("main>h2:nth-of-type(1)",6,"SOURCEPEEK");taps("main>h2:nth-of-type(2)",6,"C
     let kt = 0;
     const capOf = tag => CAPS ? CAPS.base + CAPS.step * ((CAPS.lv || {})[String(tag).toUpperCase()] || 0) : 30;
     const isOwner = () => !!(CLAN && me && (CLAN.members || []).some(m => m.role === "owner" && String(m.nick).toLowerCase() === me.nick.toLowerCase()));
+    const RKM = { owner: ["👑", "Глава", "Leader"], coleader: ["⭐", "Со-глава", "Co-leader"], veteran: ["🛡️", "Ветеран", "Veteran"] };
+    const rkName = k => RKM[k] ? L2(RKM[k][1], RKM[k][2]) : "";
+    const mrow = () => CLAN && me ? (CLAN.members || []).find(m => String(m.nick).toLowerCase() === me.nick.toLowerCase()) : null;
+    const myRank = () => { const m = mrow(); return m ? (m.role === "owner" ? "owner" : m.rank || "") : ""; };
+    async function loadRanks() {
+        if (!CLAN) {
+            return;
+        }
+        const r = await rpc("gacha_clan_ranks", { p_token: TOKEN });
+        const mp = !r.error && r.data && typeof r.data === "object" ? r.data : {};
+        (CLAN.members || []).forEach(m => { m.rank = m.role === "owner" ? "owner" : mp[String(m.nick).toLowerCase()] || ""; });
+    }
     const noSql = e => /Could not find|schema cache/i.test(String(e || ""));
     const emc = e => noSql(e) ? L2("Нужно обновить SQL (clan_cap.sql)", "SQL update needed (clan_cap.sql)") : srv(String(e || ""));
     async function loadCaps(force) {
@@ -476,6 +488,7 @@ taps("main>h2:nth-of-type(1)",6,"SOURCEPEEK");taps("main>h2:nth-of-type(2)",6,"C
         }
         CLAN = r.data && r.data.clan || null;
         await loadCaps();
+        await loadRanks();
         try {
             render();
         }
@@ -518,10 +531,15 @@ taps("main>h2:nth-of-type(1)",6,"SOURCEPEEK");taps("main>h2:nth-of-type(2)",6,"C
     // строка участника; владелец может нажать на любого, кроме себя
     function memberRow(m, i) {
         const mine = me && String(m.nick).toLowerCase() === me.nick.toLowerCase();
-        const can = isOwner() && !mine && m.role !== "owner";
+        const mr = myRank();
+        const can = !mine && m.role !== "owner" && (mr === "owner" || (mr === "coleader" && m.rank !== "coleader"));
         const sel = can && selM === m.nick;
-        let h = `<div class="glass ti${mine ? " eq" : ""}${can ? " clk" : ""}"${can ? ` data-a="msel" data-nick="${esc(m.nick)}" style="cursor:pointer"` : ""}><div class="ic">${i < 3 ? ["🥇", "🥈", "🥉"][i] : "#" + (i + 1)}</div><div class="tx"><b>${m.role === "owner" ? "👑 " : ""}${esc(m.nick)}</b></div><b style="flex:none">💎 ${fmt(+m.donated || 0)}</b>${can ? `<span style="flex:none;opacity:.6">${sel ? "▾" : "›"}</span>` : ""}</div>`;
+        const rk = m.role === "owner" ? "owner" : m.rank || "";
+        const ico = RKM[rk] ? RKM[rk][0] + " " : "";
+        let h = `<div class="glass ti${mine ? " eq" : ""}${can ? " clk" : ""}"${can ? ` data-a="msel" data-nick="${esc(m.nick)}" style="cursor:pointer"` : ""}><div class="ic">${i < 3 ? ["🥇", "🥈", "🥉"][i] : "#" + (i + 1)}</div><div class="tx"><b>${ico}${esc(m.nick)}</b>${rk ? `<span>${esc(rkName(rk))}</span>` : ""}</div><b style="flex:none">💎 ${fmt(+m.donated || 0)}</b>${can ? `<span style="flex:none;opacity:.6">${sel ? "▾" : "›"}</span>` : ""}</div>`;
         if (sel) {
+            const rb = (k, lbl) => `<button class="${(m.rank || "") === k ? "" : "alt"}" data-a="rk" data-nick="${esc(m.nick)}" data-rank="${k}" style="padding:9px 6px;font-size:12px">${lbl}</button>`;
+            h += `<div class="row">${mr === "owner" ? rb("coleader", "⭐ " + rkName("coleader")) : ""}${rb("veteran", "🛡️ " + rkName("veteran"))}${rb("", L2("Без ранга", "No rank"))}</div>`;
             h += `<div class="row"><button class="alt" data-a="kick" data-nick="${esc(m.nick)}" style="border-color:var(--c5);color:var(--c5)">${L2("Исключить из клана", "Kick from clan")}</button><button class="alt" data-a="mx" style="flex:none">✕</button></div>`;
         }
         return h;
@@ -580,15 +598,73 @@ taps("main>h2:nth-of-type(1)",6,"SOURCEPEEK");taps("main>h2:nth-of-type(2)",6,"C
         if (open() && TOPV)
             drawTop();
     }
+    let SETV = false;
+    function drawSet() {
+        const c = CLAN;
+        B().innerHTML = `<div class="row" style="margin-top:8px"><button class="alt" data-a="setb" style="flex:none;padding:9px 14px">← ${L2("Назад", "Back")}</button></div><h2 style="margin-top:14px">⚙ ${L2("Настройки клана", "Clan settings")}</h2><div style="color:var(--mute);font-size:12px;margin-bottom:4px">${L2("Название", "Name")}</div><div class="row" style="margin-top:0"><input id="cl_sname" maxlength="16" value="${esc(c.name)}"></div><div style="color:var(--mute);font-size:12px;margin:10px 0 4px">${L2("Тег (2–4 символа, латиница или цифры)", "Tag (2-4 letters or digits)")}</div><div class="row" style="margin-top:0"><input id="cl_stag" maxlength="4" value="${esc(c.tag)}" style="text-transform:uppercase"></div><div class="row"><button data-a="setsave">${L2("Сохранить", "Save")}</button></div>`;
+    }
     function draw() {
+        if (SETV && CLAN && isOwner() && TOKEN && !off) {
+            drawSet();
+            return;
+        }
+        SETV = false;
         if (TOPV && TOKEN && !off) {
             drawTop();
             return;
         }
         drawMain();
-        if (TOKEN && !off)
-            B().insertAdjacentHTML("afterbegin", topTabs());
+        if (TOKEN && !off) {
+            B().insertAdjacentHTML("afterbegin", topTabs() + (CLAN && isOwner() ? `<div class="row" style="margin-top:8px"><button class="alt" data-a="sets" style="padding:9px">⚙ ${L2("Настройки клана", "Clan settings")}</button></div>` : ""));
+        }
     }
+    P.addEventListener("click", async function (e) {
+        const t = e.target.closest("[data-a=sets],[data-a=setb],[data-a=setsave],[data-a=rk]");
+        if (!t || t.disabled) {
+            return;
+        }
+        const a = t.dataset.a;
+        if (a === "sets") {
+            SETV = true;
+            draw();
+        }
+        else if (a === "setb") {
+            SETV = false;
+            draw();
+        }
+        else if (a === "setsave") {
+            const n = $("cl_sname").value.trim();
+            const g = $("cl_stag").value.trim().toUpperCase();
+            if (n.length < 3) {
+                return toast(L2("Название: от 3 символов", "Name: 3+ characters"), "err");
+            }
+            if (!/^[A-Z0-9]{2,4}$/.test(g)) {
+                return toast(L2("Тег: 2–4 символа, латиница или цифры", "Tag: 2-4 letters or digits"), "err");
+            }
+            t.disabled = !0;
+            const r = await rpc("gacha_clan_edit", { p_token: TOKEN, p_name: n, p_tag: g });
+            t.disabled = !1;
+            if (r.error) {
+                return toast(noSql(r.error) ? L2("Нужно обновить SQL (clan_manage.sql)", "SQL update needed (clan_manage.sql)") : srv(String(r.error)), "err");
+            }
+            toast(L2("Клан обновлён", "Clan updated"), "ok");
+            SETV = false;
+            await load();
+            await loadCaps(!0);
+            draw();
+        }
+        else if (a === "rk") {
+            t.disabled = !0;
+            const r = await rpc("gacha_clan_set_rank", { p_token: TOKEN, p_nick: t.dataset.nick, p_rank: t.dataset.rank });
+            t.disabled = !1;
+            if (r.error) {
+                return toast(noSql(r.error) ? L2("Нужно обновить SQL (clan_manage.sql)", "SQL update needed (clan_manage.sql)") : srv(String(r.error)), "err");
+            }
+            toast(L2("Ранг изменён", "Rank changed"), "ok");
+            selM = "";
+            await load();
+        }
+    });
     P.addEventListener("click", function (e) {
         const t = e.target.closest("[data-a=tt],[data-a=tb]");
         if (!t) {
@@ -656,10 +732,16 @@ taps("main>h2:nth-of-type(1)",6,"SOURCEPEEK");taps("main>h2:nth-of-type(2)",6,"C
                 return toast(L2("Не хватает алмазов", "Not enough gems"), "err");
             }
             t.disabled = !0;
-            const r = await rpc("gacha_clan_donate", { p_token: TOKEN, p_gems: n });
+            let r = await rpc("gacha_clan_donate", { p_token: TOKEN, p_gems: n });
+            if (r.error && /максимальн|maxim/i.test(String(r.error))) {   // клан 10 ур.: вклад без лимита
+                r = await serial(async () => {
+                    await trFlush();
+                    return await rpc("gacha_clan_donate_max", { p_token: TOKEN, p_gems: n });
+                });
+            }
             t.disabled = !1;
             if (r.error) {
-                return toast(em(r.error), "err");
+                return toast(noSql(r.error) ? emc(r.error) : em(r.error), "err");
             }
             S.gem -= n;
             render();
