@@ -439,13 +439,8 @@ taps("main>h2:nth-of-type(1)",6,"SOURCEPEEK");taps("main>h2:nth-of-type(2)",6,"C
     const rkName = k => RKM[k] ? L2(RKM[k][1], RKM[k][2]) : "";
     const mrow = () => CLAN && me ? (CLAN.members || []).find(m => String(m.nick).toLowerCase() === me.nick.toLowerCase()) : null;
     const myRank = () => { const m = mrow(); return m ? (m.role === "owner" ? "owner" : m.rank || "") : ""; };
-    async function loadRanks() {
-        if (!CLAN) {
-            return;
-        }
-        const r = await rpc("gacha_clan_ranks", { p_token: TOKEN });
-        const mp = !r.error && r.data && typeof r.data === "object" ? r.data : {};
-        (CLAN.members || []).forEach(m => { m.rank = m.role === "owner" ? "owner" : mp[String(m.nick).toLowerCase()] || ""; });
+    async function loadRanks() {   // ранг лежит в role участника: owner / coleader / veteran / member
+        (CLAN && CLAN.members || []).forEach(m => { m.rank = m.role === "coleader" || m.role === "veteran" ? m.role : ""; });
     }
     const noSql = e => /Could not find|schema cache/i.test(String(e || ""));
     const emc = e => noSql(e) ? L2("Нужно обновить SQL (clan_cap.sql)", "SQL update needed (clan_cap.sql)") : srv(String(e || ""));
@@ -453,7 +448,7 @@ taps("main>h2:nth-of-type(1)",6,"SOURCEPEEK");taps("main>h2:nth-of-type(2)",6,"C
         if (!force && CAPS && Date.now() - capT < 30000) {
             return;
         }
-        const r = await rpc("gacha_clan_caps", {});
+        const r = await rpc("gacha_clan_caps", TOKEN ? { p_token: TOKEN } : {});
         if (!r.error && r.data && r.data.base != null) {
             CAPS = r.data;
             capT = Date.now();
@@ -708,6 +703,7 @@ taps("main>h2:nth-of-type(1)",6,"SOURCEPEEK");taps("main>h2:nth-of-type(2)",6,"C
             save();
             pushSoon();
             toast(L2("Клан создан", "Clan created"), "ok");
+            capT = 0;
             await load();
         }
         else if (a === "join") {
@@ -732,13 +728,10 @@ taps("main>h2:nth-of-type(1)",6,"SOURCEPEEK");taps("main>h2:nth-of-type(2)",6,"C
                 return toast(L2("Не хватает алмазов", "Not enough gems"), "err");
             }
             t.disabled = !0;
-            let r = await rpc("gacha_clan_donate", { p_token: TOKEN, p_gems: n });
-            if (r.error && /максимальн|maxim/i.test(String(r.error))) {   // клан 10 ур.: вклад без лимита
-                r = await serial(async () => {
-                    await trFlush();
-                    return await rpc("gacha_clan_donate_max", { p_token: TOKEN, p_gems: n });
-                });
-            }
+            const r = await serial(async () => {
+                await trFlush();   // сервер проверяет алмазы по сохранению
+                return await rpc("gacha_clan_donate", { p_token: TOKEN, p_gems: n });
+            });
             t.disabled = !1;
             if (r.error) {
                 return toast(noSql(r.error) ? emc(r.error) : em(r.error), "err");
@@ -827,6 +820,7 @@ taps("main>h2:nth-of-type(1)",6,"SOURCEPEEK");taps("main>h2:nth-of-type(2)",6,"C
                 return toast(em(r.error), "err");
             }
             CLAN = null;
+            capT = 0;
             try {
                 render();
             }
