@@ -693,6 +693,7 @@ img{content-visibility:auto}
 #vp .vsr{width:100%;margin:0 0 10px;padding:12px 14px;border-radius:14px}
 #vp .vl{display:flex;flex-direction:column;gap:6px;max-height:52vh;overflow:auto;text-align:left}
 #vp .vi{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;margin:0;flex:none;justify-content:flex-start;font-weight:700}
+#vp .vi .avw{display:inline-flex;flex:none}
 #vp .vi .avimg{width:28px;height:28px;border-radius:9px;object-fit:cover}
 #vp .vi span{margin-left:auto;color:var(--mute);font-size:12.5px}
 #vp .vs b.na{color:var(--mute);font-weight:700}
@@ -942,7 +943,14 @@ setInterval(() => { $("topp").style.display === "block" && !document.hidden && l
 document.addEventListener("visibilitychange", () => { !document.hidden && $("topp").style.display === "block" && loadTop(); });
 setInterval(() => { !document.hidden && TOKEN && ready && topTries < 3 && (!TOPC.c || !TOPC.g) && topPrefetch(); }, 5e3);
 const IC=n=>`<svg class="ico ei" aria-hidden="true"><use href="#i-${n}"/></svg>`,EIM={"🏆":"top","🪙":"coin","💎":"gem","🎲":"dice","🍀":"clover","💰":"income","⭐":"star","🐾":"paw","📚":"book","🛡":"shield"},EI=t=>esc(t).replace(/(🏆|🪙|💎|🎲|🍀|💰|⭐|🐾|📚|🛡)\uFE0F?/g,(m,g)=>IC(EIM[g]));
-const tMsg=(e,t)=>{const n=$("t_st");if(e===tr("wait")){n.textContent=e,n.style.color="var(--mute)";return}n.textContent="",e&&toast(e,t?"ok":"err")};let tBusy=!1,claimOff=0,TP=[],tSel="";function drawPl(){const e=$("t_nick").value.trim().toLowerCase(),t=TP.filter(n=>!me||n.nick.toLowerCase()!==me.nick.toLowerCase()).filter(n=>!e||n.nick.toLowerCase().includes(e));$("t_list").innerHTML=t.length?t.map(n=>`<div class="glass ti pl${n.nick===tSel?" eq":""}" data-n="${esc(n.nick)}"><div class="tx"><b>${avH(n.avatar)} ${esc(n.nick)}</b></div></div>`).join(""):`<div style="color:var(--mute);font-size:13px;margin-top:8px">${tr("pnone")}</div>`}let _lpAt=0;async function loadPlayers(){if(!TOKEN)return;if(Date.now()-_lpAt<6e4&&TP.length){drawPl();return}_lpAt=Date.now();const e=await rpc("gacha_top",{p_token:TOKEN,p_limit:500});e.error&&(_lpAt=0);TP=e.error?[]:(e.data||{}).top||[],drawPl()}$("t_nick").oninput=()=>{$("t_nick").value!==tSel&&(tSel="",trPD={},trPC={coins:0,gems:0},trW={}),drawPl(),drawTrI()};
+const AVC={},avQ=[];let avRun=0,avIO=null;
+const avN=(nick,fb)=>AVC[String(nick).toLowerCase()]||fb,
+avW=(nick,fb)=>`<span class="avw" data-an="${esc(nick)}">${avH(avN(nick,fb))}</span>`;
+function avPut(nick,av){document.querySelectorAll(".avw").forEach(w=>{if(w.dataset.an.toLowerCase()===nick.toLowerCase()&&isImg(av))w.innerHTML=avH(av)})}
+async function avPump(){while(avRun<3&&avQ.length){const nick=avQ.shift();avRun++;(async()=>{try{const r=await rpc("gacha_profile",{p_token:TOKEN,p_nick:nick}),x=r&&!r.error&&r.data?(Array.isArray(r.data)?r.data[0]:r.data):null,a=x&&x.avatar;AVC[nick.toLowerCase()]=isImg(a)?a:"";isImg(a)&&avPut(nick,a)}catch(e){AVC[nick.toLowerCase()]=""}avRun--;avPump()})()}}
+function avAsk(w){const nick=w.dataset.an,k=nick.toLowerCase();if(!TOKEN||AVC[k]!==undefined||avQ.includes(nick))return;if(me&&k===me.nick.toLowerCase())return;avQ.push(nick);avPump()}
+function avWatch(root){if(!root)return;const ws=root.querySelectorAll(".avw");if(!("IntersectionObserver"in window)){[...ws].slice(0,30).forEach(avAsk);return}avIO=avIO||new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){avIO.unobserve(e.target);avAsk(e.target)}}),{rootMargin:"120px"});ws.forEach(w=>{AVC[w.dataset.an.toLowerCase()]===undefined&&avIO.observe(w)})}
+const tMsg=(e,t)=>{const n=$("t_st");if(e===tr("wait")){n.textContent=e,n.style.color="var(--mute)";return}n.textContent="",e&&toast(e,t?"ok":"err")};let tBusy=!1,claimOff=0,TP=[],tSel="";function drawPl(){const e=$("t_nick").value.trim().toLowerCase(),t=TP.filter(n=>!me||n.nick.toLowerCase()!==me.nick.toLowerCase()).filter(n=>!e||n.nick.toLowerCase().includes(e));$("t_list").innerHTML=t.length?t.map(n=>`<div class="glass ti pl${n.nick===tSel?" eq":""}" data-n="${esc(n.nick)}"><div class="tx"><b>${avW(n.nick,n.avatar)} ${esc(n.nick)}</b></div></div>`).join(""):`<div style="color:var(--mute);font-size:13px;margin-top:8px">${tr("pnone")}</div>`;avWatch($("t_list"))}let _lpAt=0;async function loadPlayers(){if(!TOKEN)return;if(Date.now()-_lpAt<6e4&&TP.length){drawPl();return}_lpAt=Date.now();const e=await rpc("gacha_top",{p_token:TOKEN,p_limit:500});e.error&&(_lpAt=0);TP=e.error?[]:(e.data||{}).top||[],drawPl()}$("t_nick").oninput=()=>{$("t_nick").value!==tSel&&(tSel="",trPD={},trPC={coins:0,gems:0},trW={}),drawPl(),drawTrI()};
 $("t_list").onclick=e=>{const t=e.target.closest("[data-n]");t&&trPick(t.dataset.n)};
 Object.assign(TX,{"Трейды":"Trades","Меняйся повторками, монетами и алмазами с другими игроками":"Swap duplicates, coins and gems with other players","Предложить обмен":"Offer a trade"});
 let trTab="n",trPD={},trPC={coins:0,gems:0},trG={},trW={},trRF=-1,trIn=0,trData=null,trOff=0;
@@ -1009,7 +1017,14 @@ function promoAdmin(){const on=(isOwner||granted)&&!!TOKEN;$("pr_adm").style.dis
 async function loadPromos(){const r=await rpc("gacha_promo_list",{p_token:TOKEN}),el=$("pr_list"),hint=t=>`<div style="color:var(--mute);font-size:13px">${esc(t)}</div>`;
  if(r.error){el.innerHTML=hint(promoErr(r.error));return}
  const a=Array.isArray(r.data)?r.data:[];
- setH(el,a.length?a.map(x=>`<div class="glass ti"><div class="tx"><b>${esc(x.code)}</b><small>${[x.coins>0?"🪙 "+fmt(+x.coins):"",x.gems>0?"💎 "+fmt(+x.gems):"",L2("использовано ","used ")+x.uses+"/"+(x.max_uses==null?"∞":x.max_uses),x.expires_at?L2("до ","until ")+new Date(x.expires_at).toLocaleString():""].filter(Boolean).join(" · ")}</small></div><button class="alt" data-pd="${esc(x.code)}">${L2("Удалить","Delete")}</button></div>`).join(""):hint(L2("Пока нет промокодов","No promo codes yet")))}
+ const key=a.map(x=>x.code).join("|");
+ if(a.length&&el._pk===key){a.forEach(x=>{const sm=[...el.querySelectorAll("small[data-pc]")].find(q=>q.dataset.pc===x.code);if(sm){sm.dataset.u=x.uses;sm.dataset.m=x.max_uses==null?"":x.max_uses;sm.dataset.e=x.expires_at?+new Date(x.expires_at):"";sm.dataset.c=x.coins||0;sm.dataset.g=x.gems||0;pTxt(sm)}});return}
+ el._pk=key;
+ setH(el,a.length?a.map(x=>`<div class="glass ti"><div class="tx"><b>${esc(x.code)}</b><small data-pc="${esc(x.code)}" data-u="${x.uses}" data-m="${x.max_uses==null?"":x.max_uses}" data-e="${x.expires_at?+new Date(x.expires_at):""}" data-c="${x.coins||0}" data-g="${x.gems||0}"></small></div><button class="alt" data-pd="${esc(x.code)}">${L2("Удалить","Delete")}</button></div>`).join(""):hint(L2("Пока нет промокодов","No promo codes yet")));
+ el.querySelectorAll("small[data-pc]").forEach(pTxt)}
+const fmtLeft=ms=>{let t=Math.max(0,Math.floor(ms/1e3));const d=Math.floor(t/86400),h=Math.floor(t%86400/3600),m=Math.floor(t%3600/60),q=t%60,u=L2(["д","ч","м","с"],["d","h","m","s"]);return[d?d+u[0]:"",d||h?h+u[1]:"",d||h||m?m+u[2]:"",q+u[3]].filter(Boolean).join(" ")};
+function pTxt(sm){const d=sm.dataset,p=[];if(+d.c>0)p.push("🪙 "+fmt(+d.c));if(+d.g>0)p.push("💎 "+fmt(+d.g));p.push(L2("использовано ","used ")+d.u+"/"+(d.m===""?"∞":d.m));if(d.e!==""){const ms=+d.e-Date.now();p.push(ms>0?L2("осталось ","left ")+fmtLeft(ms):L2("срок истёк","expired"))}const t=p.join(" · ");sm.textContent!==t&&(sm.textContent=t)}
+setInterval(()=>{$("promop").style.display==="block"&&!document.hidden&&document.querySelectorAll("#pr_list small[data-pc]").forEach(pTxt)},1e3);
 $("pr_create").onclick=async()=>{
  const code=$("pr_ncode").value.trim().toUpperCase(),coins=Math.floor(+$("pr_ncoins").value)||0,gems=Math.floor(+$("pr_ngems").value)||0,
   uses=$("pr_nuses").value.trim()===""?null:Math.floor(+$("pr_nuses").value),hours=$("pr_nhours").value.trim()===""?null:+$("pr_nhours").value;
@@ -1026,7 +1041,7 @@ $("pr_list").onclick=async e=>{const b=e.target.closest("[data-pd]");if(!b)retur
  const r=await rpc("gacha_promo_delete",{p_token:TOKEN,p_code:b.dataset.pd});if(r.error)return toast(promoErr(r.error),"err");
  toast(L2("Промокод удалён","Promo code deleted"),"ok");loadPromos()};
 /* пока панель промокодов открыта, список (и счётчик «использовано») обновляется сам каждые 6 секунд */
-setInterval(()=>{$("promop").style.display==="block"&&!document.hidden&&TOKEN&&(isOwner||granted)&&loadPromos()},1e4);
+setInterval(()=>{$("promop").style.display==="block"&&!document.hidden&&TOKEN&&(isOwner||granted)&&loadPromos()},2e3);
 Object.assign(TX,{"Промокод":"Promo code","Введи промокод и получи награду":"Enter a promo code to get a reward","Активировать":"Redeem","Новый промокод":"New promo code","Создать промокод":"Create promo code","Активные промокоды":"Active promo codes","Введите промокод":"Enter promo code","Код (A-Z, 0-9)":"Code (A-Z, 0-9)","Монеты":"Coins","Алмазы":"Gems","Макс. активаций (пусто — без лимита)":"Max uses (empty — unlimited)","Срок, часов (пусто — навсегда)":"Lifetime, hours (empty — forever)"});
 $("trb").onclick=()=>{trTab="n";trG={};trW={};trPD={};trPC={coins:0,gems:0};tSel="";$("t_nick").value="";tMsg(TOKEN?"":tr("tlogin"));drawPl();drawTr();openPanel("trp");loadPlayers();loadTr()};
 $("t_send").onclick=async()=>{if(!TOKEN||!me)return tMsg(tr("tlogin"));if(tBusy||busy||!ready||!tSel)return;
@@ -1907,7 +1922,8 @@ function drawList(){
   const f=q.trim().toLowerCase();
   const arr=LST.map((x,i)=>Object.assign({_r:i+1},x)).filter(x=>!f||String(x.nick).toLowerCase().includes(f)).slice(0,60);
   const l=vb.querySelector("#vl");if(!l)return;
-  l.innerHTML=arr.length?arr.map(x=>'<button class="alt vi" data-pn="'+esc(x.nick)+'">'+avH(x.avatar)+'<b>'+esc(x.nick)+'</b><span>'+IC("coin")+nf(x.coins)+'</span></button>').join(""):'<div style="color:var(--mute);padding:8px">'+L2("Никого не найдено","Nobody found")+'</div>';
+  l.innerHTML=arr.length?arr.map(x=>'<button class="alt vi" data-pn="'+esc(x.nick)+'">'+avW(x.nick,x.avatar)+'<b>'+esc(x.nick)+'</b><span>'+IC("coin")+nf(x.coins)+'</span></button>').join(""):'<div style="color:var(--mute);padding:8px">'+L2("Никого не найдено","Nobody found")+'</div>';
+  avWatch(l);
 }
 function showList(){
   seq++;
@@ -1937,7 +1953,7 @@ function stats(d){
 }
 function drawProfile(d,loading){
   const st=stats(d),miss=st.some(x=>x[1]==null&&/Раз|Брос|Rolls|удач|Luck|доход|Income|редк|rarity|Пит|Pets/.test(x[0]));
-  vb.innerHTML='<div class="vav" id="vav">'+avH(d.avatar)+'</div><h3>'+esc(d.nick)+'</h3>'+
+  vb.innerHTML='<div class="vav" id="vav">'+avH(avN(d.nick,d.avatar))+'</div><h3>'+esc(d.nick)+'</h3>'+
    '<div class="vr">'+(me&&d.nick===me.nick?L2("Это ты","This is you"):L2("Профиль игрока","Player profile"))+'</div>'+
    '<div class="vg">'+st.filter(x=>x[1]!=null||/Брос|Rolls|удач|Luck|доход|Income/.test(x[0])).map(x=>'<div class="vs"><small>'+EI(x[0])+'</small>'+(x[1]==null?'<b class="na">—</b>':'<b>'+esc(x[1])+'</b>')+'</div>').join("")+'</div>'+
    (loading?'<div class="vn">…</div>':(miss?'<div class="vn">'+L2("Сервер пока не отдаёт эти данные других игроков","The server does not share these stats of other players yet")+'</div>':''))+
