@@ -1726,26 +1726,26 @@ document.addEventListener("visibilitychange",function(){if(!ctx)return;try{docum
 lab();
 })();</script> <script>
 (function(){
-const IB='<svg class="ico"><use href="#i-bp"/></svg>',IP='<svg class="ico"><use href="#i-bpp"/></svg>',LV=30,XPL=250,PREM=7500,
+const IB='<svg class="ico"><use href="#i-bp"/></svg>',IP='<svg class="ico"><use href="#i-bpp"/></svg>',LV=30,PREM=7500,xpNeed=i=>350+75*i,cum=l=>{let t=0;for(let i=0;i<l;i++)t+=xpNeed(i);return t},
 XPT={roll:2,x10:5,fuse:15,up:25,gem:10,rare:1,epic:3,leg:10},
 NM=[["Зимняя стужа","Winter Frost"],["Сердца и звёзды","Hearts & Stars"],["Весенний рассвет","Spring Dawn"],["Цветущий алтарь","Blooming Altar"],["Майская гроза","May Storm"],["Летний зной","Summer Heat"],["Звёздное лето","Starry Summer"],["Золотой урожай","Golden Harvest"],["Осенний туман","Autumn Mist"],["Тёмная луна","Dark Moon"],["Первый снег","First Snow"],["Новогоднее чудо","New Year Miracle"]];
 const sid=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")};
 const snum=()=>{const d=new Date();return (d.getFullYear()-2026)*12+d.getMonth()+1-9};
 const sname=()=>NM[new Date().getMonth()][LANG==="en"?1:0];
 function bp(){const s=sid();if(!S.bp||typeof S.bp!=="object"||S.bp.s<s)S.bp={s:s,xp:0,pr:0,c:0,p:0};return S.bp}
-const lvl=()=>Math.min(LV,Math.floor(bp().xp/XPL));
+const lvl=()=>{const x=bp().xp;let l=0;while(l<LV&&x>=cum(l+1))l++;return l};
 function rw(L,p){const m=p?2.5:1;return{coins:Math.max(Math.round(250*L*m),Math.floor(inc()*30*L*m)),gems:(L%5===0?L/5*(p?4:2):0)+(p?1:0)}}
 const rt=r=>"🪙 "+fmt(r.coins)+(r.gems?" · 💎 "+r.gems:"");
-function bpAdd(x){if(!ready||!(x>0))return;const b=bp(),a=lvl();b.xp=Math.min(LV*XPL,b.xp+x);const n=lvl();if(n>a)toast(L2("Батлпасс: уровень ","Battle pass: level ")+n,"ok")}
+function bpAdd(x){if(!ready||!(x>0))return;const b=bp(),a=lvl();b.xp=Math.min(cum(LV),b.xp+x);const n=lvl();if(n>a)toast(L2("Батлпасс: уровень ","Battle pass: level ")+n,"ok")}
 const _d=dqAdd;dqAdd=function(id,n){_d(id,n);if(ready&&n>0&&XPT[id])bpAdd(XPT[id]*n)};
 TT.push({id:"bp30",e:"🎖️",c:"#4ade80",ru:["Ветеран сезона","Забрать награду 30 уровня батлпасса"],en:["Season Veteran","Claim the level 30 battle pass reward"],cur:()=>S.tb.includes("bp30")?1:0,goal:1},{id:"bp30p",e:"🏅",c:"#ffb02e",ru:["Чемпион сезона","Забрать награду 30 уровня премиум-пропуска"],en:["Season Champion","Claim the level 30 premium pass reward"],cur:()=>S.tb.includes("bp30p")?1:0,goal:1});
 function claim(i,p){const b=bp(),L=i+1;if(lvl()<L||(p&&!b.pr))return null;const k=p?"p":"c",bit=1<<i;if(b[k]&bit)return null;b[k]|=bit;const r=rw(L,p);S.coins+=r.coins;S.gem=(S.gem||0)+r.gems;if(L===LV){const t=p?"bp30p":"bp30";Array.isArray(S.tb)||(S.tb=[]);S.tb.includes(t)||S.tb.push(t)}return r}
 function pending(){if(!ready)return 0;const b=bp(),l=lvl();let n=0;for(let i=0;i<l;i++){if(!(b.c&(1<<i)))n++;if(b.pr&&!(b.p&(1<<i)))n++}return n}
 let sig="";
-function draw(){const b=bp(),l=lvl(),t=LANG==="en",end=new Date(new Date().getFullYear(),new Date().getMonth()+1,1)-Date.now(),cur=b.xp-l*XPL,pc=l>=LV?100:cur/XPL*100,pn=pending();
+function draw(){const b=bp(),l=lvl(),t=LANG==="en",end=new Date(new Date().getFullYear(),new Date().getMonth()+1,1)-Date.now(),cur=b.xp-cum(l),pc=l>=LV?100:cur/xpNeed(l)*100,pn=pending();
 $("bphd").innerHTML=IB+L2("Батлпасс · сезон ","Battle pass · season ")+snum();
 $("bpsub").textContent=sname()+" · "+L2("до конца ","ends in ")+fmtT(Math.max(0,Math.floor(end/1e3)));
-let h=`<div class="glass" style="padding:12px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>${L2("Уровень","Level")} ${l}/${LV}</span><span style="color:var(--mute);font-size:13px">${l>=LV?"MAX":fmt(cur)+" / "+XPL+" XP"}</span></div><div class="pb"><i style="width:${pc}%;background:var(--c4)"></i></div><div style="color:var(--mute);font-size:12px;margin-top:6px">${L2("XP: бросок +2, слияние +15, прокачка +25, алмаз +10, редкие предметы","XP: roll +2, fusion +15, upgrade +25, gem +10, rare items")}</div><div class="row" style="margin-top:8px">${b.pr?`<span style="flex:1;color:#ffb02e;font-weight:800">${IP} ${L2("Премиум активен","Premium active")}</span>`:`<button data-bpbuy="1" ${S.gem>=PREM?"":"disabled"}>${IP} ${L2("Премиум","Premium")} · 💎 ${PREM}</button>`}<button class="alt" data-bpall="1" ${pn?"":"disabled"}>${L2("Забрать всё","Claim all")}${pn?" ("+pn+")":""}</button></div></div>`;
+let h=`<div class="glass" style="padding:12px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>${L2("Уровень","Level")} ${l}/${LV}</span><span style="color:var(--mute);font-size:13px">${l>=LV?"MAX":fmt(cur)+" / "+xpNeed(l)+" XP"}</span></div><div class="pb"><i style="width:${pc}%;background:var(--c4)"></i></div><div style="color:var(--mute);font-size:12px;margin-top:6px">${L2("XP: бросок +2, слияние +15, прокачка +25, алмаз +10, редкие предметы","XP: roll +2, fusion +15, upgrade +25, gem +10, rare items")}</div><div class="row" style="margin-top:8px">${b.pr?`<span style="flex:1;color:#ffb02e;font-weight:800">${IP} ${L2("Премиум активен","Premium active")}</span>`:`<button data-bpbuy="1" ${S.gem>=PREM?"":"disabled"}>${IP} ${L2("Премиум","Premium")} · 💎 ${PREM}</button>`}<button class="alt" data-bpall="1" ${pn?"":"disabled"}>${L2("Забрать всё","Claim all")}${pn?" ("+pn+")":""}</button></div></div>`;
 for(let i=0;i<LV;i++){const L=i+1,ok=l>=L,f=rw(L,0),p=rw(L,1),fc=b.c&(1<<i),pcl=b.p&(1<<i),bs='style="padding:6px 10px;font-size:12px;min-width:84px"';
 h+=`<div class="glass ti ${ok?"":"off"}"><div class="ic" style="font:800 18px var(--fh)">${L}</div><div class="tx"><b>${rt(f)}${L===LV?" · "+IB:""}</b><span style="color:#ffb02e">${IP} ${rt(p)}${L===LV?" · "+IP:""}</span></div><div style="display:flex;flex-direction:column;gap:4px;flex:none"><button data-bpc="${i}|0" ${bs} ${ok&&!fc?"":"disabled"}>${fc?"✓":ok?L2("Забрать","Claim"):"🔒"}</button><button class="alt" data-bpc="${i}|1" ${bs} ${ok&&b.pr&&!pcl?"":"disabled"}>${pcl?"✓":ok&&b.pr?L2("Забрать","Claim"):IP}</button></div></div>`}
 if(h!==sig){const sc=$("bplist");sig=h;$("bptop").innerHTML="";sc.innerHTML=h}}
@@ -1756,6 +1756,21 @@ if(bt.dataset.bpbuy){if((S.gem||0)<PREM)return toast(L2("Не хватает а�
 else if(bt.dataset.bpall){const l=lvl(),b=bp();for(let i=0;i<l;i++)for(const p of [0,1]){const r=claim(i,p);if(r){sum.coins+=r.coins;sum.gems+=r.gems}}if(sum.coins||sum.gems){toast(L2("Награда: ","Reward: ")+rt(sum),"ok");got=1}}
 else if(bt.dataset.bpc){const [i,p]=bt.dataset.bpc.split("|").map(Number),r=claim(i,p);if(r){toast(L2("Награда: ","Reward: ")+rt(r),"ok");got=1}}
 if(got){render();save();pushSoon();draw();lab()}});
+
+/* ===== Подарок премиума (через систему обменов) ===== */
+const isGift=x=>{try{const g=Object.keys(x.give||{}),w=Object.keys(x.want||{});return g.length===1&&w.length===1&&g[0]==="$gems"&&w[0]==="$coins"&&+x.give["$gems"]===PREM&&+x.want["$coins"]===1}catch(e){return false}};
+const _tc=trCard;trCard=function(x,k){if(!isGift(x))return _tc(x,k);const who=esc(k==="out"?x.to_nick:x.from_nick);
+return `<div class="glass ti"><div class="tx"><b>${who}</b><span class="l">🎁 ${L2("Подарок: Премиум батлпасс","Gift: Premium battle pass")}</span></div>`+(k==="in"?`<button data-ta="ok|${x.id}">${L2("Принять","Accept")}</button><button class="alt" data-ta="no|${x.id}">${L2("Отказ","Decline")}</button>`:k==="out"?`<button class="alt" data-ta="no|${x.id}">${L2("Отмена","Cancel")}</button>`:`<span style="flex:none;color:var(--mute);font-size:12px">${L2(...(trLbl[x.status]||[x.status,x.status]))}</span>`)+`</div>`};
+const _ta=trAct;trAct=async function(kind,id){const x=((trData&&trData.incoming)||[]).find(o=>o.id===id),g=kind==="ok"&&x&&isGift(x)&&!bp().pr,before=S.gem||0;await _ta(kind,id);
+if(g&&(S.gem||0)-before>=PREM&&!bp().pr){S.gem=Math.max(0,S.gem-PREM);bp().pr=1;render();save();pushSoon();draw();lab();toast(L2("🎁 Премиум батлпасс получен в подарок!","🎁 Premium battle pass received as a gift!"),"ok")}};
+const gb=document.createElement("div");gb.id="bpgift";gb.className="glass";gb.style.cssText="padding:12px;margin-bottom:8px";
+gb.innerHTML=`<div style="font-weight:800;margin-bottom:6px">🎁 <span id="bpg_t"></span></div><div class="row"><input id="bpg_n" maxlength="16" autocomplete="off"><button id="bpg_b" style="flex:none"></button></div><div id="bpg_s" style="font-size:12px;color:var(--mute);margin-top:6px"></div>`;
+$("bpp").insertBefore(gb,$("bplist"));
+function gTxt(){$("bpg_t").textContent=L2("Подарить премиум другу","Gift premium to a friend");$("bpg_n").placeholder=L2("Ник друга","Friend's nickname");$("bpg_b").textContent=L2("Подарить · 💎 ","Gift · 💎 ")+PREM;$("bpg_s").textContent=L2("Друг увидит подарок во входящих обменах и получит премиум после принятия.","Your friend will see the gift in incoming trades and get premium once they accept.")}
+gTxt();setInterval(gTxt,3000);
+$("bpg_b").onclick=async()=>{if(!TOKEN||!me)return toast(L2("Войдите в аккаунт","Sign in first"),"err");const n=$("bpg_n").value.trim();if(!n)return toast(L2("Введите ник друга","Enter a nickname"),"err");if(n.toLowerCase()===me.nick.toLowerCase())return toast(L2("Нельзя дарить себе","You can't gift yourself"),"err");if((S.gem||0)<PREM)return toast(L2("Не хватает алмазов","Not enough gems"),"err");if(tBusy||busy||!ready)return;tBusy=true;
+const r=await serial(async()=>{await trFlush();return await rpc("gacha_trade_send",{p_token:TOKEN,p_to:n,p_give:{"$gems":PREM},p_want:{"$coins":1}})});tBusy=false;
+if(r.error)return toast(srv(r.error),"err");$("bpg_n").value="";toast(L2("🎁 Подарок отправлен игроку ","🎁 Gift sent to ")+n,"ok");loadTr()};
 setInterval(()=>{lab();if($("bpp").style.display==="block")try{draw()}catch(e){}},1000);
 })();
 </script></body> </html>
